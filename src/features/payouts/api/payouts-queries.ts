@@ -24,6 +24,14 @@ export type NewPayoutInput = Omit<
   "id" | "user_id" | "created_at"
 >
 
+export type UpdatePayoutInput = {
+  id: string
+  amount: number
+  fee_taken: number
+  paid_at: string
+  notes: string | null
+}
+
 export const payoutsKeys = {
   all: ["payouts"] as const,
   list: () => [...payoutsKeys.all, "list"] as const,
@@ -54,6 +62,25 @@ export function useCreatePayout() {
       const { data, error } = await supabase
         .from("payouts")
         .insert({ ...input, user_id: user.id })
+        .select()
+        .single()
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: payoutsKeys.all })
+    },
+  })
+}
+
+export function useUpdatePayout() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, ...input }: UpdatePayoutInput) => {
+      const { data, error } = await supabase
+        .from("payouts")
+        .update(input)
+        .eq("id", id)
         .select()
         .single()
       if (error) throw error

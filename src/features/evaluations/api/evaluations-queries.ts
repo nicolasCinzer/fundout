@@ -5,15 +5,24 @@ import { useAuth } from "@/features/auth/api/auth-provider"
 import type { Database, Tables, TablesInsert } from "@/types/database"
 
 export type EvaluationStatus = Database["public"]["Enums"]["evaluation_status"]
+export type EvaluationReset = Tables<"evaluation_resets">
 
 export type Evaluation = Tables<"evaluations"> & {
   propfirm: Pick<Tables<"propfirms">, "id" | "name" | "slug"> | null
+  resets: EvaluationReset[]
 }
 
 export type NewEvaluationInput = Omit<
   TablesInsert<"evaluations">,
   "id" | "user_id" | "created_at" | "updated_at"
 >
+
+export type NewResetInput = {
+  evaluation_id: string
+  fee: number
+  reset_at: string
+  notes: string | null
+}
 
 export const evaluationsKeys = {
   all: ["evaluations"] as const,
@@ -26,12 +35,25 @@ export function useEvaluations() {
     queryFn: async (): Promise<Evaluation[]> => {
       const { data, error } = await supabase
         .from("evaluations")
-        .select("*, propfirm:propfirms(id, name, slug)")
+        .select(
+          "*, propfirm:propfirms(id, name, slug), resets:evaluation_resets(*)",
+        )
         .order("purchase_date", { ascending: false })
       if (error) throw error
       return (data ?? []) as Evaluation[]
     },
   })
+}
+
+/** Sum of base fee + every reset fee for an evaluation. */
+export function totalFee(e: Evaluation): number {
+  const resetSum = (e.resets ?? []).reduce((acc, r) => acc + Number(r.fee), 0)
+  return Number(e.fee_paid) + resetSum
+}
+
+/** Sum of just the reset fees. */
+export function resetsTotal(e: Evaluation): number {
+  return (e.resets ?? []).reduce((acc, r) => acc + Number(r.fee), 0)
 }
 
 export function useCreateEvaluation() {
@@ -55,13 +77,9 @@ export function useCreateEvaluation() {
 }
 
 /**
- * Compound: marks the evaluation as passed (closed_at = today) AND creates
- * the linked funded_account in active state. One user-facing click.
- *
- * Not atomic at the DB level (no transaction from the client). If the second
- * step fails, the evaluation is left passed without a funded account — the
- * user can re-run the action; the update is idempotent and the insert will
- * complete the second time.
+ * Compound: marks evaluation as passed (closed_at = today) AND inserts the
+ * linked funded_account. Two operations, idempotent on retry — see commit
+ * message for failure-mode reasoning.
  */
 export function useMarkEvaluationFunded() {
   const queryClient = useQueryClient()
@@ -120,6 +138,26 @@ export function useUpdateEvaluationStatus() {
   })
 }
 
+export function useLogEvaluationReset() {
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  return useMutation({
+    mutationFn: async (input: NewResetInput) => {
+      if (!user) throw new Error("Not authenticated")
+      const { data, error } = await supabase
+        .from("evaluation_resets")
+        .insert({ ...input, user_id: user.id })
+        .select()
+        .single()
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: evaluationsKeys.all })
+    },
+  })
+}
+
 export function useDeleteEvaluation() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -128,8 +166,6 @@ export function useDeleteEvaluation() {
       if (error) throw error
     },
     onSuccess: () => {
-      // Evaluations cascade to funded_accounts which cascade to payouts.
-      // Invalidate all three.
       queryClient.invalidateQueries({ queryKey: evaluationsKeys.all })
       queryClient.invalidateQueries({ queryKey: ["funded_accounts"] })
       queryClient.invalidateQueries({ queryKey: ["payouts"] })

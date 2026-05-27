@@ -1,4 +1,7 @@
-import type { Evaluation } from "@/features/evaluations/api/evaluations-queries"
+import {
+  totalFee,
+  type Evaluation,
+} from "@/features/evaluations/api/evaluations-queries"
 import type { FundedAccount } from "@/features/funded-accounts/api/funded-accounts-queries"
 import type { Payout } from "@/features/payouts/api/payouts-queries"
 
@@ -20,7 +23,8 @@ export function computeKpis(
   fundedAccounts: FundedAccount[],
   payouts: Payout[],
 ): DashboardKpis {
-  const totalSpent = evaluations.reduce((acc, e) => acc + Number(e.fee_paid), 0)
+  // total spent = base fees + every reset fee across all evaluations
+  const totalSpent = evaluations.reduce((acc, e) => acc + totalFee(e), 0)
   const totalPayoutsGross = payouts.reduce(
     (acc, p) => acc + Number(p.amount),
     0,
@@ -31,12 +35,11 @@ export function computeKpis(
   )
   const netPnl = totalPayoutsNet - totalSpent
 
-  // Decisive = evaluations whose outcome is known. Refunds don't count toward
-  // funding ratio because they were never really an attempt.
-  const decisive = evaluations.filter((e) => e.status !== "refunded")
+  // Funding ratio = funded / total evaluations. With resets in the mix and
+  // 'refunded' gone, every evaluation counts toward the denominator.
   const countFunded = fundedAccounts.length
   const fundingRatio =
-    decisive.length === 0 ? 0 : countFunded / decisive.length
+    evaluations.length === 0 ? 0 : countFunded / evaluations.length
 
   const fundedWithPayouts = new Set(
     payouts

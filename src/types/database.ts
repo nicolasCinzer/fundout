@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      evaluation_resets: {
+        Row: {
+          created_at: string
+          evaluation_id: string
+          fee: number
+          id: string
+          notes: string | null
+          reset_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evaluation_id: string
+          fee: number
+          id?: string
+          notes?: string | null
+          reset_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evaluation_id?: string
+          fee?: number
+          id?: string
+          notes?: string | null
+          reset_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluation_resets_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evaluations: {
         Row: {
           account_size: number
@@ -187,7 +225,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      evaluation_status: "in_progress" | "passed" | "failed" | "refunded"
+      evaluation_status: "in_progress" | "passed" | "failed"
       funded_account_status: "active" | "breached"
     }
     CompositeTypes: {
@@ -316,7 +354,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      evaluation_status: ["in_progress", "passed", "failed", "refunded"],
+      evaluation_status: ["in_progress", "passed", "failed"],
       funded_account_status: ["active", "breached"],
     },
   },

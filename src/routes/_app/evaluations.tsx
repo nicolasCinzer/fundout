@@ -40,6 +40,8 @@ import {
   compareStrings,
 } from "@/lib/sorting"
 import {
+  totalFee,
+  resetsTotal,
   useEvaluations,
   type EvaluationStatus,
   type Evaluation,
@@ -56,12 +58,12 @@ const SORT_KEYS = [
   "status",
 ] as const
 
+const ROUTE_STATUSES = ["in_progress", "passed", "failed"] as const
+type RouteStatus = (typeof ROUTE_STATUSES)[number]
+
 const SEARCH_SCHEMA = z.object({
   q: z.string().optional().catch(undefined),
-  status: z
-    .enum(["in_progress", "passed", "failed", "refunded"])
-    .optional()
-    .catch(undefined),
+  status: z.enum(ROUTE_STATUSES).optional().catch(undefined),
   sort: z.enum(SORT_KEYS).optional().catch(undefined),
   dir: z.enum(["asc", "desc"]).optional().catch(undefined),
 })
@@ -79,7 +81,6 @@ const STATUS_META: {
   in_progress: { variant: "default", label: "In progress" },
   passed: { variant: "secondary", label: "Passed" },
   failed: { variant: "destructive", label: "Failed" },
-  refunded: { variant: "outline", label: "Refunded" },
 }
 
 function getStatusMeta(s: EvaluationStatus) {
@@ -102,8 +103,9 @@ function sortEvaluations(
         compareNumbers(Number(a.account_size), Number(b.account_size), dir),
       )
     case "fee_paid":
+      // Sort by total fee (base + resets) so the visible value drives the order.
       return sorted.sort((a, b) =>
-        compareNumbers(Number(a.fee_paid), Number(b.fee_paid), dir),
+        compareNumbers(totalFee(a), totalFee(b), dir),
       )
     case "purchase_date":
       return sorted.sort((a, b) =>
@@ -141,7 +143,7 @@ function EvaluationsPage() {
     return sortEvaluations(filtered, search.sort, search.dir ?? "asc")
   }, [filtered, search.sort, search.dir])
 
-  const updateSearch = (next: { q?: string; status?: EvaluationStatus }) => {
+  const updateSearch = (next: { q?: string; status?: RouteStatus }) => {
     navigate({
       search: (prev) => ({
         ...prev,
@@ -204,7 +206,7 @@ function EvaluationsPage() {
                 value={search.status ?? "all"}
                 onValueChange={(v) =>
                   updateSearch({
-                    status: v === "all" ? undefined : (v as EvaluationStatus),
+                    status: v === "all" ? undefined : (v as RouteStatus),
                   })
                 }
               >
@@ -216,7 +218,6 @@ function EvaluationsPage() {
                   <SelectItem value="in_progress">In progress</SelectItem>
                   <SelectItem value="passed">Passed</SelectItem>
                   <SelectItem value="failed">Failed</SelectItem>
-                  <SelectItem value="refunded">Refunded</SelectItem>
                 </SelectContent>
               </Select>
               {hasFilters ? (
@@ -310,6 +311,8 @@ function EvaluationsPage() {
                   <TableBody>
                     {rows.map((e) => {
                       const meta = getStatusMeta(e.status)
+                      const resetSum = resetsTotal(e)
+                      const resetCount = e.resets?.length ?? 0
                       return (
                         <TableRow key={e.id}>
                           <TableCell className="font-medium">
@@ -319,7 +322,18 @@ function EvaluationsPage() {
                             {formatCurrency(e.account_size)}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">
-                            {formatCurrency(e.fee_paid, true)}
+                            <span>{formatCurrency(e.fee_paid, true)}</span>
+                            {resetSum > 0 ? (
+                              <>
+                                <span className="text-muted-foreground"> + </span>
+                                <span
+                                  className="text-amber-600 dark:text-amber-400"
+                                  title={`${resetCount} reset${resetCount === 1 ? "" : "s"}`}
+                                >
+                                  {formatCurrency(resetSum, true)}
+                                </span>
+                              </>
+                            ) : null}
                           </TableCell>
                           <TableCell>{formatDate(e.purchase_date)}</TableCell>
                           <TableCell className="text-muted-foreground">

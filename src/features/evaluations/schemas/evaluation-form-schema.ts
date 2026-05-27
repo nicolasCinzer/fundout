@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const STATUSES = ["in_progress", "passed", "failed", "refunded"] as const
+const STATUSES = ["in_progress", "passed", "failed"] as const
 
 export const evaluationFormSchema = z
   .object({

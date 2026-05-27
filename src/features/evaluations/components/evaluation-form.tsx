@@ -29,6 +29,7 @@ import {
 } from "@/features/evaluations/schemas/evaluation-form-schema"
 import { useCreateEvaluation } from "@/features/evaluations/api/evaluations-queries"
 import { usePropfirms } from "@/features/propfirms/api/propfirms-queries"
+import { PropfirmCombobox } from "@/features/propfirms/components/propfirm-combobox"
 
 type EvaluationFormProps = {
   onSuccess?: () => void
@@ -39,7 +40,6 @@ const STATUS_OPTIONS = [
   { value: "in_progress", label: "In progress" },
   { value: "passed", label: "Passed" },
   { value: "failed", label: "Failed" },
-  { value: "refunded", label: "Refunded" },
 ] as const
 
 const ACCOUNT_SIZE_PRESETS = [
@@ -105,28 +105,21 @@ export function EvaluationForm({ onSuccess, onCancel }: EvaluationFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Propfirm</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-                disabled={propfirmsLoading}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        propfirmsLoading ? "Loading…" : "Pick a propfirm"
-                      }
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {(propfirms ?? []).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <PropfirmCombobox
+                  value={field.value}
+                  onChange={field.onChange}
+                  propfirms={propfirms ?? []}
+                  disabled={propfirmsLoading}
+                  placeholder={
+                    propfirmsLoading ? "Loading…" : "Pick a propfirm…"
+                  }
+                />
+              </FormControl>
+              <FormDescription>
+                Don&apos;t see your propfirm? Type its name and hit
+                &ldquo;Create&rdquo;.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -16,11 +16,21 @@ export function computeMonthlyFlow(
 ): MonthlyFlowPoint[] {
   const buckets = new Map<string, { fees: number; payouts: number }>()
 
+  // Base fees land on the evaluation's purchase month.
   for (const e of evaluations) {
     const key = format(startOfMonth(parseISO(e.purchase_date)), "yyyy-MM")
     const bucket = buckets.get(key) ?? { fees: 0, payouts: 0 }
     bucket.fees += Number(e.fee_paid)
     buckets.set(key, bucket)
+
+    // Reset fees land on the month the reset happened, not on the original
+    // purchase month — they represent spend at that point in time.
+    for (const r of e.resets ?? []) {
+      const rKey = format(startOfMonth(parseISO(r.reset_at)), "yyyy-MM")
+      const rBucket = buckets.get(rKey) ?? { fees: 0, payouts: 0 }
+      rBucket.fees += Number(r.fee)
+      buckets.set(rKey, rBucket)
+    }
   }
 
   for (const p of payouts) {
