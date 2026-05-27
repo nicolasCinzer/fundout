@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { z } from "zod"
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -15,19 +16,38 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { FundingFunnel } from "@/features/dashboard/components/funding-funnel"
 import { MonthlyFlowChart } from "@/features/dashboard/components/monthly-flow-chart"
+import { PropfirmLeaderboard } from "@/features/dashboard/components/propfirm-leaderboard"
+import { TimePeriodSelect } from "@/features/dashboard/components/time-period-select"
 import { computeKpis } from "@/features/dashboard/lib/compute-kpis"
+import { computeLeaderboard } from "@/features/dashboard/lib/compute-leaderboard"
 import { computeMonthlyFlow } from "@/features/dashboard/lib/compute-monthly-flow"
+import {
+  DEFAULT_PERIOD,
+  PERIODS,
+  PERIOD_LABEL,
+  periodRange,
+  type Period,
+} from "@/features/dashboard/lib/period"
 import { useEvaluations } from "@/features/evaluations/api/evaluations-queries"
 import { useFundedAccounts } from "@/features/funded-accounts/api/funded-accounts-queries"
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { formatCurrency, formatPercent } from "@/lib/format"
 
+const SEARCH_SCHEMA = z.object({
+  period: z.enum(PERIODS).optional().catch(undefined),
+})
+
 export const Route = createFileRoute("/_app/")({
   component: DashboardPage,
+  validateSearch: (search) => SEARCH_SCHEMA.parse(search),
 })
 
 function DashboardPage() {
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const period: Period = search.period ?? DEFAULT_PERIOD
+
   const evaluations = useEvaluations()
   const fundedAccounts = useFundedAccounts()
   const payouts = usePayouts()
@@ -38,6 +58,12 @@ function DashboardPage() {
     payouts.data
   )
 
+  const handlePeriodChange = (next: Period) =>
+    navigate({
+      search: { period: next === DEFAULT_PERIOD ? undefined : next },
+      replace: true,
+    })
+
   return (
     <>
       <AppHeader
@@ -45,6 +71,17 @@ function DashboardPage() {
         description="Your propfirm ROI at a glance"
       />
       <main className="flex-1 space-y-6 p-4 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Showing{" "}
+            <span className="font-medium text-foreground">
+              {PERIOD_LABEL[period].toLowerCase()}
+            </span>
+            . Switch the period to compare ranges.
+          </p>
+          <TimePeriodSelect value={period} onChange={handlePeriodChange} />
+        </div>
+
         {!ready ? (
           <DashboardSkeleton />
         ) : evaluations.data!.length === 0 ? (
@@ -57,6 +94,7 @@ function DashboardPage() {
           />
         ) : (
           <DashboardContent
+            period={period}
             evaluations={evaluations.data!}
             fundedAccounts={fundedAccounts.data!}
             payouts={payouts.data!}
@@ -68,19 +106,44 @@ function DashboardPage() {
 }
 
 type DashboardContentProps = {
+  period: Period
   evaluations: NonNullable<ReturnType<typeof useEvaluations>["data"]>
   fundedAccounts: NonNullable<ReturnType<typeof useFundedAccounts>["data"]>
   payouts: NonNullable<ReturnType<typeof usePayouts>["data"]>
 }
 
 function DashboardContent({
+  period,
   evaluations,
   fundedAccounts,
   payouts,
 }: DashboardContentProps) {
-  const kpis = computeKpis(evaluations, fundedAccounts, payouts)
-  const monthlyFlow = computeMonthlyFlow(evaluations, payouts)
+  const range = periodRange(period)
+  const kpis = computeKpis(evaluations, fundedAccounts, payouts, range)
+  const monthlyFlow = computeMonthlyFlow(evaluations, payouts, range)
+  const leaderboard = computeLeaderboard(
+    evaluations,
+    fundedAccounts,
+    payouts,
+    range,
+  )
   const netPositive = kpis.netPnl >= 0
+
+  const noPeriodActivity =
+    kpis.totalEvaluations === 0 &&
+    kpis.countFunded === 0 &&
+    kpis.totalPayoutsGross === 0
+
+  if (noPeriodActivity) {
+    return (
+      <EmptyState
+        icon={<TrendingUp className="h-5 w-5" />}
+        title="No activity in this period"
+        description="Pick a wider range to see your data, or log some activity to start filling it in."
+        className="mt-8"
+      />
+    )
+  }
 
   return (
     <>
@@ -128,7 +191,7 @@ function DashboardContent({
         <KpiCard
           label="Active funded"
           value={String(kpis.activeFunded)}
-          hint="Accounts currently active"
+          hint="Accounts currently active in this period"
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </section>
@@ -138,6 +201,10 @@ function DashboardContent({
           <MonthlyFlowChart data={monthlyFlow} />
         </div>
         <FundingFunnel kpis={kpis} />
+      </section>
+
+      <section>
+        <PropfirmLeaderboard rows={leaderboard} />
       </section>
     </>
   )
@@ -176,6 +243,17 @@ function DashboardSkeleton() {
                 <Skeleton className="h-3 w-full" />
               </div>
             ))}
+          </CardContent>
+        </Card>
+      </section>
+      <section>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="mt-2 h-3 w-72" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[180px] w-full" />
           </CardContent>
         </Card>
       </section>

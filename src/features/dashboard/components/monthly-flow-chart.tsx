@@ -1,10 +1,17 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+} from "recharts"
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardContent,
 } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -26,6 +33,10 @@ const chartConfig = {
     label: "Payouts (net)",
     color: "var(--chart-2)",
   },
+  cumulative: {
+    label: "Cumulative P&L",
+    color: "var(--chart-1)",
+  },
 } satisfies ChartConfig
 
 type MonthlyFlowChartProps = {
@@ -38,12 +49,13 @@ export function MonthlyFlowChart({ data }: MonthlyFlowChartProps) {
       <CardHeader>
         <CardTitle>Monthly flow</CardTitle>
         <CardDescription>
-          Fees spent vs net payouts received per month
+          Fees vs payouts per month, with cumulative net P&amp;L over the
+          selected period
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[320px] w-full">
-          <BarChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
+          <LineChart data={data} margin={{ left: 0, right: 12, top: 8 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="monthLabel"
@@ -60,8 +72,9 @@ export function MonthlyFlowChart({ data }: MonthlyFlowChartProps) {
               tickFormatter={(v) => formatCurrency(Number(v))}
               width={64}
             />
+            <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />
             <ChartTooltip
-              cursor={false}
+              cursor={{ strokeDasharray: "3 3" }}
               content={
                 <ChartTooltipContent
                   formatter={(value) => formatCurrency(Number(value), true)}
@@ -69,13 +82,31 @@ export function MonthlyFlowChart({ data }: MonthlyFlowChartProps) {
               }
             />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="fees" fill="var(--color-fees)" radius={[4, 4, 0, 0]} />
-            <Bar
-              dataKey="payouts"
-              fill="var(--color-payouts)"
-              radius={[4, 4, 0, 0]}
+            <Line
+              type="monotone"
+              dataKey="fees"
+              stroke="var(--color-fees)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+              activeDot={{ r: 4 }}
             />
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="payouts"
+              stroke="var(--color-payouts)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+              activeDot={{ r: 4 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="cumulative"
+              stroke="var(--color-cumulative)"
+              strokeWidth={2.5}
+              dot={{ r: 3 }}
+              activeDot={{ r: 4 }}
+            />
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>
