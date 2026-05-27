@@ -1,0 +1,184 @@
+import { createFileRoute } from "@tanstack/react-router"
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  DollarSign,
+  Percent,
+  Target,
+  TrendingUp,
+} from "lucide-react"
+import { AppHeader } from "@/components/common/app-header"
+import { EmptyState } from "@/components/common/empty-state"
+import { KpiSkeleton } from "@/components/common/kpi-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { KpiCard } from "@/features/dashboard/components/kpi-card"
+import { FundingFunnel } from "@/features/dashboard/components/funding-funnel"
+import { MonthlyFlowChart } from "@/features/dashboard/components/monthly-flow-chart"
+import { computeKpis } from "@/features/dashboard/lib/compute-kpis"
+import { computeMonthlyFlow } from "@/features/dashboard/lib/compute-monthly-flow"
+import { useEvaluations } from "@/features/evaluations/api/evaluations-queries"
+import { useFundedAccounts } from "@/features/funded-accounts/api/funded-accounts-queries"
+import { usePayouts } from "@/features/payouts/api/payouts-queries"
+import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
+import { formatCurrency, formatPercent } from "@/lib/format"
+
+export const Route = createFileRoute("/_app/")({
+  component: DashboardPage,
+})
+
+function DashboardPage() {
+  const evaluations = useEvaluations()
+  const fundedAccounts = useFundedAccounts()
+  const payouts = usePayouts()
+
+  const ready = !!(
+    evaluations.data &&
+    fundedAccounts.data &&
+    payouts.data
+  )
+
+  return (
+    <>
+      <AppHeader
+        title="Dashboard"
+        description="Your propfirm ROI at a glance"
+      />
+      <main className="flex-1 space-y-6 p-4 md:p-6">
+        {!ready ? (
+          <DashboardSkeleton />
+        ) : evaluations.data!.length === 0 ? (
+          <EmptyState
+            icon={<TrendingUp className="h-5 w-5" />}
+            title="No data yet"
+            description="Track your first propfirm evaluation to see funding ratio, net P&L, and monthly flow come to life."
+            action={<EvaluationFormDialog />}
+            className="mt-8"
+          />
+        ) : (
+          <DashboardContent
+            evaluations={evaluations.data!}
+            fundedAccounts={fundedAccounts.data!}
+            payouts={payouts.data!}
+          />
+        )}
+      </main>
+    </>
+  )
+}
+
+type DashboardContentProps = {
+  evaluations: NonNullable<ReturnType<typeof useEvaluations>["data"]>
+  fundedAccounts: NonNullable<ReturnType<typeof useFundedAccounts>["data"]>
+  payouts: NonNullable<ReturnType<typeof usePayouts>["data"]>
+}
+
+function DashboardContent({
+  evaluations,
+  fundedAccounts,
+  payouts,
+}: DashboardContentProps) {
+  const kpis = computeKpis(evaluations, fundedAccounts, payouts)
+  const monthlyFlow = computeMonthlyFlow(evaluations, payouts)
+  const netPositive = kpis.netPnl >= 0
+
+  return (
+    <>
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="lg:col-span-1 md:col-span-2">
+          <KpiCard
+            label="Net P&L"
+            value={`${netPositive ? "+" : ""}${formatCurrency(kpis.netPnl)}`}
+            hint={`${formatCurrency(kpis.totalPayoutsNet)} payouts · ${formatCurrency(kpis.totalSpent)} fees`}
+            icon={
+              netPositive ? (
+                <ArrowUpRight className="h-4 w-4" />
+              ) : (
+                <ArrowDownRight className="h-4 w-4" />
+              )
+            }
+            tone={netPositive ? "positive" : "negative"}
+            emphasized
+          />
+        </div>
+        <KpiCard
+          label="Total spent"
+          value={formatCurrency(kpis.totalSpent)}
+          hint={`${kpis.totalEvaluations} evaluations purchased`}
+          icon={<DollarSign className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Total payouts (net)"
+          value={formatCurrency(kpis.totalPayoutsNet)}
+          hint={`${formatCurrency(kpis.totalPayoutsGross)} gross before fees`}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Funding ratio"
+          value={formatPercent(kpis.fundingRatio)}
+          hint={`${kpis.countFunded} of ${kpis.totalEvaluations} evaluations funded`}
+          icon={<Target className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Payout ratio"
+          value={formatPercent(kpis.payoutRatio)}
+          hint={`${kpis.countWithPayouts} of ${kpis.countFunded} funded accounts paid out`}
+          icon={<Percent className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Active funded"
+          value={String(kpis.activeFunded)}
+          hint="Accounts currently active"
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <MonthlyFlowChart data={monthlyFlow} />
+        </div>
+        <FundingFunnel kpis={kpis} />
+      </section>
+    </>
+  )
+}
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <KpiSkeleton key={i} />
+        ))}
+      </section>
+      <section className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="mt-2 h-3 w-56" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[320px] w-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="mt-2 h-3 w-48" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-28" />
+                </div>
+                <Skeleton className="h-3 w-full" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </section>
+    </>
+  )
+}

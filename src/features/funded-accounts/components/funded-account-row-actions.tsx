@@ -1,0 +1,118 @@
+import { useState } from "react"
+import { MoreHorizontal, Wallet, AlertTriangle, Trash2 } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ConfirmDelete } from "@/components/common/confirm-delete"
+import { PayoutFormDialog } from "@/features/payouts/components/payout-form-dialog"
+import {
+  useDeleteFundedAccount,
+  useMarkFundedAccountBreached,
+  type FundedAccount,
+} from "@/features/funded-accounts/api/funded-accounts-queries"
+
+type FundedAccountRowActionsProps = {
+  account: FundedAccount
+}
+
+export function FundedAccountRowActions({
+  account,
+}: FundedAccountRowActionsProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [payoutDialogOpen, setPayoutDialogOpen] = useState(false)
+  const markBreached = useMarkFundedAccountBreached()
+  const deleteAccount = useDeleteFundedAccount()
+
+  const isActive = account.status === "active"
+  const isPending = markBreached.isPending || deleteAccount.isPending
+  const propfirmName = account.evaluation?.propfirm?.name ?? null
+
+  const handleMarkBreached = () => {
+    markBreached.mutate(account.id, {
+      onSuccess: () => toast.success("Marked as breached"),
+      onError: (e) => toast.error(e.message || "Could not update status"),
+    })
+  }
+
+  const handleDelete = async () => {
+    await new Promise<void>((resolve, reject) => {
+      deleteAccount.mutate(account.id, {
+        onSuccess: () => {
+          toast.success("Funded account deleted")
+          resolve()
+        },
+        onError: (e) => {
+          toast.error(e.message || "Could not delete")
+          reject(e)
+        },
+      })
+    })
+  }
+
+  return (
+    <>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          {isActive ? (
+            <>
+              <DropdownMenuItem
+                onClick={() => {
+                  setMenuOpen(false)
+                  setPayoutDialogOpen(true)
+                }}
+                disabled={isPending}
+              >
+                <Wallet className="mr-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                Log payout
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleMarkBreached}
+                disabled={isPending}
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                Mark as breached
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          ) : null}
+          <ConfirmDelete
+            trigger={
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            }
+            title="Delete this funded account?"
+            description="This will also delete any payouts logged against it. The original evaluation will remain."
+            pending={deleteAccount.isPending}
+            onConfirm={async () => {
+              await handleDelete()
+              setMenuOpen(false)
+            }}
+          />
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <PayoutFormDialog
+        open={payoutDialogOpen}
+        onOpenChange={setPayoutDialogOpen}
+        fundedAccountId={account.id}
+        propfirmName={propfirmName}
+      />
+    </>
+  )
+}
