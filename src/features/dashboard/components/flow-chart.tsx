@@ -1,7 +1,8 @@
 import {
+  Bar,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ReferenceLine,
   XAxis,
   YAxis,
@@ -22,7 +23,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { formatCurrency } from "@/lib/format"
-import type { MonthlyFlowPoint } from "@/features/dashboard/lib/compute-monthly-flow"
+import type { FlowPoint } from "@/features/dashboard/lib/compute-flow"
 
 const chartConfig = {
   fees: {
@@ -39,37 +40,50 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-type MonthlyFlowChartProps = {
-  data: MonthlyFlowPoint[]
+type FlowChartProps = {
+  data: FlowPoint[]
 }
 
-export function MonthlyFlowChart({ data }: MonthlyFlowChartProps) {
+export function FlowChart({ data }: FlowChartProps) {
+  // Compact Y-axis tick labels when values are large enough that full
+  // currency strings ($1,200,000) make the axis crowded.
+  const max = data.reduce(
+    (acc, p) => Math.max(acc, Math.abs(p.fees), Math.abs(p.payouts), Math.abs(p.cumulative)),
+    0,
+  )
+  const compact = max >= 10_000
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly flow</CardTitle>
+        <CardTitle>Daily flow</CardTitle>
         <CardDescription>
-          Fees vs payouts per month, with cumulative net P&amp;L over the
+          Fees and payouts by day, with cumulative net P&amp;L over the
           selected period
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[320px] w-full">
-          <LineChart data={data} margin={{ left: 0, right: 12, top: 8 }}>
+          <ComposedChart data={data} margin={{ left: 0, right: 12, top: 8 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
-              dataKey="monthLabel"
+              dataKey="dayLabel"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               fontSize={12}
+              minTickGap={48}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               fontSize={12}
-              tickFormatter={(v) => formatCurrency(Number(v))}
+              tickFormatter={(v) =>
+                compact
+                  ? `$${Math.round(Number(v) / 1000)}k`
+                  : formatCurrency(Number(v))
+              }
               width={64}
             />
             <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />
@@ -82,31 +96,27 @@ export function MonthlyFlowChart({ data }: MonthlyFlowChartProps) {
               }
             />
             <ChartLegend content={<ChartLegendContent />} />
-            <Line
-              type="monotone"
+            <Bar
               dataKey="fees"
-              stroke="var(--color-fees)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 4 }}
+              fill="var(--color-fees)"
+              radius={[2, 2, 0, 0]}
+              maxBarSize={24}
             />
-            <Line
-              type="monotone"
+            <Bar
               dataKey="payouts"
-              stroke="var(--color-payouts)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 4 }}
+              fill="var(--color-payouts)"
+              radius={[2, 2, 0, 0]}
+              maxBarSize={24}
             />
             <Line
               type="monotone"
               dataKey="cumulative"
               stroke="var(--color-cumulative)"
               strokeWidth={2.5}
-              dot={{ r: 3 }}
+              dot={false}
               activeDot={{ r: 4 }}
             />
-          </LineChart>
+          </ComposedChart>
         </ChartContainer>
       </CardContent>
     </Card>

@@ -15,12 +15,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { FundingFunnel } from "@/features/dashboard/components/funding-funnel"
-import { MonthlyFlowChart } from "@/features/dashboard/components/monthly-flow-chart"
+import { FlowChart } from "@/features/dashboard/components/flow-chart"
 import { PropfirmLeaderboard } from "@/features/dashboard/components/propfirm-leaderboard"
 import { TimePeriodSelect } from "@/features/dashboard/components/time-period-select"
+import { computeFlow } from "@/features/dashboard/lib/compute-flow"
 import { computeKpis } from "@/features/dashboard/lib/compute-kpis"
 import { computeLeaderboard } from "@/features/dashboard/lib/compute-leaderboard"
-import { computeMonthlyFlow } from "@/features/dashboard/lib/compute-monthly-flow"
 import {
   DEFAULT_PERIOD,
   PERIODS,
@@ -120,7 +120,7 @@ function DashboardContent({
 }: DashboardContentProps) {
   const range = periodRange(period)
   const kpis = computeKpis(evaluations, fundedAccounts, payouts, range)
-  const monthlyFlow = computeMonthlyFlow(evaluations, payouts, range)
+  const flow = computeFlow(evaluations, payouts, range)
   const leaderboard = computeLeaderboard(
     evaluations,
     fundedAccounts,
@@ -198,7 +198,7 @@ function DashboardContent({
 
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <MonthlyFlowChart data={monthlyFlow} />
+          <FlowChart data={flow} />
         </div>
         <FundingFunnel kpis={kpis} />
       </section>

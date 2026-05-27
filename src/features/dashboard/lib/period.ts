@@ -1,9 +1,11 @@
 import {
-  eachMonthOfInterval,
+  eachDayOfInterval,
+  endOfDay,
   endOfMonth,
   endOfYear,
   format,
   parseISO,
+  startOfDay,
   startOfMonth,
   startOfYear,
   subMonths,
@@ -63,11 +65,14 @@ export function isDateInRange(dateStr: string, range: DateRange): boolean {
 }
 
 /**
- * Return every month in the range as "yyyy-MM" strings, inclusive.
+ * Return every day in the range as "yyyy-MM-dd" strings, inclusive.
  * For unbounded (all_time) the span is derived from the supplied dates;
  * if no dates exist, returns an empty array.
+ *
+ * Day-level granularity is what the flow chart bucket on. Periods like
+ * "this_month" become a real 30-ish-point line instead of a single dot.
  */
-export function monthsInRange(
+export function daysInRange(
   range: DateRange,
   fallbackDates: string[],
 ): string[] {
@@ -77,9 +82,10 @@ export function monthsInRange(
   if (!start || !end) {
     if (fallbackDates.length === 0) return []
     const sorted = [...fallbackDates].sort()
-    start = start ?? startOfMonth(parseISO(sorted[0]))
-    end = end ?? endOfMonth(parseISO(sorted[sorted.length - 1]))
+    start = start ?? startOfDay(parseISO(sorted[0]))
+    end = end ?? endOfDay(parseISO(sorted[sorted.length - 1]))
   }
 
-  return eachMonthOfInterval({ start, end }).map((d) => format(d, "yyyy-MM"))
+  return eachDayOfInterval({ start, end }).map((d) => format(d, "yyyy-MM-dd"))
 }
+
