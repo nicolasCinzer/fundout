@@ -69,19 +69,21 @@ You'll need Node + pnpm and a Supabase project of your own.
 # 1. Install deps
 pnpm install
 
-# 2. Set up environment
-cp .env.example .env  # then fill in your Supabase URL + publishable key
+# 2. Set up environment — copy .env.example, fill in your Supabase URL + publishable key
+cp .env.example .env
 
-# 3. Apply migrations (paste each file in order into the Supabase SQL editor)
-#    supabase/migrations/0001_init_schema.sql
-#    supabase/migrations/0002_seed_propfirms.sql
-#    supabase/migrations/0003_drop_retired_status.sql
+# 3. Link the Supabase CLI to your project (one-time)
+pnpm exec supabase login
+pnpm exec supabase link --project-ref <your-project-ref>
 
-# 4. Regenerate types from your schema (one-time)
+# 4. Push schema migrations
+pnpm db:push
+
+# 5. Generate TypeScript types from the schema
 export SUPABASE_PROJECT_ID=<your-project-ref>
 pnpm types:gen
 
-# 5. Run
+# 6. Run
 pnpm dev
 ```
 
