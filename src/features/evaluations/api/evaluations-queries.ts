@@ -111,17 +111,21 @@ export function useCreateEvaluation() {
  * linked funded_account. Two operations, idempotent on retry — see commit
  * message for failure-mode reasoning.
  */
+type MarkFundedInput = {
+  evaluationId: string
+  fundedAt: string
+}
+
 export function useMarkEvaluationFunded() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   return useMutation({
-    mutationFn: async (evaluationId: string) => {
+    mutationFn: async ({ evaluationId, fundedAt }: MarkFundedInput) => {
       if (!user) throw new Error("Not authenticated")
-      const today = format(new Date(), "yyyy-MM-dd")
 
       const { error: updateError } = await supabase
         .from("evaluations")
-        .update({ status: "passed", closed_at: today })
+        .update({ status: "passed", closed_at: fundedAt })
         .eq("id", evaluationId)
       if (updateError) throw updateError
 
@@ -130,7 +134,7 @@ export function useMarkEvaluationFunded() {
         .insert({
           user_id: user.id,
           evaluation_id: evaluationId,
-          start_date: today,
+          start_date: fundedAt,
           status: "active",
         })
         .select()
