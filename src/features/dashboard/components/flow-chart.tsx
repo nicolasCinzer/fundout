@@ -1,12 +1,4 @@
-import {
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  Line,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import {
   Card,
   CardContent,
@@ -45,78 +37,113 @@ type FlowChartProps = {
 }
 
 export function FlowChart({ data }: FlowChartProps) {
-  // Compact Y-axis tick labels when values are large enough that full
-  // currency strings ($1,200,000) make the axis crowded.
-  const max = data.reduce(
-    (acc, p) => Math.max(acc, Math.abs(p.fees), Math.abs(p.payouts), Math.abs(p.cumulative)),
-    0,
-  )
-  const compact = max >= 10_000
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Daily flow</CardTitle>
-        <CardDescription>
-          Fees and payouts by day, with cumulative net P&amp;L over the
-          selected period
-        </CardDescription>
+    <Card className="pt-0">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <div className="grid flex-1 gap-1">
+          <CardTitle>Daily flow</CardTitle>
+          <CardDescription>
+            Fees and payouts by day, with cumulative net P&amp;L over the
+            selected period
+          </CardDescription>
+        </div>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[320px] w-full">
-          <ComposedChart data={data} margin={{ left: 0, right: 12, top: 8 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[250px] w-full"
+        >
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="fillFees" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-fees)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-fees)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillPayouts" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-payouts)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-payouts)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillCumulative" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-cumulative)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-cumulative)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} />
             <XAxis
               dataKey="dayLabel"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              fontSize={12}
-              minTickGap={48}
+              minTickGap={32}
             />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              fontSize={12}
-              tickFormatter={(v) =>
-                compact
-                  ? `$${Math.round(Number(v) / 1000)}k`
-                  : formatCurrency(Number(v))
-              }
-              width={64}
-            />
-            <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} />
             <ChartTooltip
-              cursor={{ strokeDasharray: "3 3" }}
+              cursor={false}
               content={
                 <ChartTooltipContent
-                  formatter={(value) => formatCurrency(Number(value), true)}
+                  indicator="dot"
+                  formatter={(value, name, item) => (
+                    <>
+                      <div
+                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <div className="flex flex-1 items-center justify-between gap-2 leading-none">
+                        <span className="text-muted-foreground">
+                          {chartConfig[name as keyof typeof chartConfig]?.label ?? name}
+                        </span>
+                        <span className="font-mono font-medium text-foreground tabular-nums">
+                          {formatCurrency(Number(value), true)}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 />
               }
             />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar
+            <Area
               dataKey="fees"
-              fill="var(--color-fees)"
-              radius={[2, 2, 0, 0]}
-              maxBarSize={24}
+              type="natural"
+              fill="url(#fillFees)"
+              stroke="var(--color-fees)"
             />
-            <Bar
+            <Area
               dataKey="payouts"
-              fill="var(--color-payouts)"
-              radius={[2, 2, 0, 0]}
-              maxBarSize={24}
+              type="natural"
+              fill="url(#fillPayouts)"
+              stroke="var(--color-payouts)"
             />
-            <Line
-              type="monotone"
+            <Area
               dataKey="cumulative"
+              type="natural"
+              fill="url(#fillCumulative)"
               stroke="var(--color-cumulative)"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 4 }}
             />
-          </ComposedChart>
+            <ChartLegend content={<ChartLegendContent />} />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

@@ -61,8 +61,23 @@ export function computeFlow(
     }
   }
 
+  // Trim leading/trailing days with no activity so the chart shows only the
+  // sub-range between the first and last day that has fees or payouts. Days
+  // without activity *between* active days are kept so gaps are visible.
+  let firstActive = -1
+  let lastActive = -1
+  for (let i = 0; i < dayKeys.length; i++) {
+    const b = buckets.get(dayKeys[i])!
+    if (b.fees > 0 || b.payouts > 0) {
+      if (firstActive === -1) firstActive = i
+      lastActive = i
+    }
+  }
+  if (firstActive === -1) return []
+  const trimmedKeys = dayKeys.slice(firstActive, lastActive + 1)
+
   let runningPnl = 0
-  return dayKeys.map((day) => {
+  return trimmedKeys.map((day) => {
     const b = buckets.get(day)!
     runningPnl += b.payouts - b.fees
     return {
