@@ -56,6 +56,36 @@ export function resetsTotal(e: Evaluation): number {
   return (e.resets ?? []).reduce((acc, r) => acc + Number(r.fee), 0)
 }
 
+export type UpdateEvaluationInput = {
+  id: string
+  propfirm_id: string
+  account_size: number
+  fee_paid: number
+  purchase_date: string
+  notes: string | null
+}
+
+/**
+ * Edits the data fields of an evaluation. Status + closed_at are NOT updated
+ * here — those transitions live in the dedicated mutations (mark funded,
+ * mark failed) so the linked funded_account stays in sync.
+ */
+export function useUpdateEvaluation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, ...patch }: UpdateEvaluationInput) => {
+      const { error } = await supabase
+        .from("evaluations")
+        .update(patch)
+        .eq("id", id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: evaluationsKeys.all })
+    },
+  })
+}
+
 export function useCreateEvaluation() {
   const queryClient = useQueryClient()
   const { user } = useAuth()

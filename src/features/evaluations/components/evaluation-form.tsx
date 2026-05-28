@@ -24,14 +24,22 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import {
   evaluationFormSchema,
+  evaluationEditFormSchema,
   type EvaluationFormInput,
   type EvaluationFormValues,
+  type EvaluationEditFormInput,
+  type EvaluationEditFormValues,
 } from "@/features/evaluations/schemas/evaluation-form-schema"
-import { useCreateEvaluation } from "@/features/evaluations/api/evaluations-queries"
+import {
+  useCreateEvaluation,
+  useUpdateEvaluation,
+  type Evaluation,
+} from "@/features/evaluations/api/evaluations-queries"
 import { usePropfirms } from "@/features/propfirms/api/propfirms-queries"
 import { PropfirmCombobox } from "@/features/propfirms/components/propfirm-combobox"
 
 type EvaluationFormProps = {
+  evaluation?: Evaluation
   onSuccess?: () => void
   onCancel?: () => void
 }
@@ -46,7 +54,29 @@ const ACCOUNT_SIZE_PRESETS = [
   10_000, 25_000, 50_000, 100_000, 150_000, 200_000,
 ] as const
 
-export function EvaluationForm({ onSuccess, onCancel }: EvaluationFormProps) {
+export function EvaluationForm({
+  evaluation,
+  onSuccess,
+  onCancel,
+}: EvaluationFormProps) {
+  return evaluation ? (
+    <EditEvaluationForm
+      evaluation={evaluation}
+      onSuccess={onSuccess}
+      onCancel={onCancel}
+    />
+  ) : (
+    <CreateEvaluationForm onSuccess={onSuccess} onCancel={onCancel} />
+  )
+}
+
+function CreateEvaluationForm({
+  onSuccess,
+  onCancel,
+}: {
+  onSuccess?: () => void
+  onCancel?: () => void
+}) {
   const createMutation = useCreateEvaluation()
   const { data: propfirms, isLoading: propfirmsLoading } = usePropfirms()
 
@@ -272,6 +302,193 @@ export function EvaluationForm({ onSuccess, onCancel }: EvaluationFormProps) {
           ) : null}
           <Button type="submit" disabled={createMutation.isPending}>
             {createMutation.isPending ? "Saving…" : "Add evaluation"}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  )
+}
+
+function EditEvaluationForm({
+  evaluation,
+  onSuccess,
+  onCancel,
+}: {
+  evaluation: Evaluation
+  onSuccess?: () => void
+  onCancel?: () => void
+}) {
+  const updateMutation = useUpdateEvaluation()
+  const { data: propfirms, isLoading: propfirmsLoading } = usePropfirms()
+
+  const form = useForm<
+    EvaluationEditFormInput,
+    undefined,
+    EvaluationEditFormValues
+  >({
+    resolver: zodResolver(evaluationEditFormSchema),
+    defaultValues: {
+      propfirm_id: evaluation.propfirm_id,
+      account_size: Number(evaluation.account_size),
+      fee_paid: Number(evaluation.fee_paid),
+      purchase_date: evaluation.purchase_date,
+      notes: evaluation.notes ?? "",
+    },
+  })
+
+  const onSubmit = (values: EvaluationEditFormValues) => {
+    updateMutation.mutate(
+      {
+        id: evaluation.id,
+        propfirm_id: values.propfirm_id,
+        account_size: values.account_size,
+        fee_paid: values.fee_paid,
+        purchase_date: values.purchase_date,
+        notes: values.notes || null,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Evaluation updated")
+          onSuccess?.()
+        },
+        onError: (error) => {
+          toast.error(error.message || "Could not update the evaluation.")
+        },
+      },
+    )
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="propfirm_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Propfirm</FormLabel>
+              <FormControl>
+                <PropfirmCombobox
+                  value={field.value}
+                  onChange={field.onChange}
+                  propfirms={propfirms ?? []}
+                  disabled={propfirmsLoading}
+                  placeholder={
+                    propfirmsLoading ? "Loading…" : "Pick a propfirm…"
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-3">
+          <FormField
+            control={form.control}
+            name="account_size"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account size</FormLabel>
+                <Select
+                  onValueChange={(v) => field.onChange(Number(v))}
+                  value={String(field.value)}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Account size" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {ACCOUNT_SIZE_PRESETS.map((size) => (
+                      <SelectItem key={size} value={String(size)}>
+                        ${size.toLocaleString("en-US")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="fee_paid"
+            render={({ field }) => {
+              const { value, ...rest } = field
+              return (
+                <FormItem>
+                  <FormLabel>Fee paid (USD)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      step="0.01"
+                      placeholder="540.00"
+                      {...rest}
+                      value={(value as number | string | undefined) ?? ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="purchase_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Purchased on</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes (optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Anything worth remembering about this challenge…"
+                  rows={3}
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormDescription>
+          To change status (mark as funded, failed, or log a reset), use the
+          row actions menu.
+        </FormDescription>
+
+        <div className="flex justify-end gap-2 pt-2">
+          {onCancel ? (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onCancel}
+              disabled={updateMutation.isPending}
+            >
+              Cancel
+            </Button>
+          ) : null}
+          <Button type="submit" disabled={updateMutation.isPending}>
+            {updateMutation.isPending ? "Saving…" : "Save changes"}
           </Button>
         </div>
       </form>

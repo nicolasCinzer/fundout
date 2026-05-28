@@ -2,6 +2,7 @@ import { useState } from "react"
 import {
   MoreHorizontal,
   CheckCircle2,
+  Pencil,
   XCircle,
   RotateCcw,
   Trash2,
@@ -16,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ConfirmDelete } from "@/components/common/confirm-delete"
+import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { LogResetDialog } from "@/features/evaluations/components/log-reset-dialog"
 import {
   useDeleteEvaluation,
@@ -31,6 +33,7 @@ type EvaluationRowActionsProps = {
 export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const markFunded = useMarkEvaluationFunded()
   const updateStatus = useUpdateEvaluationStatus()
   const deleteEvaluation = useDeleteEvaluation()
@@ -82,6 +85,17 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem
+            onClick={() => {
+              setMenuOpen(false)
+              setEditDialogOpen(true)
+            }}
+            disabled={isPending}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           {isInProgress ? (
             <>
               <DropdownMenuItem onClick={handleMarkFunded} disabled={isPending}>
@@ -134,6 +148,11 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
         onOpenChange={setResetDialogOpen}
         evaluationId={evaluation.id}
         propfirmName={propfirmName}
+      />
+      <EvaluationFormDialog
+        evaluation={evaluation}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
       />
     </>
   )
