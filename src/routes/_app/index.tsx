@@ -14,7 +14,6 @@ import { KpiSkeleton } from "@/components/common/kpi-skeleton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
-import { FundingFunnel } from "@/features/dashboard/components/funding-funnel"
 import { FlowChart } from "@/features/dashboard/components/flow-chart"
 import { PropfirmLeaderboard } from "@/features/dashboard/components/propfirm-leaderboard"
 import { TimePeriodSelect } from "@/features/dashboard/components/time-period-select"
@@ -196,11 +195,8 @@ function DashboardContent({
         />
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <FlowChart data={flow} />
-        </div>
-        <FundingFunnel kpis={kpis} />
+      <section>
+        <FlowChart data={flow} />
       </section>
 
       <section>
