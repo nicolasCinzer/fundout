@@ -7,6 +7,8 @@ export type LeaderboardRow = {
   propfirmId: string
   propfirmName: string
   evaluationsCount: number
+  resetsCount: number
+  attemptsCount: number
   fundedCount: number
   paidOutCount: number
   totalFees: number
@@ -37,6 +39,7 @@ export function computeLeaderboard(
   type Bucket = {
     propfirmName: string
     evalIds: Set<string>
+    resetsCount: number
     fundedIds: Set<string>
     paidOutFundedIds: Set<string>
     totalFees: number
@@ -50,6 +53,7 @@ export function computeLeaderboard(
       b = {
         propfirmName,
         evalIds: new Set(),
+        resetsCount: 0,
         fundedIds: new Set(),
         paidOutFundedIds: new Set(),
         totalFees: 0,
@@ -74,6 +78,7 @@ export function computeLeaderboard(
         // Ensure the eval is at least tracked when only the reset is in range.
         b.evalIds.add(e.id)
         b.totalFees += Number(r.fee)
+        b.resetsCount += 1
       }
     }
   }
@@ -107,6 +112,8 @@ export function computeLeaderboard(
       propfirmId,
       propfirmName: b.propfirmName,
       evaluationsCount: b.evalIds.size,
+      resetsCount: b.resetsCount,
+      attemptsCount: b.evalIds.size + b.resetsCount,
       fundedCount: b.fundedIds.size,
       paidOutCount: b.paidOutFundedIds.size,
       totalFees: b.totalFees,
