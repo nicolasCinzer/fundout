@@ -200,7 +200,7 @@ function FundedAccountsPage() {
         description="Active and historic funded accounts"
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>All funded accounts</CardTitle>
             <CardDescription>
@@ -279,6 +279,7 @@ function FundedAccountsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Propfirm
                       </SortableTableHead>
@@ -288,6 +289,7 @@ function FundedAccountsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Account size
                       </SortableTableHead>
@@ -296,6 +298,7 @@ function FundedAccountsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Started
                       </SortableTableHead>
@@ -304,6 +307,7 @@ function FundedAccountsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Closed
                       </SortableTableHead>
@@ -312,6 +316,7 @@ function FundedAccountsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Status
                       </SortableTableHead>
@@ -321,10 +326,11 @@ function FundedAccountsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Net payouts
                       </SortableTableHead>
-                      <TableHead className="w-36" />
+                      <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>

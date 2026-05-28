@@ -129,7 +129,7 @@ function PayoutsPage() {
     <>
       <AppHeader title="Payouts" description="Every withdrawal you've taken" />
       <main className="flex-1 space-y-4 p-4 md:p-6">
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>All payouts</CardTitle>
             <CardDescription>
@@ -190,6 +190,7 @@ function PayoutsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Propfirm
                       </SortableTableHead>
@@ -198,6 +199,7 @@ function PayoutsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Paid at
                       </SortableTableHead>
@@ -207,6 +209,7 @@ function PayoutsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Amount
                       </SortableTableHead>
@@ -216,6 +219,7 @@ function PayoutsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Fee
                       </SortableTableHead>
@@ -225,10 +229,11 @@ function PayoutsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Net
                       </SortableTableHead>
-                      <TableHead className="w-36" />
+                      <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>

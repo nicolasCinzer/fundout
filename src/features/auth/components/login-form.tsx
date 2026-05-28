@@ -47,12 +47,13 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted/30 p-4">
+    <div className="flex min-h-svh items-center justify-center bg-gradient-to-br from-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <TrendingUp className="h-5 w-5" />
           </div>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">Propfirm tracker</p>
           <div className="space-y-1">
             <CardTitle className="text-2xl">
               {sentTo ? "Check your inbox" : "Sign in to Fundout"}
