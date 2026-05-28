@@ -12,6 +12,7 @@ type PayoutFormDialogProps = {
   open: boolean
   onOpenChange: Dispatch<SetStateAction<boolean>>
   fundedAccountId: string
+  startDate: string
   propfirmName?: string | null
 }
 
@@ -19,6 +20,7 @@ export function PayoutFormDialog({
   open,
   onOpenChange,
   fundedAccountId,
+  startDate,
   propfirmName,
 }: PayoutFormDialogProps) {
   return (
@@ -34,6 +36,7 @@ export function PayoutFormDialog({
         </DialogHeader>
         <PayoutForm
           fundedAccountId={fundedAccountId}
+          startDate={startDate}
           onSuccess={() => onOpenChange(false)}
           onCancel={() => onOpenChange(false)}
         />

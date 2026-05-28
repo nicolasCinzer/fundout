@@ -24,11 +24,10 @@ import {
 import { ConfirmDelete } from "@/components/common/confirm-delete"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { LogResetDialog } from "@/features/evaluations/components/log-reset-dialog"
+import { MarkFundedDialog } from "@/features/evaluations/components/mark-funded-dialog"
 import {
   useDeleteEvaluation,
-  useMarkEvaluationFunded,
   useUpdateEvaluationStatus,
-  useUndoMarkEvaluationFunded,
   useUndoMarkEvaluationFailed,
   type Evaluation,
 } from "@/features/evaluations/api/evaluations-queries"
@@ -41,57 +40,24 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
   const [menuOpen, setMenuOpen] = useState(false)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const markFunded = useMarkEvaluationFunded()
-  const undoMarkFunded = useUndoMarkEvaluationFunded()
+  const [fundedDialogOpen, setFundedDialogOpen] = useState(false)
   const updateStatus = useUpdateEvaluationStatus()
   const undoMarkFailed = useUndoMarkEvaluationFailed()
   const deleteEvaluation = useDeleteEvaluation()
 
   const isInProgress = evaluation.status === "in_progress"
   const isPending =
-    markFunded.isPending ||
-    undoMarkFunded.isPending ||
     updateStatus.isPending ||
     undoMarkFailed.isPending ||
     deleteEvaluation.isPending
   const propfirmName = evaluation.propfirm?.name ?? null
-
-  const handleMarkFunded = () => {
-    markFunded.mutate(evaluation.id, {
-      onSuccess: (fundedAccount) => {
-        toast.success("Marked as funded", {
-          duration: 6000,
-          action: {
-            label: "Undo",
-            onClick: () => {
-              undoMarkFunded.mutate(
-                {
-                  evaluationId: evaluation.id,
-                  fundedAccountId: fundedAccount.id,
-                },
-                {
-                  onSuccess: () => toast.success("Undone", { duration: 3000 }),
-                  onError: (e) =>
-                    toast.error(
-                      e.message ||
-                        "Undo partially failed — please refresh and check.",
-                    ),
-                },
-              )
-            },
-          },
-        })
-      },
-      onError: (e) => toast.error(e.message || "Could not mark as funded"),
-    })
-  }
 
   const handleMarkFailed = () => {
     updateStatus.mutate(
       { id: evaluation.id, status: "failed" },
       {
         onSuccess: () => {
-          toast.success("Marked as failed", {
+          toast.warning("Marked as failed", {
             duration: 6000,
             action: {
               label: "Undo",
@@ -136,7 +102,7 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8"
-                  onClick={handleMarkFunded}
+                  onClick={() => setFundedDialogOpen(true)}
                   disabled={isPending}
                 >
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -276,6 +242,11 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
         onOpenChange={setResetDialogOpen}
         evaluationId={evaluation.id}
         propfirmName={propfirmName}
+      />
+      <MarkFundedDialog
+        open={fundedDialogOpen}
+        onOpenChange={setFundedDialogOpen}
+        evaluation={evaluation}
       />
       <EvaluationFormDialog
         evaluation={evaluation}

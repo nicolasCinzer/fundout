@@ -31,7 +31,15 @@ export function formatPercent(value: number): string {
   return percentFormatter.format(value)
 }
 
+const DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})$/
+
 export function formatDate(value: string | Date): string {
-  const date = typeof value === "string" ? new Date(value) : value
-  return dateFormatter.format(date)
+  if (typeof value === "string") {
+    const m = DATE_ONLY_RE.exec(value)
+    if (m) {
+      return dateFormatter.format(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+    }
+    return dateFormatter.format(new Date(value))
+  }
+  return dateFormatter.format(value)
 }

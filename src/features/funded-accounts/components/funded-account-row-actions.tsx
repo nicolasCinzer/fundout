@@ -146,6 +146,7 @@ export function FundedAccountRowActions({
         open={payoutDialogOpen}
         onOpenChange={setPayoutDialogOpen}
         fundedAccountId={account.id}
+        startDate={account.start_date}
         propfirmName={propfirmName}
       />
     </>
