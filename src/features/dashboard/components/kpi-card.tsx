@@ -34,13 +34,13 @@ export function KpiCard({
           {label}
         </CardTitle>
         {icon ? (
-          <span className="text-muted-foreground">{icon}</span>
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">{icon}</span>
         ) : null}
       </CardHeader>
       <CardContent>
         <div
           className={cn(
-            "text-2xl font-semibold tracking-tight tabular-nums",
+            "font-heading text-2xl font-semibold tracking-tight tabular-nums",
             toneClasses[tone],
             emphasized && "text-3xl",
           )}

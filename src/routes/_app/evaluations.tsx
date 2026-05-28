@@ -177,7 +177,7 @@ function EvaluationsPage() {
         description="Every challenge you've purchased"
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
-        <Card>
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>All evaluations</CardTitle>
             <CardDescription>
@@ -260,6 +260,7 @@ function EvaluationsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Propfirm
                       </SortableTableHead>
@@ -269,6 +270,7 @@ function EvaluationsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Account size
                       </SortableTableHead>
@@ -278,6 +280,7 @@ function EvaluationsPage() {
                         currentDir={search.dir}
                         onSort={handleSort}
                         align="right"
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Fee
                       </SortableTableHead>
@@ -286,6 +289,7 @@ function EvaluationsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Purchased
                       </SortableTableHead>
@@ -294,6 +298,7 @@ function EvaluationsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Closed
                       </SortableTableHead>
@@ -302,10 +307,11 @@ function EvaluationsPage() {
                         currentSort={search.sort}
                         currentDir={search.dir}
                         onSort={handleSort}
+                        className="font-heading uppercase text-xs tracking-wide"
                       >
                         Status
                       </SortableTableHead>
-                      <TableHead className="w-36" />
+                      <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>

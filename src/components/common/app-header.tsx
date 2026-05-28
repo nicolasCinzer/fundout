@@ -9,11 +9,11 @@ type AppHeaderProps = {
 
 export function AppHeader({ title, description }: AppHeaderProps) {
   return (
-    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="h-5" />
       <div className="flex flex-col leading-tight">
-        <h1 className="text-sm font-semibold">{title}</h1>
+        <h1 className="font-heading text-base font-semibold">{title}</h1>
         {description ? (
           <p className="text-xs text-muted-foreground">{description}</p>
         ) : null}

@@ -20,7 +20,7 @@ import type { FlowPoint } from "@/features/dashboard/lib/compute-flow"
 const chartConfig = {
   fees: {
     label: "Fees paid",
-    color: "var(--chart-4)",
+    color: "var(--destructive)",
   },
   payouts: {
     label: "Payouts (net)",

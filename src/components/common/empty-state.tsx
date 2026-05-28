@@ -24,12 +24,12 @@ export function EmptyState({
       )}
     >
       {icon ? (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <div className="bg-primary/10 text-primary rounded-xl h-14 w-14 inline-flex items-center justify-center">
           {icon}
         </div>
       ) : null}
       <div className="space-y-1">
-        <p className="text-sm font-semibold">{title}</p>
+        <p className="font-heading text-sm font-semibold">{title}</p>
         {description ? (
           <p className="text-sm text-muted-foreground max-w-sm">
             {description}
