@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -66,7 +67,22 @@ export function PayoutEditDialog({
     }
   }, [open, payout.id, payout.amount, payout.fee_taken, payout.paid_at, payout.notes, form])
 
+  const startDate = payout.funded_account?.start_date ?? null
+  const today = format(new Date(), "yyyy-MM-dd")
+
   const onSubmit = (values: PayoutEditValues) => {
+    if (startDate && values.paid_at < startDate) {
+      form.setError("paid_at", {
+        message: "Payout date cannot be before the funding start date",
+      })
+      return
+    }
+    if (values.paid_at > today) {
+      form.setError("paid_at", {
+        message: "Payout date cannot be in the future",
+      })
+      return
+    }
     updateMutation.mutate(
       {
         id: payout.id,
@@ -159,7 +175,12 @@ export function PayoutEditDialog({
                 <FormItem>
                   <FormLabel>Paid on</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input
+                      type="date"
+                      min={startDate ?? undefined}
+                      max={today}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

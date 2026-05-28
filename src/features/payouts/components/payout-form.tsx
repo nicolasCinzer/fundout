@@ -24,16 +24,20 @@ type PayoutFormProps = {
   /** Funded account this payout belongs to. Required — payouts always derive
    *  from drilling into a funded account row. */
   fundedAccountId: string
+  /** Funded account's start_date — payouts cannot be dated before this. */
+  startDate: string
   onSuccess?: () => void
   onCancel?: () => void
 }
 
 export function PayoutForm({
   fundedAccountId,
+  startDate,
   onSuccess,
   onCancel,
 }: PayoutFormProps) {
   const createMutation = useCreatePayout()
+  const today = format(new Date(), "yyyy-MM-dd")
 
   const form = useForm<PayoutFormInput, undefined, PayoutFormValues>({
     resolver: zodResolver(payoutFormSchema),
@@ -41,12 +45,24 @@ export function PayoutForm({
       funded_account_id: fundedAccountId,
       amount: 1000,
       fee_taken: 0,
-      paid_at: format(new Date(), "yyyy-MM-dd"),
+      paid_at: today,
       notes: "",
     },
   })
 
   const onSubmit = (values: PayoutFormValues) => {
+    if (values.paid_at < startDate) {
+      form.setError("paid_at", {
+        message: "Payout date cannot be before the funding start date",
+      })
+      return
+    }
+    if (values.paid_at > today) {
+      form.setError("paid_at", {
+        message: "Payout date cannot be in the future",
+      })
+      return
+    }
     createMutation.mutate(
       {
         funded_account_id: fundedAccountId,
@@ -131,7 +147,7 @@ export function PayoutForm({
             <FormItem>
               <FormLabel>Paid on</FormLabel>
               <FormControl>
-                <Input type="date" {...field} />
+                <Input type="date" min={startDate} max={today} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

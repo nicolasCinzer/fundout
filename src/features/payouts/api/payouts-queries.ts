@@ -10,7 +10,7 @@ type EvaluationRef =
     })
   | null
 type FundedAccountRef =
-  | (Pick<Tables<"funded_accounts">, "id" | "evaluation_id"> & {
+  | (Pick<Tables<"funded_accounts">, "id" | "evaluation_id" | "start_date"> & {
       evaluation: EvaluationRef
     })
   | null
@@ -44,7 +44,7 @@ export function usePayouts() {
       const { data, error } = await supabase
         .from("payouts")
         .select(
-          "*, funded_account:funded_accounts(id, evaluation_id, evaluation:evaluations(id, propfirm_id, propfirm:propfirms(id, name, slug)))",
+          "*, funded_account:funded_accounts(id, evaluation_id, start_date, evaluation:evaluations(id, propfirm_id, propfirm:propfirms(id, name, slug)))",
         )
         .order("paid_at", { ascending: false })
       if (error) throw error
