@@ -228,7 +228,7 @@ function PayoutsPage() {
                       >
                         Net
                       </SortableTableHead>
-                      <TableHead className="w-10" />
+                      <TableHead className="w-36" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>

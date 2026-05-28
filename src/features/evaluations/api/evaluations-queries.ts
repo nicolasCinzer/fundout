@@ -202,3 +202,52 @@ export function useDeleteEvaluation() {
     },
   })
 }
+
+export function useUndoMarkEvaluationFailed() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (evaluationId: string) => {
+      const { error } = await supabase
+        .from("evaluations")
+        .update({ status: "in_progress", closed_at: null })
+        .eq("id", evaluationId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: evaluationsKeys.all })
+    },
+  })
+}
+
+export function useUndoMarkEvaluationFunded() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      evaluationId,
+      fundedAccountId,
+    }: {
+      evaluationId: string
+      fundedAccountId: string
+    }) => {
+      const { error: deleteError } = await supabase
+        .from("funded_accounts")
+        .delete()
+        .eq("id", fundedAccountId)
+      if (deleteError) throw deleteError
+
+      const { error: resetError } = await supabase
+        .from("evaluations")
+        .update({ status: "in_progress", closed_at: null })
+        .eq("id", evaluationId)
+      // funded_account was already deleted at this point — partial failure
+      if (resetError)
+        throw new Error(
+          "Undo partially failed — funded account removed but evaluation could not be reset. Please refresh and check.",
+        )
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: evaluationsKeys.all })
+      queryClient.invalidateQueries({ queryKey: ["funded_accounts"] })
+    },
+  })
+}

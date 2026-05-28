@@ -55,6 +55,22 @@ export function useMarkFundedAccountBreached() {
   })
 }
 
+export function useUndoMarkFundedAccountBreached() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("funded_accounts")
+        .update({ status: "active", closed_at: null })
+        .eq("id", id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: fundedAccountsKeys.all })
+    },
+  })
+}
+
 export function useDeleteFundedAccount() {
   const queryClient = useQueryClient()
   return useMutation({
