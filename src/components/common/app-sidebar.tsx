@@ -52,17 +52,26 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-2 py-1.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="font-heading text-sm font-semibold">Fundout</span>
-            <span className="text-xs text-muted-foreground">
-              Propfirm tracker
-            </span>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent"
+            >
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <TrendingUp className="size-4" />
+              </div>
+              <div className="grid flex-1 text-left leading-tight">
+                <span className="font-heading text-sm font-semibold">
+                  Fundout
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  Propfirm tracker
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
