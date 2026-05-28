@@ -44,8 +44,9 @@ export function PropfirmLeaderboard({ rows }: PropfirmLeaderboardProps) {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">#</TableHead>
                   <TableHead>Propfirm</TableHead>
-                  <TableHead className="text-right">Evaluations</TableHead>
+                  <TableHead className="text-right">Attempts</TableHead>
                   <TableHead className="text-right">Fees</TableHead>
                   <TableHead className="text-right">Funded</TableHead>
                   <TableHead className="text-right">Paid out</TableHead>
@@ -54,13 +55,23 @@ export function PropfirmLeaderboard({ rows }: PropfirmLeaderboardProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((r) => (
+                {rows.map((r, i) => (
                   <TableRow key={r.propfirmId}>
+                    <TableCell
+                      className={cn(
+                        "font-semibold tabular-nums",
+                        i === 0 && "text-amber-400",
+                        i === 1 && "text-zinc-300",
+                        i === 2 && "text-amber-700 dark:text-amber-600",
+                      )}
+                    >
+                      {i + 1}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {r.propfirmName}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
-                      {r.evaluationsCount}
+                      {r.attemptsCount}
                     </TableCell>
                     <TableCell className="text-right tabular-nums text-muted-foreground">
                       {formatCurrency(r.totalFees)}

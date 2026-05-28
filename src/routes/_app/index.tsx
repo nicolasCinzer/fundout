@@ -20,6 +20,9 @@ import { TimePeriodSelect } from "@/features/dashboard/components/time-period-se
 import { computeFlow } from "@/features/dashboard/lib/compute-flow"
 import { computeKpis } from "@/features/dashboard/lib/compute-kpis"
 import { computeLeaderboard } from "@/features/dashboard/lib/compute-leaderboard"
+import { computePnlContext } from "@/features/dashboard/lib/compute-pnl-context"
+import { computeRatioContext } from "@/features/dashboard/lib/compute-ratio-context"
+import { computeActiveContext } from "@/features/dashboard/lib/compute-active-context"
 import {
   DEFAULT_PERIOD,
   PERIODS,
@@ -126,6 +129,16 @@ function DashboardContent({
     payouts,
     range,
   )
+  const pnlContext = computePnlContext(evaluations, payouts, period)
+  const ratioContext = computeRatioContext(
+    evaluations,
+    fundedAccounts,
+    payouts,
+    period,
+    kpis.fundingRatio,
+    kpis.payoutRatio,
+  )
+  const activeContext = computeActiveContext(fundedAccounts, range)
   const netPositive = kpis.netPnl >= 0
 
   const noPeriodActivity =
@@ -151,7 +164,7 @@ function DashboardContent({
           <KpiCard
             label="Net P&L"
             value={`${netPositive ? "+" : ""}${formatCurrency(kpis.netPnl)}`}
-            hint={`${formatCurrency(kpis.totalPayoutsNet)} payouts · ${formatCurrency(kpis.totalSpent)} fees`}
+            hint={pnlContext.subtitle}
             icon={
               netPositive ? (
                 <ArrowUpRight className="h-4 w-4" />
@@ -159,6 +172,8 @@ function DashboardContent({
                 <ArrowDownRight className="h-4 w-4" />
               )
             }
+            badge={pnlContext.badge ?? undefined}
+            badgeTooltip={pnlContext.badgeTooltip ?? undefined}
             tone={netPositive ? "positive" : "negative"}
             emphasized
           />
@@ -166,32 +181,52 @@ function DashboardContent({
         <KpiCard
           label="Total spent"
           value={formatCurrency(kpis.totalSpent)}
-          hint={`${kpis.totalEvaluations} evaluations purchased`}
+          hint={
+            kpis.totalResets === 0
+              ? `${kpis.totalEvaluations} evaluations purchased`
+              : `${kpis.totalEvaluations} evaluations + ${kpis.totalResets} resets purchased`
+          }
           icon={<DollarSign className="h-4 w-4" />}
+          badge={`~ ${formatCurrency(kpis.avgCostPerAttempt)}`}
+          badgeTooltip="Average cost per attempt (evaluations + resets) in this period."
         />
         <KpiCard
           label="Total payouts (net)"
           value={formatCurrency(kpis.totalPayoutsNet)}
-          hint={`${formatCurrency(kpis.totalPayoutsGross)} gross before fees`}
+          hint={
+            kpis.countPayouts === 1
+              ? "1 payout received"
+              : `${kpis.countPayouts} payouts received`
+          }
           icon={<TrendingUp className="h-4 w-4" />}
+          badge={`~ ${formatCurrency(kpis.avgPayoutNet)}`}
+          badgeTooltip="Average net amount per payout in this period."
         />
         <KpiCard
           label="Funding ratio"
           value={formatPercent(kpis.fundingRatio)}
-          hint={`${kpis.countFunded} of ${kpis.totalEvaluations} evaluations funded`}
+          hint={`${kpis.countFunded} of ${kpis.totalAttempts} attempts funded`}
           icon={<Target className="h-4 w-4" />}
+          badge={ratioContext.fundingBadge?.value}
+          badgeTone={ratioContext.fundingBadge?.tone}
+          badgeTooltip={ratioContext.fundingBadge?.tooltip}
         />
         <KpiCard
           label="Payout ratio"
           value={formatPercent(kpis.payoutRatio)}
-          hint={`${kpis.countWithPayouts} of ${kpis.countFunded} funded accounts paid out`}
+          hint={`${kpis.countWithPayouts} of ${kpis.totalAttempts} attempts reached payout`}
           icon={<Percent className="h-4 w-4" />}
+          badge={ratioContext.payoutBadge?.value}
+          badgeTone={ratioContext.payoutBadge?.tone}
+          badgeTooltip={ratioContext.payoutBadge?.tooltip}
         />
         <KpiCard
           label="Active funded"
           value={String(kpis.activeFunded)}
           hint="Accounts currently active in this period"
           icon={<TrendingUp className="h-4 w-4" />}
+          badge={activeContext.badge ?? undefined}
+          badgeTooltip={activeContext.badgeTooltip ?? undefined}
         />
       </section>
 

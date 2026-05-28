@@ -7,11 +7,16 @@ export type DashboardKpis = {
   totalSpent: number
   totalPayoutsGross: number
   totalPayoutsNet: number
+  avgPayoutNet: number
+  countPayouts: number
   netPnl: number
   fundingRatio: number
   payoutRatio: number
   activeFunded: number
   totalEvaluations: number
+  totalResets: number
+  totalAttempts: number
+  avgCostPerAttempt: number
   countFunded: number
   countWithPayouts: number
 }
@@ -40,10 +45,12 @@ export function computeKpis(
     (acc, e) => acc + Number(e.fee_paid),
     0,
   )
+  let totalResets = 0
   for (const e of evaluations) {
     for (const r of e.resets ?? []) {
       if (isDateInRange(r.reset_at, range)) {
         totalSpent += Number(r.fee)
+        totalResets += 1
       }
     }
   }
@@ -59,6 +66,10 @@ export function computeKpis(
     (acc, p) => acc + (Number(p.amount) - Number(p.fee_taken)),
     0,
   )
+  const avgPayoutNet =
+    payoutsInPeriod.length === 0
+      ? 0
+      : totalPayoutsNet / payoutsInPeriod.length
   const netPnl = totalPayoutsNet - totalSpent
 
   const fundedInPeriod = fundedAccounts.filter((f) =>
@@ -66,8 +77,11 @@ export function computeKpis(
   )
   const countFunded = fundedInPeriod.length
   const totalEvaluations = evalsInPeriod.length
+  const totalAttempts = totalEvaluations + totalResets
+  const avgCostPerAttempt =
+    totalAttempts === 0 ? 0 : totalSpent / totalAttempts
   const fundingRatio =
-    totalEvaluations === 0 ? 0 : countFunded / totalEvaluations
+    totalAttempts === 0 ? 0 : countFunded / totalAttempts
 
   // Distinct funded accounts that received at least one payout in-period
   const fundedWithPayouts = new Set(
@@ -77,7 +91,7 @@ export function computeKpis(
   )
   const countWithPayouts = fundedWithPayouts.size
   const payoutRatio =
-    countFunded === 0 ? 0 : countWithPayouts / countFunded
+    totalAttempts === 0 ? 0 : countWithPayouts / totalAttempts
 
   const activeFunded = fundedInPeriod.filter(
     (f) => f.status === "active",
@@ -87,11 +101,16 @@ export function computeKpis(
     totalSpent,
     totalPayoutsGross,
     totalPayoutsNet,
+    avgPayoutNet,
+    countPayouts: payoutsInPeriod.length,
     netPnl,
     fundingRatio,
     payoutRatio,
     activeFunded,
     totalEvaluations,
+    totalResets,
+    totalAttempts,
+    avgCostPerAttempt,
     countFunded,
     countWithPayouts,
   }
