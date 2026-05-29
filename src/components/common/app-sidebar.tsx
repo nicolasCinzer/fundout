@@ -7,6 +7,7 @@ import {
   TrendingUp,
   ChevronsUpDown,
   LogOut,
+  Calculator,
 } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -33,6 +34,7 @@ import { useAuth } from "@/features/auth/api/auth-provider"
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/calculator", label: "Calculator", icon: Calculator },
   { to: "/evaluations", label: "Evaluations", icon: FileText },
   { to: "/funded-accounts", label: "Funded accounts", icon: Landmark },
   { to: "/payouts", label: "Payouts", icon: Wallet },
