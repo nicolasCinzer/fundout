@@ -81,6 +81,8 @@ export function CalculatorForm() {
             ddType: 'eod',
             ddFixed: false,
             isFunded: false,
+            hasConsistency: false,
+            hasMinDays: false,
           })
         }
       >

@@ -7,18 +7,29 @@ const phaseSchema = z.object({
   ddFixed: z.boolean(),
   isFunded: z.boolean(),
 
+  hasConsistency: z.boolean(),
   consistencyPct: z.number().gt(0).lte(100).optional(),
+
+  hasMinDays: z.boolean(),
   minDays: z.number().int().gte(1).optional(),
   minProfit: z.number().positive().optional(),
 
   payoutCapPct: z.number().gt(0).lte(100).optional(),
   splitPct: z.number().gt(0).lte(100).optional(),
 }).superRefine((p, ctx) => {
-  if (p.minDays !== undefined && p.minProfit === undefined) {
-    ctx.addIssue({ code: 'custom', path: ['minProfit'], message: 'Required when min days is set' })
+  if (p.hasConsistency && p.consistencyPct === undefined) {
+    ctx.addIssue({ code: 'custom', path: ['consistencyPct'], message: 'Required' })
   }
-  if (p.consistencyPct !== undefined && p.minDays !== undefined) {
-    ctx.addIssue({ code: 'custom', path: ['minDays'], message: 'Cannot combine consistency and min-days' })
+  if (p.hasMinDays) {
+    if (p.minDays === undefined) {
+      ctx.addIssue({ code: 'custom', path: ['minDays'], message: 'Required' })
+    }
+    if (p.minProfit === undefined) {
+      ctx.addIssue({ code: 'custom', path: ['minProfit'], message: 'Required' })
+    }
+  }
+  if (p.hasConsistency && p.hasMinDays) {
+    ctx.addIssue({ code: 'custom', path: ['hasMinDays'], message: 'Cannot combine consistency and min-days' })
   }
   if (p.isFunded) {
     if (p.payoutCapPct === undefined) ctx.addIssue({ code: 'custom', path: ['payoutCapPct'], message: 'Required for funded phase' })

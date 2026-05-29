@@ -32,12 +32,22 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/features/auth/api/auth-provider"
 
-const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/calculator", label: "Calculator", icon: Calculator },
-  { to: "/evaluations", label: "Evaluations", icon: FileText },
-  { to: "/funded-accounts", label: "Funded accounts", icon: Landmark },
-  { to: "/payouts", label: "Payouts", icon: Wallet },
+const navGroups = [
+  {
+    label: "Tracking",
+    items: [
+      { to: "/", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/evaluations", label: "Evaluations", icon: FileText },
+      { to: "/funded-accounts", label: "Funded accounts", icon: Landmark },
+      { to: "/payouts", label: "Payouts", icon: Wallet },
+    ],
+  },
+  {
+    label: "Tools",
+    items: [
+      { to: "/calculator", label: "Calculator", icon: Calculator },
+    ],
+  },
 ] as const
 
 function getInitials(email: string | null | undefined): string {
@@ -76,33 +86,35 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Tracking</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const isActive =
-                  item.to === "/"
-                    ? location.pathname === "/"
-                    : location.pathname.startsWith(item.to)
-                return (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.label}
-                    >
-                      <Link to={item.to}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {navGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const isActive =
+                    item.to === "/"
+                      ? location.pathname === "/"
+                      : location.pathname.startsWith(item.to)
+                  return (
+                    <SidebarMenuItem key={item.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.label}
+                      >
+                        <Link to={item.to}>
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
