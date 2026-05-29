@@ -24,7 +24,9 @@ const DEFAULTS: CalculatorFormValues = {
       ddType: 'eod',
       ddFixed: false,
       isFunded: false,
+      hasConsistency: true,
       consistencyPct: 50,
+      hasMinDays: false,
     },
     {
       dd: 2000,
@@ -32,6 +34,8 @@ const DEFAULTS: CalculatorFormValues = {
       ddType: 'eod',
       ddFixed: true,
       isFunded: true,
+      hasConsistency: false,
+      hasMinDays: true,
       minDays: 5,
       minProfit: 150,
       payoutCapPct: 50,

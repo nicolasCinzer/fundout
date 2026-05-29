@@ -11,9 +11,11 @@ export function formValuesToCalcInput(values: CalculatorFormValues): CalcInput {
       ddType: p.ddType,
       ddFixed: p.ddFixed,
       isFunded: p.isFunded,
-      consistencyPct: p.consistencyPct !== undefined ? p.consistencyPct / 100 : undefined,
-      minDays: p.minDays,
-      minProfit: p.minProfit,
+      consistencyPct: p.hasConsistency && p.consistencyPct !== undefined
+        ? p.consistencyPct / 100
+        : undefined,
+      minDays: p.hasMinDays ? p.minDays : undefined,
+      minProfit: p.hasMinDays ? p.minProfit : undefined,
       payoutCapPct: p.payoutCapPct !== undefined ? p.payoutCapPct / 100 : undefined,
       splitPct: p.splitPct !== undefined ? p.splitPct / 100 : undefined,
     })),

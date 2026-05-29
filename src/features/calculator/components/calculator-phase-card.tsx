@@ -31,33 +31,26 @@ type Props = {
 export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
   const { control, watch, setValue } = useFormContext<CalculatorFormValues>()
 
-  const consistencyPct = watch(`phases.${index}.consistencyPct`)
-  const minDays = watch(`phases.${index}.minDays`)
+  const hasConsistency = watch(`phases.${index}.hasConsistency`)
+  const hasMinDays = watch(`phases.${index}.hasMinDays`)
   const isFunded = watch(`phases.${index}.isFunded`)
   const ddType = watch(`phases.${index}.ddType`)
   const ddFixed = watch(`phases.${index}.ddFixed`)
 
-  const hasConsistency = consistencyPct !== undefined
-  const hasMinDays = minDays !== undefined
-
   function toggleConsistency(checked: boolean) {
+    setValue(`phases.${index}.hasConsistency`, checked, { shouldValidate: true })
     if (checked) {
       setValue(`phases.${index}.consistencyPct`, 50, { shouldValidate: true })
-      setValue(`phases.${index}.minDays`, undefined, { shouldValidate: true })
-      setValue(`phases.${index}.minProfit`, undefined, { shouldValidate: true })
-    } else {
-      setValue(`phases.${index}.consistencyPct`, undefined, { shouldValidate: true })
+      setValue(`phases.${index}.hasMinDays`, false, { shouldValidate: true })
     }
   }
 
   function toggleMinDays(checked: boolean) {
+    setValue(`phases.${index}.hasMinDays`, checked, { shouldValidate: true })
     if (checked) {
       setValue(`phases.${index}.minDays`, 1, { shouldValidate: true })
       setValue(`phases.${index}.minProfit`, 100, { shouldValidate: true })
-      setValue(`phases.${index}.consistencyPct`, undefined, { shouldValidate: true })
-    } else {
-      setValue(`phases.${index}.minDays`, undefined, { shouldValidate: true })
-      setValue(`phases.${index}.minProfit`, undefined, { shouldValidate: true })
+      setValue(`phases.${index}.hasConsistency`, false, { shouldValidate: true })
     }
   }
 
@@ -170,11 +163,11 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
           <div className="flex items-center gap-2">
             <Controller
               control={control}
-              name={`phases.${index}.consistencyPct`}
-              render={() => (
+              name={`phases.${index}.hasConsistency`}
+              render={({ field }) => (
                 <Checkbox
                   id={`consistency-toggle-${index}`}
-                  checked={hasConsistency}
+                  checked={!!field.value}
                   disabled={hasMinDays}
                   onCheckedChange={(v) => toggleConsistency(v === true)}
                 />
@@ -190,11 +183,11 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
           <div className="flex items-center gap-2">
             <Controller
               control={control}
-              name={`phases.${index}.minDays`}
-              render={() => (
+              name={`phases.${index}.hasMinDays`}
+              render={({ field }) => (
                 <Checkbox
                   id={`mindays-toggle-${index}`}
-                  checked={hasMinDays}
+                  checked={!!field.value}
                   disabled={hasConsistency}
                   onCheckedChange={(v) => toggleMinDays(v === true)}
                 />

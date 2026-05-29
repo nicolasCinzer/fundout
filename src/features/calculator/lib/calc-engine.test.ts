@@ -21,6 +21,14 @@ describe('computeStrategy', () => {
     expect(result.dailyTargets).toEqual([3000])
   })
 
+  it('consistency branch — front-loads cap, residual on last day (not equal targets)', () => {
+    // obj=3000, consistencyPct=0.4 → cap=1200, days=3 → [1200, 1200, 600], NOT [1200, 1200, 1200]
+    const result = computeStrategy({ dd: 2000, objective: 3000, ddType: 'eod', ddFixed: false, isFunded: false, consistencyPct: 0.4 })
+    expect(result.strategy).toBe('consistency')
+    expect(result.days).toBe(3)
+    expect(result.dailyTargets).toEqual([1200, 1200, 600])
+  })
+
   it('min-days branch — exact fit (no gap, no overshoot)', () => {
     const result = computeStrategy({ dd: 2000, objective: 2600, ddType: 'eod', ddFixed: true, isFunded: true, minDays: 5, minProfit: 150 })
     expect(result.strategy).toBe('min-days')
@@ -28,25 +36,36 @@ describe('computeStrategy', () => {
     expect(result.dailyTargets).toEqual([2000, 150, 150, 150, 150])
   })
 
-  it('min-days branch — gap adjustment on last day', () => {
+  it('min-days branch — extra concentrated on day 1 when minProfit floor < objective', () => {
+    // obj=3000, minDays=3, minProfit=100 → floor=300, extra=2700 → day 1 = 2800
     const result = computeStrategy({ dd: 2000, objective: 3000, ddType: 'eod', ddFixed: false, isFunded: false, minDays: 3, minProfit: 100 })
     expect(result.strategy).toBe('min-days')
     expect(result.days).toBe(3)
-    expect(result.dailyTargets).toEqual([2000, 100, 900])
+    expect(result.dailyTargets).toEqual([2800, 100, 100])
   })
 
-  it('min-days branch — overshoot accepted as-is', () => {
+  it('min-days branch — minProfit floor satisfies objective, all days at minProfit', () => {
+    // obj=1000, minDays=3, minProfit=400 → floor=1200 ≥ obj, all days at minProfit (overshoots)
     const result = computeStrategy({ dd: 2000, objective: 1000, ddType: 'eod', ddFixed: false, isFunded: false, minDays: 3, minProfit: 400 })
     expect(result.strategy).toBe('min-days')
     expect(result.days).toBe(3)
-    expect(result.dailyTargets).toEqual([2000, 400, 400])
+    expect(result.dailyTargets).toEqual([400, 400, 400])
   })
 
-  it('min-days branch — minDays=1 produces single-day with dd as target', () => {
+  it('min-days branch — minDays=1 puts entire objective on day 1', () => {
     const result = computeStrategy({ dd: 2000, objective: 5000, ddType: 'eod', ddFixed: false, isFunded: false, minDays: 1, minProfit: 100 })
     expect(result.strategy).toBe('min-days')
     expect(result.days).toBe(1)
-    expect(result.dailyTargets).toEqual([2000])
+    expect(result.dailyTargets).toEqual([5000])
+  })
+
+  it('min-days branch — lowering objective reduces day-1 target (extra shrinks)', () => {
+    // Same dd/minDays/minProfit, two objectives. Lower objective → smaller day 1 → higher pPhase.
+    const base = { dd: 1000, ddType: 'eod' as const, ddFixed: true, isFunded: false, minDays: 5, minProfit: 100 }
+    const high = computeStrategy({ ...base, objective: 1400 })
+    const low = computeStrategy({ ...base, objective: 1000 })
+    expect(high.dailyTargets).toEqual([1000, 100, 100, 100, 100])
+    expect(low.dailyTargets).toEqual([600, 100, 100, 100, 100])
   })
 
   it('single-shot branch — no consistency or min-days', () => {

@@ -12,43 +12,45 @@ export function computeStrategy(phase: PhaseInput): {
   const { dd, objective, consistencyPct, minDays, minProfit } = phase
 
   // Branch 1: consistency strategy
+  // Optimal plan under (consistencyPct × objective) per-day cap:
+  //   - Days = ceil(objective / cap). Anything fewer can't reach objective; more is wasteful.
+  //   - Front-load: each day takes the max (cap), residual lands on the last day.
+  //   - This minimizes ∑log(ddEff + t_i), which maximizes ∏ pDay (sum of logs of t-shaped
+  //     concave functions is minimized at the boundary, not the interior).
   if (consistencyPct !== undefined) {
-    const dailyTarget = objective * consistencyPct
-    const days = Math.ceil(objective / dailyTarget)
+    const cap = objective * consistencyPct
+    const days = Math.ceil(objective / cap)
+    const targets: number[] = []
+    let remaining = objective
+    for (let i = 0; i < days; i++) {
+      const target = Math.min(cap, remaining)
+      targets.push(target)
+      remaining -= target
+    }
     return {
       strategy: 'consistency',
       days,
-      dailyTargets: Array(days).fill(dailyTarget),
+      dailyTargets: targets,
     }
   }
 
   // Branch 2: min-days strategy
+  // Optimal plan under (minDays, minProfit) constraints:
+  //   - Each day must have target ≥ minProfit.
+  //   - Sum of targets ≥ objective.
+  // Floor = minDays × minProfit. Extra = objective − floor.
+  //   - If extra > 0: concentrate it on day 1 (maximizes the product of
+  //     per-day probs by keeping later days at minProfit, which is the
+  //     cheapest target). Day 1 target = minProfit + extra.
+  //   - If extra ≤ 0: minProfit on every day; plan overshoots harmlessly.
   if (minDays !== undefined && minProfit !== undefined) {
-    if (minDays === 1) {
-      return {
-        strategy: 'min-days',
-        days: 1,
-        dailyTargets: [dd],
-      }
-    }
+    const floor = minDays * minProfit
+    const extra = objective - floor
 
-    const targets: number[] = [dd]
-    for (let i = 1; i < minDays - 1; i++) {
-      targets.push(minProfit)
-    }
-
-    // Check for gap: dd + (minDays−1)×minProfit < objective
-    const sumWithoutLastDay = dd + (minDays - 2) * minProfit
-    const naturalLastDay = minProfit
-    const naturalTotal = sumWithoutLastDay + naturalLastDay
-
-    if (naturalTotal < objective) {
-      // Gap adjustment: last day closes the remaining gap
-      targets.push(objective - sumWithoutLastDay)
-    } else {
-      // Overshoot or exact: accepted as-is
-      targets.push(minProfit)
-    }
+    const targets: number[] =
+      extra > 0
+        ? [minProfit + extra, ...Array(minDays - 1).fill(minProfit)]
+        : Array(minDays).fill(minProfit)
 
     return {
       strategy: 'min-days',

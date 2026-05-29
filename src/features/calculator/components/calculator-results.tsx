@@ -138,6 +138,18 @@ export function CalculatorResults({ result }: Props) {
                   style={{ width: `${Math.max(2, phase.pPhase * 100)}%` }}
                 />
               </div>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-mono tabular-nums text-muted-foreground">
+                <span className="uppercase tracking-wide not-mono font-sans font-semibold text-[9px]">
+                  Plan
+                </span>
+                {phase.ddEffective.map((ddEff, d) => (
+                  <span key={d}>
+                    {Math.round(ddEff)}
+                    <span className="text-muted-foreground/60">:</span>
+                    {Math.round(phase.dailyTargets[d])}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </div>
