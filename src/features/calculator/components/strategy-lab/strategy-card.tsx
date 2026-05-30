@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -25,27 +26,22 @@ type KpiProps = {
 function Kpi({ label, value, tone = 'default' }: KpiProps) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className={cn('text-xl font-semibold tabular-nums leading-none', toneClasses[tone])}>
+      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className={cn('text-lg font-semibold tabular-nums leading-none', toneClasses[tone])}>
         {value}
       </p>
     </div>
   )
 }
 
-// Strategy-specific explanation copy. Keyed by strategyId so each runner
-// owns its own "how it works" narrative without bloating StrategyResult.
-const HOW_IT_WORKS: Record<string, { title: string; steps: string[]; tradeoff: string }> = {
-  'mc-cushion': {
-    title: 'How it works',
-    steps: [
-      'Day 1 — trade with the stop-loss at the full account drawdown and the take-profit at the funded objective. Probability of hitting target = drawdown / (drawdown + objective). Win → cushion equal to the objective; lose → account blown.',
-      'After day 1 — each min-profit day, take a 1:1 trade against the daily minimum profit (50/50). Wins count toward the min-trading-days requirement; losses consume from the cushion without blowing the account.',
-      'You pass when the required min-trading-days are completed before the cushion runs out.',
-    ],
-    tradeoff:
-      'Trade-off vs the standard plan: lower day-1 probability when objective > drawdown, but larger cushion + higher payout when you do pass. Payout is stochastic — the final amount depends on how many losing days you accumulate.',
-  },
+const HOW_IT_WORKS: Record<string, string[]> = {
+  'mc-cushion': [
+    'Day 1 — stop-loss at the full account drawdown, take-profit at the funded objective. Probability of hitting target = drawdown / (drawdown + objective). Win → cushion equal to the objective; lose → account blown.',
+    'After day 1 — each min-profit day, take a 1:1 trade against the daily minimum profit (50/50). Wins count toward the min-trading-days requirement; losses consume from the cushion without blowing the account.',
+    'You pass when the required min-trading-days are completed before the cushion runs out.',
+  ],
 }
 
 export function StrategyCard({ result }: Props) {
@@ -56,11 +52,13 @@ export function StrategyCard({ result }: Props) {
     result.evNetOfFees > 0 ? 'positive' : result.evNetOfFees < 0 ? 'negative' : 'default'
 
   const isStochastic = result.kind === 'stochastic'
-  const howItWorks = HOW_IT_WORKS[result.strategyId]
+  const steps = HOW_IT_WORKS[result.strategyId]
+  const hasRange =
+    isStochastic && result.payoutP95IfPass > result.payoutP5IfPass
 
   return (
     <Card className={cn('transition-opacity', !result.applicable && 'opacity-60')}>
-      <CardHeader className="pb-3 gap-2">
+      <CardHeader className="pb-3 gap-1.5">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base leading-snug">{result.label}</CardTitle>
           <Badge variant="outline" className="shrink-0 text-[10px] px-2 py-0.5">
@@ -76,52 +74,28 @@ export function StrategyCard({ result }: Props) {
         {!result.applicable ? (
           <p className="text-sm text-muted-foreground">{result.notApplicableReason}</p>
         ) : (
-          <div className="space-y-5">
-            {howItWorks && (
-              <div className="space-y-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {howItWorks.title}
-                </p>
-                <ol className="space-y-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {howItWorks.steps.map((step, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="font-mono text-foreground/60">{i + 1}.</span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4 border-t pt-4">
+          <div className="space-y-3">
+            <div
+              className={cn(
+                'grid gap-4 border-t pt-3',
+                hasRange ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3',
+              )}
+            >
               <Kpi
-                label="Probability of pass"
+                label="P(pass)"
                 value={formatPercent(result.pPass)}
                 tone={result.pPass > 0.5 ? 'positive' : 'default'}
               />
               <Kpi
-                label="Expected payout when pass"
+                label="Expected payout"
                 value={formatCurrency(result.expectedPayout, true)}
               />
-            </div>
-
-            {isStochastic && result.payoutP95IfPass > result.payoutP5IfPass && (
-              <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Payout range when pass (P5 — P95)
-                </p>
-                <p className="text-sm font-semibold tabular-nums">
-                  {formatCurrency(result.payoutP5IfPass, true)}
-                  <span className="text-muted-foreground"> — </span>
-                  {formatCurrency(result.payoutP95IfPass, true)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  90% of successful runs land in this range.
-                </p>
-              </div>
-            )}
-
-            <div className="border-t pt-4">
+              {hasRange && (
+                <Kpi
+                  label="Range (P5—P95)"
+                  value={`${formatCurrency(result.payoutP5IfPass, true)} — ${formatCurrency(result.payoutP95IfPass, true)}`}
+                />
+              )}
               <Kpi
                 label="Net EV"
                 value={formatCurrency(result.evNetOfFees, true)}
@@ -129,10 +103,21 @@ export function StrategyCard({ result }: Props) {
               />
             </div>
 
-            {howItWorks && (
-              <p className="text-xs leading-relaxed text-muted-foreground border-t pt-3">
-                {howItWorks.tradeoff}
-              </p>
+            {steps && (
+              <details className="group border-t pt-2">
+                <summary className="flex cursor-pointer items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors list-none [&::-webkit-details-marker]:hidden">
+                  <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
+                  How it works
+                </summary>
+                <ol className="mt-2 space-y-1.5 text-xs leading-relaxed text-muted-foreground">
+                  {steps.map((step, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="font-mono text-foreground/60">{i + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </details>
             )}
           </div>
         )}
