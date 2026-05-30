@@ -83,6 +83,7 @@ export function CalculatorForm() {
             isFunded: false,
             hasConsistency: false,
             hasMinDays: false,
+            minPayoutRequest: 0,
           })
         }
       >

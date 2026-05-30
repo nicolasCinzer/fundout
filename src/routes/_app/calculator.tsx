@@ -8,7 +8,9 @@ import { formValuesToCalcInput } from '@/features/calculator/lib/form-to-input'
 import { calculate } from '@/features/calculator/lib/calc-engine'
 import { CalculatorForm } from '@/features/calculator/components/calculator-form'
 import { CalculatorResults } from '@/features/calculator/components/calculator-results'
-import type { CalcResult } from '@/features/calculator/types'
+import { StrategyLab } from '@/features/calculator/components/strategy-lab/strategy-lab'
+import { Separator } from '@/components/ui/separator'
+import type { CalcResult, CalcInput } from '@/features/calculator/types'
 
 export const Route = createFileRoute('/_app/calculator')({
   component: CalculatorPage,
@@ -27,6 +29,7 @@ const DEFAULTS: CalculatorFormValues = {
       hasConsistency: true,
       consistencyPct: 50,
       hasMinDays: false,
+      minPayoutRequest: 0,
     },
     {
       dd: 2000,
@@ -40,6 +43,7 @@ const DEFAULTS: CalculatorFormValues = {
       minProfit: 150,
       payoutCapPct: 50,
       splitPct: 90,
+      minPayoutRequest: 0,
     },
   ],
 }
@@ -53,10 +57,11 @@ function CalculatorPage() {
 
   const values = useWatch({ control: form.control })
 
-  const result = useMemo<CalcResult | null>(() => {
+  const { calcInput, result } = useMemo<{ calcInput: CalcInput | null; result: CalcResult | null }>(() => {
     const parsed = calculatorFormSchema.safeParse(values)
-    if (!parsed.success) return null
-    return calculate(formValuesToCalcInput(parsed.data))
+    if (!parsed.success) return { calcInput: null, result: null }
+    const input = formValuesToCalcInput(parsed.data)
+    return { calcInput: input, result: calculate(input) }
   }, [values])
 
   return (
@@ -71,6 +76,8 @@ function CalculatorPage() {
             <CalculatorForm />
             <CalculatorResults result={result} />
           </div>
+          <Separator className="my-6" />
+          <StrategyLab input={calcInput} />
         </FormProvider>
       </main>
     </>

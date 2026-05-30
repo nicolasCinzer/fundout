@@ -9,7 +9,7 @@ export function computeStrategy(phase: PhaseInput): {
   days: number
   dailyTargets: number[]
 } {
-  const { dd, objective, consistencyPct, minDays, minProfit } = phase
+  const { objective, consistencyPct, minDays, minProfit } = phase
 
   // Branch 1: consistency strategy
   // Optimal plan under (consistencyPct × objective) per-day cap:
