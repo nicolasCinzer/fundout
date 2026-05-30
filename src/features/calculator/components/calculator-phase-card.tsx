@@ -35,7 +35,6 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
   const hasMinDays = watch(`phases.${index}.hasMinDays`)
   const isFunded = watch(`phases.${index}.isFunded`)
   const ddType = watch(`phases.${index}.ddType`)
-  const ddFixed = watch(`phases.${index}.ddFixed`)
 
   function toggleConsistency(checked: boolean) {
     setValue(`phases.${index}.hasConsistency`, checked, { shouldValidate: true })
