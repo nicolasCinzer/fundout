@@ -38,6 +38,8 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
     payoutP50: 0,
     payoutP95: 0,
     payoutStdDev: 0,
+    payoutP5IfPass: 0,
+    payoutP95IfPass: 0,
     evNetOfFees: 0,
   })
 
@@ -45,14 +47,15 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
     return notApplicable(NOT_APPLICABLE_REASON)
   }
 
-  const { dd, minDays, minProfit, payoutCapPct, splitPct, minPayoutRequest } = funded
+  const { dd, objective, minDays, minProfit, payoutCapPct, splitPct, minPayoutRequest } = funded
   const minPayout = minPayoutRequest ?? 0
 
   if (
     minDays === undefined ||
     minProfit === undefined ||
     minProfit <= 0 ||
-    dd <= 0
+    dd <= 0 ||
+    objective <= 0
   ) {
     return notApplicable(NOT_APPLICABLE_REASON)
   }
@@ -62,18 +65,25 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
   // Fresh PRNG instance per run — determinism contract
   const rng = mulberry32(seed)
 
+  // Day-1 trade: risk = dd, target = objective.
+  // Under fair-coin underlying, P(reach +target before -risk) = risk / (risk + target).
+  // pWinDay1 reduces to 0.5 when objective === dd (original 1:1 case).
+  const pWinDay1 = dd / (dd + objective)
+
   const payouts: number[] = new Array(iterations)
 
   for (let i = 0; i < iterations; i++) {
-    // Day 1: win → cushion = dd; lose → blown
-    if (rng() >= 0.5) {
+    // Day 1: win → cushion = objective; lose → blown
+    if (rng() >= pWinDay1) {
       payouts[i] = 0
       continue
     }
 
-    // Day-1 win counts as 1 min-profit day (profit ≥ min_profit trivially)
-    let equity = dd       // track relative to initial balance = 0
-    let cushion = dd
+    // Day-1 win counts as 1 min-profit day (profit ≥ min_profit trivially).
+    // Cushion = objective: trailing DD floor locks at initial_balance once
+    // equity ≥ initial + dd, and stays there regardless of further profit.
+    let equity = objective  // track relative to initial balance = 0
+    let cushion = objective
     let winDays = 1
     let blown = false
 
@@ -124,6 +134,15 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
   const p50 = sorted[Math.floor((iterations - 1) * 0.5)] ?? 0
   const p95 = sorted[Math.floor((iterations - 1) * 0.95)] ?? 0
 
+  // Conditional percentiles — only the passing iterations
+  const passSorted = sorted.filter((p) => p > 0)
+  const p5IfPass = passSorted.length > 0
+    ? passSorted[Math.floor((passSorted.length - 1) * 0.05)] ?? 0
+    : 0
+  const p95IfPass = passSorted.length > 0
+    ? passSorted[Math.floor((passSorted.length - 1) * 0.95)] ?? 0
+    : 0
+
   const mean = passSum / iterations  // = pFunded × expectedPayout
   let varianceSum = 0
   for (let i = 0; i < iterations; i++) {
@@ -152,6 +171,8 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
     payoutP50: p50,
     payoutP95: p95,
     payoutStdDev,
+    payoutP5IfPass: p5IfPass,
+    payoutP95IfPass: p95IfPass,
     evNetOfFees,
   }
 }
