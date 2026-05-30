@@ -215,4 +215,43 @@ describe('calculate', () => {
     expect(result.pEval).toBeCloseTo(result.phases[0].pPhase, 6)
     expect(result.pTotal).toBeCloseTo(result.phases[0].pPhase * result.phases[1].pPhase, 6)
   })
+
+  it('minPayoutRequest above raw payout → w = 0 (withdrawal blocked)', () => {
+    const input: CalcInput = {
+      cEval: 50,
+      cActivation: 0,
+      phases: [
+        {
+          dd: 1000,
+          objective: 500,
+          ddType: 'eod',
+          ddFixed: false,
+          isFunded: true,
+          payoutCapPct: 0.5,
+          splitPct: 0.9,
+          minPayoutRequest: 500,
+        },
+      ],
+    }
+    // raw w = 500 × 0.5 × 0.9 = 225 < 500 floor → w = 0
+    const result = calculate(input)
+    expect(result.w).toBe(0)
+  })
+
+  it('minPayoutRequest below raw payout → w unchanged', () => {
+    const input: CalcInput = {
+      ...lucidFlex50k,
+      phases: lucidFlex50k.phases.map((p) =>
+        p.isFunded ? { ...p, minPayoutRequest: 500 } : p,
+      ),
+    }
+    // raw w = 1170 > 500 floor → unchanged
+    const result = calculate(input)
+    expect(result.w).toBeCloseTo(1170.0, 2)
+  })
+
+  it('minPayoutRequest undefined → no floor applied (back-compat)', () => {
+    const result = calculate(lucidFlex50k)
+    expect(result.w).toBeCloseTo(1170.0, 2)
+  })
 })
