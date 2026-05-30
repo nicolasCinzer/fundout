@@ -161,9 +161,11 @@ export function calculate(input: CalcInput): CalcResult {
   // W: payout from the funded phase
   const fundedPhase = phases.find((p) => p.isFunded)
   const fundedResult = phaseResults.find((_, i) => phases[i].isFunded)
-  const w = fundedPhase && fundedResult
+  const rawW = fundedPhase && fundedResult
     ? fundedPhase.objective * (fundedPhase.payoutCapPct ?? 0) * (fundedPhase.splitPct ?? 0)
     : 0
+  const minPayoutRequest = fundedPhase?.minPayoutRequest ?? 0
+  const w = rawW < minPayoutRequest ? 0 : rawW
 
   const ev = pTotal * w - cEval - pEval * cActivation
   const roi = cEval === 0 ? null : ev / cEval

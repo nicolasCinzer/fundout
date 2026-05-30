@@ -13,6 +13,8 @@ export type PhaseInput = {
   minProfit?: number
   payoutCapPct?: number
   splitPct?: number
+  /** Minimum payout the propfirm allows to be requested. If computed payout < this, withdrawal is $0. Funded phase only. */
+  minPayoutRequest?: number
 }
 
 export type CalcInput = {
