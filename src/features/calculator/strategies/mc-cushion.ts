@@ -38,6 +38,8 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
     payoutP50: 0,
     payoutP95: 0,
     payoutStdDev: 0,
+    payoutP5IfPass: 0,
+    payoutP95IfPass: 0,
     evNetOfFees: 0,
   })
 
@@ -124,6 +126,15 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
   const p50 = sorted[Math.floor((iterations - 1) * 0.5)] ?? 0
   const p95 = sorted[Math.floor((iterations - 1) * 0.95)] ?? 0
 
+  // Conditional percentiles — only the passing iterations
+  const passSorted = sorted.filter((p) => p > 0)
+  const p5IfPass = passSorted.length > 0
+    ? passSorted[Math.floor((passSorted.length - 1) * 0.05)] ?? 0
+    : 0
+  const p95IfPass = passSorted.length > 0
+    ? passSorted[Math.floor((passSorted.length - 1) * 0.95)] ?? 0
+    : 0
+
   const mean = passSum / iterations  // = pFunded × expectedPayout
   let varianceSum = 0
   for (let i = 0; i < iterations; i++) {
@@ -152,6 +163,8 @@ function runMcCushion(input: CalcInput, options?: StrategyOptions): StrategyResu
     payoutP50: p50,
     payoutP95: p95,
     payoutStdDev,
+    payoutP5IfPass: p5IfPass,
+    payoutP95IfPass: p95IfPass,
     evNetOfFees,
   }
 }

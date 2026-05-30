@@ -23,6 +23,8 @@ function runAnalytic(input: CalcInput, _options?: StrategyOptions): StrategyResu
     payoutP50: w,
     payoutP95: w,
     payoutStdDev: 0,
+    payoutP5IfPass: w,
+    payoutP95IfPass: w,
     evNetOfFees: ev,
   }
 }

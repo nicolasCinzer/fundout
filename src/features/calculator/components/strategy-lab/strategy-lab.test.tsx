@@ -42,17 +42,19 @@ describe('StrategyLab', () => {
     expect(html).toContain('Strategy Lab')
   })
 
-  it('renders subtitle about risk/reward frontier', () => {
+  it('renders subtitle describing alternative strategies', () => {
     const html = renderToStaticMarkup(<StrategyLab input={FUNDED_INPUT} />)
-    expect(html.toLowerCase()).toContain('risk')
-    expect(html.toLowerCase()).toContain('frontier')
+    expect(html.toLowerCase()).toContain('alternative')
+    expect(html.toLowerCase()).toContain('analytic baseline')
   })
 
-  it('renders one card per strategy in the registry when input is provided', () => {
+  it('renders cards for non-analytic strategies only (analytic is shown by the standard results panel)', () => {
     const html = renderToStaticMarkup(<StrategyLab input={FUNDED_INPUT} />)
-    for (const runner of STRATEGY_REGISTRY) {
+    const labRunners = STRATEGY_REGISTRY.filter((r) => r.id !== 'analytic')
+    for (const runner of labRunners) {
       expect(html).toContain(runner.label)
     }
+    expect(html).not.toContain('>Analytic<')
   })
 
   it('renders skeleton cards when input is null', () => {

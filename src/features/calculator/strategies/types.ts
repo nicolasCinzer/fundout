@@ -17,6 +17,10 @@ export type StrategyResult = {
   payoutP50: number
   payoutP95: number
   payoutStdDev: number
+  // conditional payout distribution (only over passing iterations)
+  // for deterministic strategies both equal expectedPayout
+  payoutP5IfPass: number
+  payoutP95IfPass: number
   // money (NET — same semantics as CalcResult.ev)
   evNetOfFees: number
 }

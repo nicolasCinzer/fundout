@@ -20,20 +20,32 @@ type KpiProps = {
   label: string
   value: string
   tone?: Tone
-  muted?: boolean
 }
 
-function Kpi({ label, value, tone = 'default', muted = false }: KpiProps) {
+function Kpi({ label, value, tone = 'default' }: KpiProps) {
   return (
     <div className="space-y-1">
-      <p className={cn('text-xs font-medium', muted ? 'text-muted-foreground/70' : 'text-muted-foreground')}>
-        {label}
-      </p>
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className={cn('text-xl font-semibold tabular-nums leading-none', toneClasses[tone])}>
         {value}
       </p>
     </div>
   )
+}
+
+// Strategy-specific explanation copy. Keyed by strategyId so each runner
+// owns its own "how it works" narrative without bloating StrategyResult.
+const HOW_IT_WORKS: Record<string, { title: string; steps: string[]; tradeoff: string }> = {
+  'mc-cushion': {
+    title: 'How it works',
+    steps: [
+      'Day 1 — take a 1:1 trade against the full account drawdown. 50% chance of building a cushion equal to the drawdown; 50% chance the account is blown.',
+      'After day 1 — each min-profit day, take a 1:1 trade against the daily minimum profit. Wins count toward the min-trading-days requirement; losses consume from the cushion without blowing the account.',
+      'You pass when the required min-trading-days are completed before the cushion runs out.',
+    ],
+    tradeoff:
+      'Trade-off vs the standard plan: lower payout per pass, higher probability of passing. Payout is stochastic — the final amount depends on how many losing days you accumulate.',
+  },
 }
 
 export function StrategyCard({ result }: Props) {
@@ -44,6 +56,7 @@ export function StrategyCard({ result }: Props) {
     result.evNetOfFees > 0 ? 'positive' : result.evNetOfFees < 0 ? 'negative' : 'default'
 
   const isStochastic = result.kind === 'stochastic'
+  const howItWorks = HOW_IT_WORKS[result.strategyId]
 
   return (
     <Card className={cn('transition-opacity', !result.applicable && 'opacity-60')}>
@@ -63,11 +76,26 @@ export function StrategyCard({ result }: Props) {
         {!result.applicable ? (
           <p className="text-sm text-muted-foreground">{result.notApplicableReason}</p>
         ) : (
-          <div className="space-y-4">
-            {/* Primary metrics */}
-            <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-5">
+            {howItWorks && (
+              <div className="space-y-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {howItWorks.title}
+                </p>
+                <ol className="space-y-1.5 text-xs leading-relaxed text-muted-foreground">
+                  {howItWorks.steps.map((step, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="font-mono text-foreground/60">{i + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 border-t pt-4">
               <Kpi
-                label="P(pass)"
+                label="Probability of pass"
                 value={formatPercent(result.pPass)}
                 tone={result.pPass > 0.5 ? 'positive' : 'default'}
               />
@@ -77,28 +105,35 @@ export function StrategyCard({ result }: Props) {
               />
             </div>
 
-            {/* Percentile distribution — stochastic only */}
-            {isStochastic && (
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                  Payout distribution
+            {isStochastic && result.payoutP95IfPass > result.payoutP5IfPass && (
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Payout range when pass (P5 — P95)
                 </p>
-                <div className="grid grid-cols-3 gap-2">
-                  <Kpi label="P5" value={formatCurrency(result.payoutP5, true)} muted />
-                  <Kpi label="P50" value={formatCurrency(result.payoutP50, true)} muted />
-                  <Kpi label="P95" value={formatCurrency(result.payoutP95, true)} muted />
-                </div>
+                <p className="text-sm font-semibold tabular-nums">
+                  {formatCurrency(result.payoutP5IfPass, true)}
+                  <span className="text-muted-foreground"> — </span>
+                  {formatCurrency(result.payoutP95IfPass, true)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  90% of successful runs land in this range.
+                </p>
               </div>
             )}
 
-            {/* Net EV */}
-            <div className="border-t pt-3">
+            <div className="border-t pt-4">
               <Kpi
                 label="Net EV"
                 value={formatCurrency(result.evNetOfFees, true)}
                 tone={evTone}
               />
             </div>
+
+            {howItWorks && (
+              <p className="text-xs leading-relaxed text-muted-foreground border-t pt-3">
+                {howItWorks.tradeoff}
+              </p>
+            )}
           </div>
         )}
       </CardContent>
