@@ -35,7 +35,6 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
   const hasMinDays = watch(`phases.${index}.hasMinDays`)
   const isFunded = watch(`phases.${index}.isFunded`)
   const ddType = watch(`phases.${index}.ddType`)
-  const ddFixed = watch(`phases.${index}.ddFixed`)
 
   function toggleConsistency(checked: boolean) {
     setValue(`phases.${index}.hasConsistency`, checked, { shouldValidate: true })
@@ -353,6 +352,29 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                           onChange={(e) => field.onChange(e.target.valueAsNumber)}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name={`phases.${index}.minPayoutRequest`}
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel className="text-xs">Min payout request ($)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          step={1}
+                          {...field}
+                          value={field.value ?? 0}
+                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        />
+                      </FormControl>
+                      <p className="text-[10px] text-muted-foreground leading-snug">
+                        Minimum amount the propfirm allows to request
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

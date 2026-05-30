@@ -18,6 +18,7 @@ export function formValuesToCalcInput(values: CalculatorFormValues): CalcInput {
       minProfit: p.hasMinDays ? p.minProfit : undefined,
       payoutCapPct: p.payoutCapPct !== undefined ? p.payoutCapPct / 100 : undefined,
       splitPct: p.splitPct !== undefined ? p.splitPct / 100 : undefined,
+      minPayoutRequest: p.isFunded ? (p.minPayoutRequest ?? 0) : undefined,
     })),
   }
 }

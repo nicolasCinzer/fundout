@@ -16,6 +16,7 @@ const phaseSchema = z.object({
 
   payoutCapPct: z.number().gt(0).lte(100).optional(),
   splitPct: z.number().gt(0).lte(100).optional(),
+  minPayoutRequest: z.number().min(0).optional(),
 }).superRefine((p, ctx) => {
   if (p.hasConsistency && p.consistencyPct === undefined) {
     ctx.addIssue({ code: 'custom', path: ['consistencyPct'], message: 'Required' })
