@@ -39,12 +39,12 @@ const HOW_IT_WORKS: Record<string, { title: string; steps: string[]; tradeoff: s
   'mc-cushion': {
     title: 'How it works',
     steps: [
-      'Day 1 — take a 1:1 trade against the full account drawdown. 50% chance of building a cushion equal to the drawdown; 50% chance the account is blown.',
-      'After day 1 — each min-profit day, take a 1:1 trade against the daily minimum profit. Wins count toward the min-trading-days requirement; losses consume from the cushion without blowing the account.',
+      'Day 1 — trade with the stop-loss at the full account drawdown and the take-profit at the funded objective. Probability of hitting target = drawdown / (drawdown + objective). Win → cushion equal to the objective; lose → account blown.',
+      'After day 1 — each min-profit day, take a 1:1 trade against the daily minimum profit (50/50). Wins count toward the min-trading-days requirement; losses consume from the cushion without blowing the account.',
       'You pass when the required min-trading-days are completed before the cushion runs out.',
     ],
     tradeoff:
-      'Trade-off vs the standard plan: lower payout per pass, higher probability of passing. Payout is stochastic — the final amount depends on how many losing days you accumulate.',
+      'Trade-off vs the standard plan: lower day-1 probability when objective > drawdown, but larger cushion + higher payout when you do pass. Payout is stochastic — the final amount depends on how many losing days you accumulate.',
   },
 }
 

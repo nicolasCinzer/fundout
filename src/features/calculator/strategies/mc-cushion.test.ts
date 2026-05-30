@@ -69,13 +69,13 @@ const noFundedInput: CalcInput = {
 }
 
 describe('mcCushionRunner — confirmed fixture', () => {
-  it('expectedPayout (gross) ≈ $899 ±$150 with seed=42, 10k iterations', () => {
-    // Spec stated ≈$1000 ±$50; actual simulation yields ~$899.
-    // Tolerance widened to ±$150 to match the real value.
-    // See apply-progress for spec-tolerance adjustment note.
+  it('expectedPayout (gross) ≈ $1170 ±$50 with seed=42, 10k iterations', () => {
+    // Day-1 target = objective (2600). P(win day 1) = dd/(dd+objective) = 2000/4600 ≈ 0.435.
+    // Equity at pass ≈ objective = 2600 (symmetric walk on min-profit days).
+    // Expected payout | pass = 2600 × 0.5 × 0.9 = $1170.
     const result = mcCushionRunner.run(lucidFlex50kInput, { seed: 42, iterations: 10_000 })
-    expect(result.expectedPayout).toBeGreaterThan(749)
-    expect(result.expectedPayout).toBeLessThan(1049)
+    expect(result.expectedPayout).toBeGreaterThan(1120)
+    expect(result.expectedPayout).toBeLessThan(1220)
   })
 
   it('evNetOfFees derives from pPass * expectedPayout - cEval - pEval * cActivation', () => {
@@ -181,14 +181,14 @@ describe('mcCushionRunner — applicability guard (SL-5)', () => {
 })
 
 describe('mcCushionRunner — edge cases (SL-3)', () => {
-  it('minDays=1 → P(pass funded) ≈ 0.5 (only day-1 matters)', () => {
+  it('minDays=1 with objective=dd → P(pass funded) ≈ 0.5 (only day-1 matters, symmetric R:R)', () => {
     const input: CalcInput = {
       cEval: 0,
       cActivation: 0,
       phases: [
         {
           dd: 2000,
-          objective: 2600,
+          objective: 2000, // R:R 1:1 → P(win day 1) = 0.5
           minDays: 1,
           minProfit: 150,
           ddType: 'eod',
@@ -200,9 +200,31 @@ describe('mcCushionRunner — edge cases (SL-3)', () => {
       ],
     }
     const result = mcCushionRunner.run(input, { seed: 42, iterations: 100_000 })
-    // Day-1 win = 0.5, no further days needed
     expect(result.pFunded).toBeGreaterThan(0.48)
     expect(result.pFunded).toBeLessThan(0.52)
+  })
+
+  it('minDays=1 with objective=1.5×dd → P(pass funded) = dd/(dd+objective) = 0.4', () => {
+    const input: CalcInput = {
+      cEval: 0,
+      cActivation: 0,
+      phases: [
+        {
+          dd: 2000,
+          objective: 3000, // R:R 1:1.5 → P(win day 1) = 2000/5000 = 0.4
+          minDays: 1,
+          minProfit: 150,
+          ddType: 'eod',
+          ddFixed: true,
+          isFunded: true,
+          payoutCapPct: 0.5,
+          splitPct: 0.9,
+        },
+      ],
+    }
+    const result = mcCushionRunner.run(input, { seed: 42, iterations: 100_000 })
+    expect(result.pFunded).toBeGreaterThan(0.38)
+    expect(result.pFunded).toBeLessThan(0.42)
   })
 
   it('pEval === 1 when no eval phase (single funded-only input) — MC still runs', () => {
