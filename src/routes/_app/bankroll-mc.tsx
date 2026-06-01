@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,12 +19,37 @@ export const Route = createFileRoute('/_app/bankroll-mc')({
   component: BankrollMcPage,
 })
 
+const STORAGE_KEY = 'bankroll-mc:inputs'
+
+function loadInitialValues(): BankrollMcFormValues {
+  if (typeof window === 'undefined') return bankrollMcFormDefaults
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) return bankrollMcFormDefaults
+    const parsed = JSON.parse(raw) as Partial<BankrollMcFormValues>
+    return { ...bankrollMcFormDefaults, ...parsed }
+  } catch {
+    return bankrollMcFormDefaults
+  }
+}
+
 function BankrollMcPage() {
   const form = useForm<BankrollMcFormValues>({
     resolver: zodResolver(bankrollMcFormSchema),
-    defaultValues: bankrollMcFormDefaults,
+    defaultValues: loadInitialValues(),
     mode: 'onChange',
   })
+
+  useEffect(() => {
+    const sub = form.watch((values) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(values))
+      } catch {
+        // quota or privacy mode — fail silently
+      }
+    })
+    return () => sub.unsubscribe()
+  }, [form])
 
   const [computed, setComputed] = useState<{
     input: BankrollMcInput | null
