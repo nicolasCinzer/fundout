@@ -136,7 +136,7 @@ describe('engine — aggregation and metrics', () => {
     })
   })
 
-  it('simCount constant is 5000 (triangulation: consistent with ruinRate denominator)', () => {
+  it('simCount constant is 10000 (triangulation: consistent with ruinRate denominator)', () => {
     const input: BankrollMcInput = {
       bankroll: 1000,
       cost: 140,
@@ -144,7 +144,7 @@ describe('engine — aggregation and metrics', () => {
       payoutNet: 400,
     }
     const result = runSimulation(input)
-    expect(result.simCount).toBe(5000)
+    expect(result.simCount).toBe(10000)
   })
 })
 

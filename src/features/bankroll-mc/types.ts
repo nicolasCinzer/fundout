@@ -25,7 +25,7 @@ export type MetricsPanel = {
   pReachTarget: number // fraction of runs reaching targetBankroll; 0 when no target provided
   survivalRate: number // fraction of runs that reach MAX_ATTEMPTS alive
   maxAttemptsHeuristic: number // floor(bankroll / cost) — max attempts with no payouts
-  simCount: number // ITERATIONS constant (5000)
+  simCount: number // ITERATIONS constant (10000)
 }
 
 export type BankrollMcResult = MetricsPanel & {

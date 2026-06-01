@@ -6,7 +6,7 @@ import type { BankrollMcInput, BankrollMcResult, PercentileBand, RunTrajectory }
 // ---------------------------------------------------------------------------
 
 const SEED = 42
-const ITERATIONS = 5000
+const ITERATIONS = 10000
 const MAX_ATTEMPTS = 100
 const SAMPLED_PATHS = 250
 

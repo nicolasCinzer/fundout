@@ -47,7 +47,7 @@ function ChartHeader() {
         <h3 className="text-sm font-medium">Distribución del bankroll a lo largo del tiempo</h3>
         <p className="text-xs text-muted-foreground">
           Cada punto en X es un intento (0 → 100). El gráfico resume cómo evoluciona
-          tu bankroll en las 5&nbsp;000 corridas simuladas.
+          tu bankroll en las 10&nbsp;000 corridas simuladas.
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
