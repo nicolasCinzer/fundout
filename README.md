@@ -1,69 +1,97 @@
 # Fundout
 
-> A propfirm tracker for traders who want to know if the grind is actually paying off.
+> The propfirm tracker and decision-support suite for traders who treat the challenge economy as a business, not a lottery.
 
-Unlike trade journals (Tradezella, Edgewonk), Fundout tracks the **meta-game** of propfirms: how much you've spent on evaluations, how many got funded, how many of those paid out, and the net P&L across the whole journey. It answers the question every prop trader eventually asks: **am I actually making money playing this game?**
+Prop trading firms have turned trader evaluations into a recurring product. For every funded account, traders pay for several attempts, resets, and add-ons — and most existing tools (Tradezella, Edgewonk, broker journals) focus on the trades themselves, not on the **meta-game** that surrounds them.
 
-## Stack
+Fundout closes that gap. It tracks the full economic loop of a propfirm career — fees in, payouts out, accounts active, attempts wasted — and pairs it with a set of quantitative tools to decide which firms, account sizes, and risk profiles are actually worth the capital and time.
 
-- **Build**: Vite 8, React 19, TypeScript 6
-- **Styling**: Tailwind v4, [shadcn/ui](https://ui.shadcn.com) (new-york style)
-- **Routing**: TanStack Router (file-based, code-split per route)
-- **Data**: TanStack Query against Supabase (Postgres + Row-Level Security + Magic-link auth)
+The question every prop trader eventually asks is simple: **am I making money playing this game, and which version of the game has the best odds?** Fundout is built to answer both.
+
+---
+
+## What Fundout does
+
+Fundout is split into two complementary surfaces: a **tracker** that records the journey, and a **toolkit** that helps decide what to do next.
+
+### Tracker — the meta-game ledger
+
+- **Evaluations, funded accounts, and payouts** modeled as first-class entities with explicit state transitions (`in_progress → passed/failed`, `funded → paid_out/closed`).
+- **One-click "Mark as funded"** runs a compound mutation — closes the evaluation and creates the matching funded account in a single user action.
+- **Dashboard** with the six KPIs that matter: net P&L, total spent, total payouts (net), funding ratio, payout ratio, and active funded accounts — plus a daily fees-vs-payouts flow chart and a Propfirms-by-ROI breakdown.
+- **URL-state filters, search, and sortable columns** on every table — bookmarkable, shareable, survive refresh.
+- **Period switching** on the dashboard (this month, this year, all time) recomputes every metric in place.
+
+### Toolkit — quantitative decision support
+
+Two analytical tools, both pure-function engines with the math separated from the UI:
+
+#### `/calculator` — Probability & ROI Calculator
+
+A deterministic, **gambler's-ruin-based** probability calculator for multi-phase propfirm challenges. Given account rules (target, max drawdown, daily loss limit) and a trader profile (risk per trade, expected edge), it computes:
+
+- Probability of passing each phase and the full evaluation
+- Expected ROI over an evaluation + funded cycle
+- Average attempts to fund, average attempts to first payout
+- A **Strategy Lab** that runs the same input through alternative non-analytic strategies (Monte Carlo cushion variants) and shows the trade-offs side by side
+
+Form inputs persist to `localStorage`, so a trader can come back the next day without re-entering the firm's rules.
+
+#### `/bankroll-mc` — Bankroll Monte Carlo Simulator
+
+A portfolio-level simulator that answers the question the single-attempt calculator can't: **starting from bankroll B, how likely am I to go broke before reaching N evaluation attempts?**
+
+- 10,000 Monte Carlo runs with a fixed seed (reproducible across reloads and shares)
+- Configurable per-attempt cost, payout probability, and net payout
+- Renders p10 / p50 / p90 trajectory bands plus the ruin probability and the worst-case "max attempts with no payouts" streak
+- Pure synchronous engine — runs on the main thread in under 100 ms for the default workload
+
+---
+
+## Why these tools, together
+
+A propfirm career has two levels of decision:
+
+1. **Per-attempt**: given this firm's rules and my edge, what's my expected probability and ROI? → `/calculator`
+2. **Portfolio-level**: given my bankroll and a stream of attempts, what's the probability I run out of capital before I hit a payout? → `/bankroll-mc`
+
+The tracker measures the actual realized outcome of those decisions over time, closing the feedback loop. Each piece is useful on its own; together they form a decision system rather than a journal.
+
+---
+
+## Status
+
+Fundout is in active development. The tracker MVP, the probability calculator, and the bankroll simulator are all live and usable end-to-end. Current focus is on UX polish (edit forms, row actions), additional dashboard insights, and a public landing page ahead of deployment.
+
+---
+
+## Technical details
+
+### Stack
+
+- **Build**: Vite 8, React 19, TypeScript 6 (strict mode, zero `any`)
+- **Routing**: TanStack Router — file-based, code-split per route, URL state validated with Zod
+- **Data**: TanStack Query against Supabase (Postgres + Row-Level Security + magic-link auth)
+- **Styling**: Tailwind v4, [shadcn/ui](https://ui.shadcn.com) (new-york style), dark mode with FOUC-prevention inline script
 - **Forms**: React Hook Form + Zod
 - **Charts**: Recharts via shadcn chart primitives
-- **Deploy**: TBD (Vercel + Supabase Cloud planned)
+- **Testing**: Vitest — 80+ tests covering the calculator and Monte Carlo engines
+- **Deploy**: Vercel + Supabase Cloud (planned)
 
-## What works today
+### Architecture
 
-- **Auth** via Supabase magic link (passwordless, one-click sign in)
-- **CRUD-create + state transitions** across three entities: evaluations → funded accounts → payouts
-- **One-click "Mark as funded"** runs a compound mutation: closes the evaluation and creates the funded account atomically from a user perspective
-- **Dashboard** with the six KPIs that matter: net P&L, total spent, total payouts, funding ratio, payout ratio, active funded count — plus a monthly fees-vs-payouts chart and a funding funnel
-- **URL-state filters, search and sortable columns** on every table (bookmarkeable, shareable, survives refresh)
-- **Dark mode** with FOUC-prevention inline script
-- **Skeleton + contextual empty-state UX** across all data fetching (different empty messages when filters are active vs. truly empty)
+The codebase is organized to make the domain shout louder than the framework.
 
-## Architecture highlights
+- **Screaming Architecture** — `src/features/{evaluations,funded-accounts,payouts,dashboard,calculator,bankroll-mc,auth,propfirms}` over layer-first organization. Each feature is autonomous: components, hooks, schemas, queries, engines. A new contributor opens `src/features/` and understands the product in five seconds.
+- **Pure-function engines** — the calculator and Monte Carlo engines are pure functions that take typed input and return typed output. The route orchestrates the queries and calls compute; components receive props. Container/presentational + separation of concerns without the Clean Architecture ceremony.
+- **Schema-enforced invariants** — business rules live in the database. `funded_accounts.evaluation_id UNIQUE` enforces the 1:1 relationship; `numeric(12,2)` for every monetary column (never `float`); `CHECK` constraints enforce status/timestamp coherence; `ON DELETE` is `CASCADE` for owned data and `RESTRICT` for references.
+- **RLS as the security boundary** — every table has Row-Level Security scoped to `auth.uid()`. RLS uses `(select auth.uid())` instead of `auth.uid()` directly — a Supabase 2025 best practice that lets Postgres cache the call as an `InitPlan` rather than re-evaluating per row.
+- **URL state for table and tool interactions** — filters, search, sort, and tool inputs live in the URL or `localStorage`. Zod schemas use `.catch(undefined)` per field to degrade gracefully on malformed input.
+- **Spec-driven development** — non-trivial features (probability calculator, Strategy Lab, bankroll simulator) are designed through an explicit explore → propose → spec → design → tasks → apply → verify → archive workflow before any code is written. Specifications and design decisions are persistent project artifacts.
 
-These are the decisions that don't show up on a screenshot but make the codebase actually pleasant to work in.
+### Run locally
 
-### Screaming Architecture
-
-`src/features/{evaluations,funded-accounts,payouts,dashboard,auth,propfirms}` over layer-first organization. A new contributor opens `src/features/` and understands what the product does in five seconds — the domain shouts louder than the framework. Each feature is autonomous: components, hooks, schemas, queries. Delete a feature folder and the rest keeps working.
-
-### Schema-enforced invariants
-
-Business rules live in the database, not in JavaScript:
-
-- `funded_accounts.evaluation_id UNIQUE` enforces the 1:1 relationship between a passed evaluation and a funded account
-- `numeric(12,2)` for all monetary columns (never `float`/`real` — binary precision will bite you with `0.1 + 0.2 = 0.30000000000000004`)
-- `CHECK` constraints enforce coherence (`status = 'in_progress' ↔ closed_at IS NULL`)
-- `ON DELETE CASCADE` for owned data, `ON DELETE RESTRICT` for references (you can't delete a propfirm if evaluations point to it)
-
-### RLS as the security boundary
-
-Every table has Row-Level Security scoped to `auth.uid()`. The client can ask for anything; the database returns only what belongs to the user. RLS uses `(select auth.uid())` (subquery) instead of `auth.uid()` directly — Supabase 2025 best practice that lets Postgres cache the call as an `InitPlan` instead of re-evaluating per row.
-
-### URL state for table interactions
-
-Filters, search query, and sort live in the URL search params via TanStack Router's `validateSearch`. The Zod schema uses `.catch(undefined)` per field to gracefully degrade when someone pastes a malformed URL — no error boundary, just ignore the bad param. `navigate({ ..., replace: true })` avoids polluting history with every keystroke.
-
-### Defensive enum lookups
-
-When migrating an enum value out of a column, regenerated types may lag behind code for a moment. The pattern `Partial<Record<EnumType, T>>` with a `?? fallback` lookup means the code compiles regardless of whether the type is the old or new shape. Useful any time you're rolling out a schema change.
-
-### Compound mutations for UX flows
-
-"Mark as funded" is one click from the user's perspective but two operations under the hood: `UPDATE evaluations SET status='passed'` plus `INSERT INTO funded_accounts`. Not atomic at the DB level (would require an RPC function), but idempotent — if step 2 fails, retry is safe because `UPDATE` is a no-op the second time and `INSERT` respects the `UNIQUE` constraint.
-
-### Compute is a pure function, not a hook
-
-Dashboard KPIs and monthly aggregations are pure functions in `features/dashboard/lib/` that take data and return derived values. The route orchestrates the queries and calls compute. Components are tonto — they receive props. This is container/presentational + separation of concerns without the Clean Architecture ceremony.
-
-## Run locally
-
-You'll need Node + pnpm and a Supabase project of your own.
+You'll need Node, pnpm, and a Supabase project of your own.
 
 ```bash
 # 1. Install deps
@@ -88,16 +116,6 @@ pnpm dev
 ```
 
 Full Supabase setup walkthrough lives in [supabase/README.md](./supabase/README.md).
-
-## Status
-
-Active development. The MVP backbone is in place — auth, CRUD-create, state transitions, dashboard with real data, filters/search/sort. Coming next:
-
-- Edit forms (currently you fix typos by deleting and recreating)
-- More dashboard insights (top propfirms by ROI, breakdown by account size)
-- Row actions UX redesign (move away from dropdown-only triggers)
-- Public landing page
-- Deployment to Vercel
 
 ## License
 
