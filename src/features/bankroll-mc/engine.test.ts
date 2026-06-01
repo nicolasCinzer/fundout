@@ -23,7 +23,7 @@ const evNegativeInput: BankrollMcInput = {
 }
 
 describe('engine — single-run behaviour', () => {
-  it('immediate ruin: bankroll < cost → trajectory length 1', () => {
+  it('immediate ruin: bankroll < cost → ruinRate=1, no alive cohort past index 0', () => {
     const input: BankrollMcInput = {
       bankroll: 50,
       cost: 100,
@@ -31,12 +31,11 @@ describe('engine — single-run behaviour', () => {
       payoutNet: 200,
     }
     const result = runSimulation(input)
-    // All runs ruin immediately: each sampled path has exactly 1 point
-    expect(result.sampledPaths[0].length).toBe(1)
     expect(result.ruinRate).toBe(1)
+    expect(result.percentileP50[1]).toBeNull()
   })
 
-  it('trajectory shape: first element equals input bankroll', () => {
+  it('trajectory shape: percentileP50[0] equals input bankroll', () => {
     const input: BankrollMcInput = {
       bankroll: 1000,
       cost: 140,
@@ -44,23 +43,7 @@ describe('engine — single-run behaviour', () => {
       payoutNet: 400,
     }
     const result = runSimulation(input)
-    // Every sampled path starts at input.bankroll
-    expect(result.sampledPaths[0][0]).toBe(input.bankroll)
-  })
-
-  it('trajectory is truncated at ruin: ruined path has no nulls, only numbers (immediate ruin)', () => {
-    const input: BankrollMcInput = {
-      bankroll: 50,
-      cost: 100,
-      payoutProb: 0.5,
-      payoutNet: 200,
-    }
-    const result = runSimulation(input)
-    // Trajectories must contain only numbers (no null padding)
-    const allNumeric = result.sampledPaths.every(path =>
-      path.every(v => typeof v === 'number'),
-    )
-    expect(allNumeric).toBe(true)
+    expect(result.percentileP50[0]).toBe(input.bankroll)
   })
 })
 
@@ -80,7 +63,7 @@ describe('engine — aggregation and metrics', () => {
     const run2 = runSimulation(input)
     expect(run1.ruinRate).toBe(run2.ruinRate)
     expect(run1.evPerAttempt).toBe(run2.evPerAttempt)
-    expect(run1.sampledPaths[0]).toEqual(run2.sampledPaths[0])
+    expect(run1.percentileP50).toEqual(run2.percentileP50)
   })
 
   it('EV closed-form: evPerAttempt === -cost + payoutProb * payoutNet', () => {
@@ -121,7 +104,7 @@ describe('engine — aggregation and metrics', () => {
     expect(Number.isNaN(result.avgAttemptsToRuin)).toBe(false)
   })
 
-  it('huge bankroll: ruinRate === 0, all paths reach length 101', () => {
+  it('huge bankroll: ruinRate === 0, percentile cohort survives to index 100', () => {
     const input: BankrollMcInput = {
       bankroll: 1e9,
       cost: 100,
@@ -130,10 +113,7 @@ describe('engine — aggregation and metrics', () => {
     }
     const result = runSimulation(input)
     expect(result.ruinRate).toBe(0)
-    // sampledPaths is first 250 runs, each should have length 101
-    result.sampledPaths.forEach(path => {
-      expect(path.length).toBe(101)
-    })
+    expect(result.percentileP50[100]).not.toBeNull()
   })
 
   it('simCount constant is 10000 (triangulation: consistent with ruinRate denominator)', () => {
@@ -191,50 +171,6 @@ describe('engine — percentile bands', () => {
     expect(result.percentileP10.length).toBe(101)
     expect(result.percentileP50.length).toBe(101)
     expect(result.percentileP90.length).toBe(101)
-  })
-})
-
-// ---------------------------------------------------------------------------
-// Batch 6 — Sampled trajectories
-// ---------------------------------------------------------------------------
-
-describe('engine — sampled paths', () => {
-  it('sampledPaths has exactly 250 entries', () => {
-    const input: BankrollMcInput = {
-      bankroll: 1000,
-      cost: 140,
-      payoutProb: 0.3,
-      payoutNet: 400,
-    }
-    const result = runSimulation(input)
-    expect(result.sampledPaths.length).toBe(250)
-  })
-
-  it('trajectory snapshot: sampledPaths[0] matches deterministic fixture', () => {
-    const input: BankrollMcInput = {
-      bankroll: 1000,
-      cost: 140,
-      payoutProb: 0.3,
-      payoutNet: 400,
-    }
-    const result = runSimulation(input)
-    // Snapshot locks the PRNG draw order
-    expect(result.sampledPaths[0]).toMatchSnapshot()
-  })
-
-  it('ruined path is truncated: no nulls, length <= 101', () => {
-    const input: BankrollMcInput = {
-      bankroll: 1000,
-      cost: 140,
-      payoutProb: 0.3,
-      payoutNet: 400,
-    }
-    const result = runSimulation(input)
-    result.sampledPaths.forEach(path => {
-      expect(path.length).toBeGreaterThanOrEqual(1)
-      expect(path.length).toBeLessThanOrEqual(101)
-      path.forEach(v => expect(typeof v).toBe('number'))
-    })
   })
 })
 

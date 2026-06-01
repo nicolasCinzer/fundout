@@ -1,5 +1,5 @@
 import { mulberry32 } from '../calculator/strategies/prng'
-import type { BankrollMcInput, BankrollMcResult, PercentileBand, RunTrajectory } from './types'
+import type { BankrollMcInput, BankrollMcResult, PercentileBand } from './types'
 
 // ---------------------------------------------------------------------------
 // Internal constants
@@ -8,7 +8,6 @@ import type { BankrollMcInput, BankrollMcResult, PercentileBand, RunTrajectory }
 const SEED = 42
 const ITERATIONS = 10000
 const MAX_ATTEMPTS = 100
-const SAMPLED_PATHS = 250
 
 // ---------------------------------------------------------------------------
 // Internal per-run result
@@ -168,18 +167,6 @@ export function runSimulation(input: BankrollMcInput): BankrollMcResult {
     // else leave null
   }
 
-  // --- Sampled trajectories ---
-  const sampledPaths: RunTrajectory[] = []
-  for (let run = 0; run < SAMPLED_PATHS && run < ITERATIONS; run++) {
-    const len = aliveLen[run]
-    const offset = run * (MAX_ATTEMPTS + 1)
-    const path: number[] = []
-    for (let j = 0; j < len; j++) {
-      path.push(matrix[offset + j])
-    }
-    sampledPaths.push(path)
-  }
-
   return {
     ruinRate,
     avgFinalBankroll,
@@ -194,7 +181,6 @@ export function runSimulation(input: BankrollMcInput): BankrollMcResult {
     survivalRate,
     maxAttemptsHeuristic,
     simCount: ITERATIONS,
-    sampledPaths,
     percentileP10,
     percentileP50,
     percentileP90,

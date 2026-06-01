@@ -6,9 +6,6 @@ export type BankrollMcInput = {
   targetBankroll?: number // optional; if present must be > bankroll
 }
 
-/** Variable-length trajectory: indices 0..aliveLen-1. Truncated at ruin (no padding). */
-export type RunTrajectory = number[]
-
 /** Per-index percentile band. Length === MAX_ATTEMPTS + 1. Null when no alive runs at that index. */
 export type PercentileBand = (number | null)[]
 
@@ -29,7 +26,6 @@ export type MetricsPanel = {
 }
 
 export type BankrollMcResult = MetricsPanel & {
-  sampledPaths: RunTrajectory[] // first SAMPLED_PATHS runs, each truncated at ruin
   percentileP10: PercentileBand // length MAX_ATTEMPTS + 1
   percentileP50: PercentileBand
   percentileP90: PercentileBand
