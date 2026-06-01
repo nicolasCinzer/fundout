@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
 } from 'recharts'
 import { formatCurrency } from '@/lib/format'
 import type { BankrollMcResult } from '../types'
@@ -18,46 +19,88 @@ type Props = {
 
 type ChartRow = {
   x: number
+  p10: number | null
   p50: number | null
+  p90: number | null
   range: [number, number] | null
 }
 
 function buildChartData(result: BankrollMcResult): ChartRow[] {
   return Array.from({ length: 101 }, (_, x) => {
     const p10 = result.percentileP10[x]
-    const p90 = result.percentileP90[x]
     const p50 = result.percentileP50[x]
+    const p90 = result.percentileP90[x]
     return {
       x,
+      p10: p10 ?? null,
       p50: p50 ?? null,
+      p90: p90 ?? null,
       range: p10 != null && p90 != null ? [p10, p90] : null,
     }
   })
 }
 
-function ChartLegend() {
+function ChartHeader() {
   return (
-    <div className="mb-3 space-y-2 text-xs text-muted-foreground">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+    <div className="mb-3 space-y-2">
+      <div>
+        <h3 className="text-sm font-medium">Distribución del bankroll a lo largo del tiempo</h3>
+        <p className="text-xs text-muted-foreground">
+          Cada punto en X es un intento (0 → 100). El gráfico resume cómo evoluciona
+          tu bankroll en las 5&nbsp;000 corridas simuladas.
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-4 rounded-sm bg-primary/30" />
           <span>
-            <strong className="text-foreground">Banda p10–p90</strong>: donde cae
-            el bankroll del 80&nbsp;% de las corridas en cada intento
+            <strong className="text-foreground">Banda p10–p90</strong>: rango donde
+            cae el 80&nbsp;% central de las corridas
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="inline-block h-0.5 w-4 bg-primary" />
           <span>
-            <strong className="text-foreground">p50 (mediana)</strong>: la
-            corrida típica — la mitad termina por encima y la mitad por debajo
+            <strong className="text-foreground">p50 (mediana)</strong>: la corrida
+            típica
           </span>
         </div>
       </div>
-      <p className="text-[11px] leading-snug">
-        Las corridas que se funden dejan de aportar al cálculo desde ese intento
-        en adelante. Eje X: número de intento. Eje Y: bankroll en €.
-      </p>
+    </div>
+  )
+}
+
+type TooltipPayload = {
+  payload?: ChartRow
+}
+
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: number }) {
+  if (!active || !payload?.length) return null
+  const row = payload[0]?.payload
+  if (!row) return null
+
+  const hasData = row.p50 != null
+  return (
+    <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-md">
+      <div className="mb-1 font-medium">Intento {label}</div>
+      {hasData ? (
+        <div className="space-y-0.5">
+          <div className="flex justify-between gap-4">
+            <span className="text-muted-foreground">p90 (mejor 10%)</span>
+            <span className="font-mono">{formatCurrency(row.p90 ?? 0)}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-muted-foreground">p50 (mediana)</span>
+            <span className="font-mono">{formatCurrency(row.p50 ?? 0)}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-muted-foreground">p10 (peor 10%)</span>
+            <span className="font-mono">{formatCurrency(row.p10 ?? 0)}</span>
+          </div>
+        </div>
+      ) : (
+        <div className="text-muted-foreground">Sin corridas vivas en este intento</div>
+      )}
     </div>
   )
 }
@@ -77,23 +120,24 @@ export function BankrollMcChart({ result }: Props) {
 
   return (
     <div>
-      <ChartLegend />
-      <ResponsiveContainer width="100%" height={280}>
-        <ComposedChart data={data} margin={{ top: 4, right: 8, bottom: 16, left: 8 }}>
+      <ChartHeader />
+      <ResponsiveContainer width="100%" height={420}>
+        <ComposedChart data={data} margin={{ top: 8, right: 12, bottom: 20, left: 8 }}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />
           <XAxis
             dataKey="x"
             type="number"
             domain={[0, 100]}
             ticks={X_TICKS}
-            tick={{ fontSize: 10 }}
-            label={{ value: 'Intento', position: 'insideBottom', offset: -6, fontSize: 10 }}
+            tick={{ fontSize: 11 }}
+            label={{ value: 'Intento', position: 'insideBottom', offset: -8, fontSize: 11 }}
           />
           <YAxis
             tickFormatter={(v: number) => formatCurrency(v)}
-            tick={{ fontSize: 10 }}
-            width={72}
+            tick={{ fontSize: 11 }}
+            width={80}
           />
+          <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--muted-foreground)', strokeDasharray: '3 3' }} />
 
           <Area
             type="monotone"
@@ -114,7 +158,7 @@ export function BankrollMcChart({ result }: Props) {
             dot={false}
             isAnimationActive={false}
             connectNulls={false}
-            activeDot={false}
+            activeDot={{ r: 4 }}
             legendType="none"
           />
         </ComposedChart>
