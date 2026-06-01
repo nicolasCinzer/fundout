@@ -7,13 +7,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import type { BankrollMcFormValues } from '../schema'
 
-export function BankrollMcForm() {
-  const { control } = useFormContext<BankrollMcFormValues>()
+interface BankrollMcFormProps {
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+}
+
+export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
+  const { control, formState } = useFormContext<BankrollMcFormValues>()
 
   return (
-    <div className="space-y-3">
+    <form onSubmit={onSubmit} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={control}
@@ -125,6 +130,10 @@ export function BankrollMcForm() {
           </FormItem>
         )}
       />
-    </div>
+
+      <Button type="submit" disabled={formState.isSubmitting} className="w-full">
+        Calcular
+      </Button>
+    </form>
   )
 }

@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useForm, useWatch, FormProvider } from 'react-hook-form'
+import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AppHeader } from '@/components/common/app-header'
 import {
@@ -26,14 +26,15 @@ function BankrollMcPage() {
     mode: 'onChange',
   })
 
-  const values = useWatch({ control: form.control })
+  const [computed, setComputed] = useState<{
+    input: BankrollMcInput | null
+    result: BankrollMcResult | null
+  }>({ input: null, result: null })
 
-  const { input, result } = useMemo<{ input: BankrollMcInput | null; result: BankrollMcResult | null }>(() => {
-    const parsed = bankrollMcFormSchema.safeParse(values)
-    if (!parsed.success) return { input: null, result: null }
-    const mcInput = formValuesToInput(parsed.data)
-    return { input: mcInput, result: runSimulation(mcInput) }
-  }, [values])
+  const onSubmit = (values: BankrollMcFormValues) => {
+    const mcInput = formValuesToInput(values)
+    setComputed({ input: mcInput, result: runSimulation(mcInput) })
+  }
 
   return (
     <>
@@ -45,10 +46,10 @@ function BankrollMcPage() {
         <FormProvider {...form}>
           <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-4">
             <div className="flex flex-col gap-4">
-              <BankrollMcForm />
-              <BankrollMcChart result={result} />
+              <BankrollMcForm onSubmit={form.handleSubmit(onSubmit)} />
+              <BankrollMcChart result={computed.result} />
             </div>
-            <BankrollMcResults result={result} input={input} />
+            <BankrollMcResults result={computed.result} input={computed.input} />
           </div>
         </FormProvider>
       </main>
