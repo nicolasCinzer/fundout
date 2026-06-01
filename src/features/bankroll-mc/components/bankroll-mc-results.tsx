@@ -77,13 +77,26 @@ export function BankrollMcResults({ result, input }: Props) {
       )}
 
       {/* Ruin — headline */}
-      <CompactKpi
-        label="Ruin"
-        value={formatPercent(result.ruinRate)}
-        emphasized
-        tone={ruinTone}
-        hint={`${Math.round(result.ruinRate * result.simCount).toLocaleString()} accounts lost · ${Math.round(result.survivalRate * result.simCount).toLocaleString()} survived`}
-      />
+      <Card className="gap-2 border-primary/40 px-4 py-3.5 shadow-sm">
+        <p className="text-sm font-medium text-muted-foreground">Ruin</p>
+        <p
+          className={cn(
+            'font-heading text-3xl font-semibold leading-none tracking-tight tabular-nums',
+            toneClasses[ruinTone],
+          )}
+        >
+          {formatPercent(result.ruinRate)}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {Math.round(result.ruinRate * result.simCount).toLocaleString()} accounts lost · {Math.round(result.survivalRate * result.simCount).toLocaleString()} survived
+        </p>
+        <div className="mt-2 flex flex-wrap gap-1.5 border-t pt-2">
+          <Badge variant="secondary" className="font-normal">
+            <span className="text-muted-foreground">Max attempts with no payouts:&nbsp;</span>
+            <span className="font-mono tabular-nums">{result.maxAttemptsHeuristic}</span>
+          </Badge>
+        </div>
+      </Card>
 
       {/* Final bankroll — with attempts/payouts badges */}
       <Card className="gap-2 px-4 py-3.5">
@@ -140,9 +153,9 @@ export function BankrollMcResults({ result, input }: Props) {
         />
       )}
 
-      {/* Reference — minimal footer */}
+      {/* Footer — sim count only */}
       <p className="px-1 text-[11px] text-muted-foreground">
-        Max attempts with no payouts: <span className="font-mono tabular-nums text-foreground">{result.maxAttemptsHeuristic}</span> · Simulations: <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span>
+        Based on <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span> simulations
       </p>
     </div>
   )
