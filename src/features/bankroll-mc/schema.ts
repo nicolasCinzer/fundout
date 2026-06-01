@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const requiredNumber = (message = 'Required') =>
   z
-    .union([z.number(), z.null(), z.undefined()])
+    .union([z.number(), z.null()])
     .refine((v): v is number => typeof v === 'number' && !Number.isNaN(v), { message })
 
 export const bankrollMcFormSchema = z
@@ -14,7 +14,7 @@ export const bankrollMcFormSchema = z
     }),
     payoutNet: requiredNumber().refine((v) => v > 0, { message: 'Must be greater than 0' }),
     targetBankroll: z
-      .union([z.number(), z.null(), z.undefined()])
+      .union([z.number(), z.null()])
       .optional()
       .transform((v) => (v == null ? undefined : v))
       .refine((v) => v === undefined || v > 0, { message: 'Must be greater than 0' }),
