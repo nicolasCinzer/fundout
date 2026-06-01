@@ -37,15 +37,15 @@ function ChartLegend() {
   return (
     <div className="flex items-center gap-4 mb-2 text-xs text-muted-foreground">
       <div className="flex items-center gap-1.5">
-        <span className="inline-block w-4 h-0.5 bg-[hsl(var(--destructive))]" />
+        <span className="inline-block h-0.5 w-4 bg-destructive" />
         <span>p10</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="inline-block w-4 h-0.5 bg-[hsl(var(--primary))]" />
+        <span className="inline-block h-0.5 w-4 bg-primary" />
         <span>p50</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="inline-block w-4 h-0.5 bg-[hsl(var(--chart-2))]" />
+        <span className="inline-block h-0.5 w-4 bg-chart-2" />
         <span>p90</span>
       </div>
     </div>
@@ -69,7 +69,7 @@ export function BankrollMcChart({ result }: Props) {
       key={`s${i}`}
       type="linear"
       dataKey={`s${i}`}
-      stroke="hsl(var(--muted-foreground))"
+      stroke="var(--muted-foreground)"
       strokeOpacity={0.08}
       strokeWidth={1}
       dot={false}
@@ -109,7 +109,7 @@ export function BankrollMcChart({ result }: Props) {
           {/* Percentile overlays — on top */}
           <Line
             dataKey="p10"
-            stroke="hsl(var(--destructive))"
+            stroke="var(--destructive)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
@@ -118,7 +118,7 @@ export function BankrollMcChart({ result }: Props) {
           />
           <Line
             dataKey="p50"
-            stroke="hsl(var(--primary))"
+            stroke="var(--primary)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
@@ -127,7 +127,7 @@ export function BankrollMcChart({ result }: Props) {
           />
           <Line
             dataKey="p90"
-            stroke="hsl(var(--chart-2))"
+            stroke="var(--chart-2)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
