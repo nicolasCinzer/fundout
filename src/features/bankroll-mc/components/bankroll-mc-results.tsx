@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatPercent } from '@/lib/format'
 import type { BankrollMcResult } from '../types'
@@ -62,7 +63,6 @@ export function BankrollMcResults({ result, input }: Props) {
 
   const ruinTone: Tone = result.ruinRate > 0.5 ? 'negative' : result.ruinRate > 0.2 ? 'warning' : 'positive'
   const evTone: Tone = result.evPerAttempt > 0 ? 'positive' : result.evPerAttempt < 0 ? 'negative' : 'default'
-  const survivalTone: Tone = result.survivalRate > 0.5 ? 'positive' : result.survivalRate > 0.1 ? 'default' : 'negative'
 
   const avgAttemptsToRuinDisplay =
     result.avgAttemptsToRuin === 0 ? '—' : Math.round(result.avgAttemptsToRuin).toString()
@@ -76,7 +76,7 @@ export function BankrollMcResults({ result, input }: Props) {
         </div>
       )}
 
-      {/* KPI #1: Ruin % */}
+      {/* Ruin — headline */}
       <CompactKpi
         label="Ruin"
         value={formatPercent(result.ruinRate)}
@@ -85,58 +85,53 @@ export function BankrollMcResults({ result, input }: Props) {
         hint={`${Math.round(result.ruinRate * result.simCount).toLocaleString()} accounts lost · ${Math.round(result.survivalRate * result.simCount).toLocaleString()} survived`}
       />
 
-      {/* KPI #2: Final bankroll — avg / p10 / p50 / p90 */}
+      {/* Final bankroll — with attempts/payouts badges */}
       <Card className="gap-2 px-4 py-3.5">
         <p className="text-sm font-medium text-muted-foreground">Final bankroll</p>
         <p className="font-heading text-2xl font-semibold tracking-tight tabular-nums leading-none">
           {formatCurrency(result.avgFinalBankroll)}
         </p>
-        <div className="grid grid-cols-3 gap-1 mt-1">
+        <div className="mt-1 grid grid-cols-3 gap-1">
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">p10</p>
-            <p className="text-xs font-mono tabular-nums">{formatCurrency(result.p10FinalBankroll)}</p>
+            <p className="text-[10px] uppercase text-muted-foreground">p10</p>
+            <p className="font-mono text-xs tabular-nums">{formatCurrency(result.p10FinalBankroll)}</p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">p50</p>
-            <p className="text-xs font-mono tabular-nums">{formatCurrency(result.p50FinalBankroll)}</p>
+            <p className="text-[10px] uppercase text-muted-foreground">p50</p>
+            <p className="font-mono text-xs tabular-nums">{formatCurrency(result.p50FinalBankroll)}</p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase">p90</p>
-            <p className="text-xs font-mono tabular-nums">{formatCurrency(result.p90FinalBankroll)}</p>
+            <p className="text-[10px] uppercase text-muted-foreground">p90</p>
+            <p className="font-mono text-xs tabular-nums">{formatCurrency(result.p90FinalBankroll)}</p>
           </div>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1.5 border-t pt-2">
+          <Badge variant="secondary" className="font-normal">
+            <span className="text-muted-foreground">Avg attempts to ruin:&nbsp;</span>
+            <span className="font-mono tabular-nums">{avgAttemptsToRuinDisplay}</span>
+          </Badge>
+          <Badge variant="secondary" className="font-normal">
+            <span className="text-muted-foreground">Avg payouts:&nbsp;</span>
+            <span className="font-mono tabular-nums">{result.avgPayoutsCollected.toFixed(1)}</span>
+          </Badge>
         </div>
       </Card>
 
+      {/* EV + Drawdown side by side */}
       <div className="grid grid-cols-2 gap-3">
-        {/* KPI #3: Avg attempts to ruin */}
         <CompactKpi
-          label="Avg attempts to ruin"
-          value={avgAttemptsToRuinDisplay}
-          hint="ruined runs only"
+          label="EV per attempt"
+          value={formatCurrency(result.evPerAttempt, true)}
+          tone={evTone}
         />
-
-        {/* KPI #4: Avg payouts collected */}
         <CompactKpi
-          label="Avg payouts"
-          value={result.avgPayoutsCollected.toFixed(1)}
+          label="Avg max drawdown"
+          value={formatPercent(result.avgMaxDrawdownPct)}
+          tone={result.avgMaxDrawdownPct > 0.5 ? 'negative' : 'default'}
         />
       </div>
 
-      {/* KPI #5: EV per attempt */}
-      <CompactKpi
-        label="EV per attempt"
-        value={formatCurrency(result.evPerAttempt, true)}
-        tone={evTone}
-      />
-
-      {/* KPI #6: Avg max drawdown */}
-      <CompactKpi
-        label="Avg max drawdown"
-        value={formatPercent(result.avgMaxDrawdownPct)}
-        tone={result.avgMaxDrawdownPct > 0.5 ? 'negative' : 'default'}
-      />
-
-      {/* KPI #7: P(reach target) — ONLY when target provided */}
+      {/* P(reach target) — only when target provided */}
       {input?.targetBankroll !== undefined && (
         <CompactKpi
           label={`P(reach ${formatCurrency(input.targetBankroll)})`}
@@ -145,23 +140,10 @@ export function BankrollMcResults({ result, input }: Props) {
         />
       )}
 
-      {/* KPI #8: Survival % */}
-      <CompactKpi
-        label="Survival"
-        value={formatPercent(result.survivalRate)}
-        tone={survivalTone}
-      />
-
-      {/* KPI #9: Reference */}
-      <Card className="gap-1 px-4 py-3">
-        <p className="text-sm font-medium text-muted-foreground">Reference</p>
-        <p className="text-xs text-muted-foreground">
-          Max attempts with no payouts: <span className="font-mono tabular-nums text-foreground">{result.maxAttemptsHeuristic}</span>
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Simulations: <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span>
-        </p>
-      </Card>
+      {/* Reference — minimal footer */}
+      <p className="px-1 text-[11px] text-muted-foreground">
+        Max attempts with no payouts: <span className="font-mono tabular-nums text-foreground">{result.maxAttemptsHeuristic}</span> · Simulations: <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span>
+      </p>
     </div>
   )
 }

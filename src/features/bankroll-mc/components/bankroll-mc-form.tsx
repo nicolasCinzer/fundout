@@ -112,23 +112,24 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
         />
       </div>
 
-      <FormField
-        control={control}
-        name="targetBankroll"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-xs">Target bankroll ($, optional)</FormLabel>
-            <FormControl>
-              <NumberFieldInput field={field} min={0.01} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <Button type="submit" disabled={formState.isSubmitting} className="w-full">
-        Calculate
-      </Button>
+      <div className="grid grid-cols-[1fr_auto] items-end gap-3">
+        <FormField
+          control={control}
+          name="targetBankroll"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs">Target bankroll ($, optional)</FormLabel>
+              <FormControl>
+                <NumberFieldInput field={field} min={0.01} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={formState.isSubmitting} className="px-8">
+          Calculate
+        </Button>
+      </div>
     </form>
   )
 }
