@@ -42,29 +42,32 @@ function buildChartData(result: BankrollMcResult): ChartRow[] {
 
 function ChartHeader() {
   return (
-    <div className="mb-3 space-y-2">
-      <div>
-        <h3 className="text-sm font-medium">Bankroll distribution over time</h3>
-        <p className="text-xs text-muted-foreground">
-          Each X point is an attempt (0 → 100). The chart summarizes how your
-          bankroll evolves across the 10&nbsp;000 simulated runs.
-        </p>
+    <div className="mb-3">
+      <h3 className="text-sm font-medium">Bankroll distribution over time</h3>
+      <p className="text-xs text-muted-foreground">
+        Each X point is an attempt (0 → 100). The chart summarizes how your
+        bankroll evolves across the 10&nbsp;000 simulated runs.
+      </p>
+    </div>
+  )
+}
+
+function ChartLegend() {
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5">
+        <span className="inline-block h-2.5 w-4 rounded-sm bg-primary/30" />
+        <span>
+          <strong className="text-foreground">p10–p90 band</strong>: range where
+          the central 80&nbsp;% of runs land
+        </span>
       </div>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-4 rounded-sm bg-primary/30" />
-          <span>
-            <strong className="text-foreground">p10–p90 band</strong>: range where
-            the central 80&nbsp;% of runs land
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-block h-0.5 w-4 bg-primary" />
-          <span>
-            <strong className="text-foreground">p50 (median)</strong>: the typical
-            run
-          </span>
-        </div>
+      <div className="flex items-center gap-1.5">
+        <span className="inline-block h-0.5 w-4 bg-primary" />
+        <span>
+          <strong className="text-foreground">p50 (median)</strong>: the typical
+          run
+        </span>
       </div>
     </div>
   )
@@ -163,6 +166,7 @@ export function BankrollMcChart({ result }: Props) {
           />
         </ComposedChart>
       </ResponsiveContainer>
+      <ChartLegend />
     </div>
   )
 }
