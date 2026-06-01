@@ -39,11 +39,11 @@ function NumberFieldInput({
       onChange={(e) => {
         const raw = e.target.value
         if (raw === '') {
-          field.onChange(undefined)
+          field.onChange(null)
           return
         }
         const parsed = Number(raw)
-        field.onChange(Number.isNaN(parsed) ? undefined : parsed)
+        field.onChange(Number.isNaN(parsed) ? null : parsed)
       }}
     />
   )
