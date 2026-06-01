@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, type ControllerRenderProps, type FieldPath } from 'react-hook-form'
 import {
   FormField,
   FormItem,
@@ -14,6 +14,41 @@ interface BankrollMcFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }
 
+type NumberFieldName = FieldPath<BankrollMcFormValues>
+
+function NumberFieldInput({
+  field,
+  min,
+  max,
+}: {
+  field: ControllerRenderProps<BankrollMcFormValues, NumberFieldName>
+  min?: number
+  max?: number
+}) {
+  const displayValue = field.value === undefined || field.value === null ? '' : String(field.value)
+  return (
+    <Input
+      type="number"
+      min={min}
+      max={max}
+      step="any"
+      name={field.name}
+      ref={field.ref}
+      onBlur={field.onBlur}
+      value={displayValue}
+      onChange={(e) => {
+        const raw = e.target.value
+        if (raw === '') {
+          field.onChange(undefined)
+          return
+        }
+        const parsed = Number(raw)
+        field.onChange(Number.isNaN(parsed) ? undefined : parsed)
+      }}
+    />
+  )
+}
+
 export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
   const { control, formState } = useFormContext<BankrollMcFormValues>()
 
@@ -27,17 +62,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Bankroll ($)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min={0.01}
-                  step="any"
-                  {...field}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const v = e.target.valueAsNumber
-                    field.onChange(isNaN(v) ? undefined : v)
-                  }}
-                />
+                <NumberFieldInput field={field} min={0.01} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -50,17 +75,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Costo por intento ($)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min={0.01}
-                  step="any"
-                  {...field}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const v = e.target.valueAsNumber
-                    field.onChange(isNaN(v) ? undefined : v)
-                  }}
-                />
+                <NumberFieldInput field={field} min={0.01} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -76,18 +91,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Prob. de payout (%)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min={0.1}
-                  max={99.9}
-                  step="any"
-                  {...field}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const v = e.target.valueAsNumber
-                    field.onChange(isNaN(v) ? undefined : v)
-                  }}
-                />
+                <NumberFieldInput field={field} min={0.1} max={99.9} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,17 +104,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Payout neto ($)</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min={0.01}
-                  step="any"
-                  {...field}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const v = e.target.valueAsNumber
-                    field.onChange(isNaN(v) ? undefined : v)
-                  }}
-                />
+                <NumberFieldInput field={field} min={0.01} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -125,17 +119,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           <FormItem>
             <FormLabel className="text-xs">Target bankroll ($, opcional)</FormLabel>
             <FormControl>
-              <Input
-                type="number"
-                min={0.01}
-                step="any"
-                {...field}
-                value={field.value ?? ''}
-                onChange={(e) => {
-                  const v = e.target.valueAsNumber
-                  field.onChange(isNaN(v) ? undefined : v)
-                }}
-              />
+              <NumberFieldInput field={field} min={0.01} />
             </FormControl>
             <FormMessage />
           </FormItem>
