@@ -4,7 +4,7 @@ export const bankrollMcFormSchema = z
   .object({
     bankroll: z.number().positive(),
     cost: z.number().positive(),
-    payoutProb: z.number().gt(0).lt(1),
+    payoutProbPct: z.number().gt(0).lt(100),
     payoutNet: z.number().positive(),
     targetBankroll: z.number().positive().optional(),
   })
@@ -13,17 +13,16 @@ export const bankrollMcFormSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['targetBankroll'],
-        message: 'Target must be greater than bankroll',
+        message: 'Target debe ser mayor al bankroll',
       })
     }
   })
 
 export type BankrollMcFormValues = z.infer<typeof bankrollMcFormSchema>
 
-export const bankrollMcFormDefaults: BankrollMcFormValues = {
+export const bankrollMcFormDefaults: Partial<BankrollMcFormValues> = {
   bankroll: 1000,
   cost: 140,
-  payoutProb: 0.3,
+  payoutProbPct: 30,
   payoutNet: 400,
-  targetBankroll: 5000,
 }

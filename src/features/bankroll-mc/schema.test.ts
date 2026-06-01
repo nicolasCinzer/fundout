@@ -4,7 +4,7 @@ import { bankrollMcFormSchema } from './schema'
 const validBase = {
   bankroll: 1000,
   cost: 140,
-  payoutProb: 0.3,
+  payoutProbPct: 30,
   payoutNet: 400,
 }
 
@@ -24,13 +24,13 @@ describe('bankrollMcFormSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects payoutProb = 0', () => {
-    const result = bankrollMcFormSchema.safeParse({ ...validBase, payoutProb: 0 })
+  it('rejects payoutProbPct = 0', () => {
+    const result = bankrollMcFormSchema.safeParse({ ...validBase, payoutProbPct: 0 })
     expect(result.success).toBe(false)
   })
 
-  it('rejects payoutProb = 1', () => {
-    const result = bankrollMcFormSchema.safeParse({ ...validBase, payoutProb: 1 })
+  it('rejects payoutProbPct = 100', () => {
+    const result = bankrollMcFormSchema.safeParse({ ...validBase, payoutProbPct: 100 })
     expect(result.success).toBe(false)
   })
 

@@ -25,7 +25,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="bankroll"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Bankroll (€)</FormLabel>
+              <FormLabel className="text-xs">Bankroll ($)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -33,7 +33,10 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
                   step="any"
                   {...field}
                   value={field.value ?? ''}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const v = e.target.valueAsNumber
+                    field.onChange(isNaN(v) ? undefined : v)
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -45,7 +48,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="cost"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Costo por intento (€)</FormLabel>
+              <FormLabel className="text-xs">Costo por intento ($)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -53,7 +56,10 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
                   step="any"
                   {...field}
                   value={field.value ?? ''}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const v = e.target.valueAsNumber
+                    field.onChange(isNaN(v) ? undefined : v)
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -65,19 +71,22 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={control}
-          name="payoutProb"
+          name="payoutProbPct"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Prob. de payout (0–1)</FormLabel>
+              <FormLabel className="text-xs">Prob. de payout (%)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  min={0.001}
-                  max={0.999}
-                  step="0.01"
+                  min={0.1}
+                  max={99.9}
+                  step="any"
                   {...field}
                   value={field.value ?? ''}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const v = e.target.valueAsNumber
+                    field.onChange(isNaN(v) ? undefined : v)
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -89,7 +98,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="payoutNet"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Payout neto (€)</FormLabel>
+              <FormLabel className="text-xs">Payout neto ($)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -97,7 +106,10 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
                   step="any"
                   {...field}
                   value={field.value ?? ''}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const v = e.target.valueAsNumber
+                    field.onChange(isNaN(v) ? undefined : v)
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -111,13 +123,12 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
         name="targetBankroll"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs">Target bankroll (€, opcional)</FormLabel>
+            <FormLabel className="text-xs">Target bankroll ($, opcional)</FormLabel>
             <FormControl>
               <Input
                 type="number"
                 min={0.01}
                 step="any"
-                placeholder="Ej: 5000"
                 {...field}
                 value={field.value ?? ''}
                 onChange={(e) => {

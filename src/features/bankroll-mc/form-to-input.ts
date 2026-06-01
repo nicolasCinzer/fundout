@@ -5,7 +5,7 @@ export function formValuesToInput(values: BankrollMcFormValues): BankrollMcInput
   return {
     bankroll: values.bankroll,
     cost: values.cost,
-    payoutProb: values.payoutProb,
+    payoutProb: values.payoutProbPct / 100,
     payoutNet: values.payoutNet,
     targetBankroll: values.targetBankroll,
   }

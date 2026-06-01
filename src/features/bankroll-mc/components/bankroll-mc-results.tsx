@@ -82,7 +82,7 @@ export function BankrollMcResults({ result, input }: Props) {
         value={formatPercent(result.ruinRate)}
         emphasized
         tone={ruinTone}
-        hint={`Supervivencia: ${formatPercent(result.survivalRate)}`}
+        hint={`${Math.round(result.ruinRate * result.simCount).toLocaleString()} cuentas perdidas · ${Math.round(result.survivalRate * result.simCount).toLocaleString()} sobrevivieron`}
       />
 
       {/* KPI #2: Bankroll final — avg / p10 / p50 / p90 */}
