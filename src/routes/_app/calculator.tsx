@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useForm, useWatch, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -48,12 +48,38 @@ const DEFAULTS: CalculatorFormValues = {
   ],
 }
 
+const STORAGE_KEY = 'calculator:inputs'
+
+function loadInitialValues(): CalculatorFormValues {
+  if (typeof window === 'undefined') return DEFAULTS
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) return DEFAULTS
+    const parsed = JSON.parse(raw)
+    const validated = calculatorFormSchema.safeParse(parsed)
+    return validated.success ? validated.data : DEFAULTS
+  } catch {
+    return DEFAULTS
+  }
+}
+
 function CalculatorPage() {
   const form = useForm<CalculatorFormValues>({
     resolver: zodResolver(calculatorFormSchema),
-    defaultValues: DEFAULTS,
+    defaultValues: loadInitialValues(),
     mode: 'onChange',
   })
+
+  useEffect(() => {
+    const sub = form.watch((values) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(values))
+      } catch {
+        // quota or privacy mode — fail silently
+      }
+    })
+    return () => sub.unsubscribe()
+  }, [form])
 
   const values = useWatch({ control: form.control })
 
