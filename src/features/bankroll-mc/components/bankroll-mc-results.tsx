@@ -54,7 +54,7 @@ export function BankrollMcResults({ result, input }: Props) {
     return (
       <div className="lg:sticky lg:top-4 space-y-3">
         <p className="text-xs text-muted-foreground text-center py-4">
-          Completá el formulario para ver los resultados
+          Fill out the form to see the results
         </p>
       </div>
     )
@@ -72,22 +72,22 @@ export function BankrollMcResults({ result, input }: Props) {
       {/* EV-negative advisory — ABOVE KPI #1 */}
       {result.evPerAttempt < 0 && (
         <div className="rounded-md border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
-          EV negativo: la ruina solo crece con el tiempo en esta estrategia.
+          Negative EV: ruin only grows over time with this strategy.
         </div>
       )}
 
-      {/* KPI #1: Ruina % */}
+      {/* KPI #1: Ruin % */}
       <CompactKpi
-        label="Ruina"
+        label="Ruin"
         value={formatPercent(result.ruinRate)}
         emphasized
         tone={ruinTone}
-        hint={`${Math.round(result.ruinRate * result.simCount).toLocaleString()} cuentas perdidas · ${Math.round(result.survivalRate * result.simCount).toLocaleString()} sobrevivieron`}
+        hint={`${Math.round(result.ruinRate * result.simCount).toLocaleString()} accounts lost · ${Math.round(result.survivalRate * result.simCount).toLocaleString()} survived`}
       />
 
-      {/* KPI #2: Bankroll final — avg / p10 / p50 / p90 */}
+      {/* KPI #2: Final bankroll — avg / p10 / p50 / p90 */}
       <Card className="gap-2 px-4 py-3.5">
-        <p className="text-sm font-medium text-muted-foreground">Bankroll final</p>
+        <p className="text-sm font-medium text-muted-foreground">Final bankroll</p>
         <p className="font-heading text-2xl font-semibold tracking-tight tabular-nums leading-none">
           {formatCurrency(result.avgFinalBankroll)}
         </p>
@@ -108,58 +108,58 @@ export function BankrollMcResults({ result, input }: Props) {
       </Card>
 
       <div className="grid grid-cols-2 gap-3">
-        {/* KPI #3: Avg intentos a ruina */}
+        {/* KPI #3: Avg attempts to ruin */}
         <CompactKpi
-          label="Avg intentos a ruina"
+          label="Avg attempts to ruin"
           value={avgAttemptsToRuinDisplay}
-          hint="solo runs ruinados"
+          hint="ruined runs only"
         />
 
-        {/* KPI #4: Avg payouts cobrados */}
+        {/* KPI #4: Avg payouts collected */}
         <CompactKpi
           label="Avg payouts"
           value={result.avgPayoutsCollected.toFixed(1)}
         />
       </div>
 
-      {/* KPI #5: EV por intento */}
+      {/* KPI #5: EV per attempt */}
       <CompactKpi
-        label="EV por intento"
+        label="EV per attempt"
         value={formatCurrency(result.evPerAttempt, true)}
         tone={evTone}
       />
 
-      {/* KPI #6: Drawdown máx. promedio */}
+      {/* KPI #6: Avg max drawdown */}
       <CompactKpi
-        label="Drawdown máx. promedio"
+        label="Avg max drawdown"
         value={formatPercent(result.avgMaxDrawdownPct)}
         tone={result.avgMaxDrawdownPct > 0.5 ? 'negative' : 'default'}
       />
 
-      {/* KPI #7: P(alcanzar target) — ONLY when target provided */}
+      {/* KPI #7: P(reach target) — ONLY when target provided */}
       {input?.targetBankroll !== undefined && (
         <CompactKpi
-          label={`P(alcanzar ${formatCurrency(input.targetBankroll)})`}
+          label={`P(reach ${formatCurrency(input.targetBankroll)})`}
           value={formatPercent(result.pReachTarget)}
           tone={result.pReachTarget > 0.5 ? 'positive' : result.pReachTarget > 0.1 ? 'default' : 'negative'}
         />
       )}
 
-      {/* KPI #8: Supervivencia % */}
+      {/* KPI #8: Survival % */}
       <CompactKpi
-        label="Supervivencia"
+        label="Survival"
         value={formatPercent(result.survivalRate)}
         tone={survivalTone}
       />
 
-      {/* KPI #9: Referencias */}
+      {/* KPI #9: Reference */}
       <Card className="gap-1 px-4 py-3">
-        <p className="text-sm font-medium text-muted-foreground">Referencia</p>
+        <p className="text-sm font-medium text-muted-foreground">Reference</p>
         <p className="text-xs text-muted-foreground">
-          Max intentos sin payouts: <span className="font-mono tabular-nums text-foreground">{result.maxAttemptsHeuristic}</span>
+          Max attempts with no payouts: <span className="font-mono tabular-nums text-foreground">{result.maxAttemptsHeuristic}</span>
         </p>
         <p className="text-xs text-muted-foreground">
-          Simulaciones: <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span>
+          Simulations: <span className="font-mono tabular-nums text-foreground">{result.simCount.toLocaleString()}</span>
         </p>
       </Card>
     </div>

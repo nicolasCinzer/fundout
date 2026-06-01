@@ -73,7 +73,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="cost"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Costo por intento ($)</FormLabel>
+              <FormLabel className="text-xs">Cost per attempt ($)</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -89,7 +89,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="payoutProbPct"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Prob. de payout (%)</FormLabel>
+              <FormLabel className="text-xs">Payout probability (%)</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.1} max={99.9} />
               </FormControl>
@@ -102,7 +102,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="payoutNet"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Payout neto ($)</FormLabel>
+              <FormLabel className="text-xs">Net payout ($)</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -117,7 +117,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
         name="targetBankroll"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs">Target bankroll ($, opcional)</FormLabel>
+            <FormLabel className="text-xs">Target bankroll ($, optional)</FormLabel>
             <FormControl>
               <NumberFieldInput field={field} min={0.01} />
             </FormControl>
@@ -127,7 +127,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
       />
 
       <Button type="submit" disabled={formState.isSubmitting} className="w-full">
-        Calcular
+        Calculate
       </Button>
     </form>
   )

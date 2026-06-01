@@ -64,8 +64,8 @@ function BankrollMcPage() {
   return (
     <>
       <AppHeader
-        title="Bankroll MC"
-        description="Simulador Monte Carlo de ruina de bankroll — 10 000 runs, semilla fija"
+        title="Bankroll Calculator"
+        description="Monte Carlo bankroll-ruin simulator — 10,000 runs, fixed seed"
       />
       <main className="flex-1 p-4 md:p-6">
         <FormProvider {...form}>
