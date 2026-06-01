@@ -5,6 +5,7 @@ import {
   Landmark,
   Wallet,
   TrendingUp,
+  TrendingDown,
   ChevronsUpDown,
   LogOut,
   Calculator,
@@ -45,7 +46,8 @@ const navGroups = [
   {
     label: "Tools",
     items: [
-      { to: "/calculator", label: "Calculator", icon: Calculator },
+      { to: "/calculator", label: "Evaluation Calculator", icon: Calculator },
+      { to: "/bankroll-mc", label: "Bankroll Calculator", icon: TrendingDown },
     ],
   },
 ] as const
