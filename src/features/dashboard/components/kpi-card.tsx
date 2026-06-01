@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
@@ -56,11 +56,16 @@ export function KpiCard({
     </span>
   ) : null
   return (
-    <Card className={cn(emphasized && "border-primary/40 shadow-sm")}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card
+      className={cn(
+        "gap-2 px-4 py-3.5",
+        emphasized && "border-primary/40 shadow-sm",
+      )}
+    >
+      <div className="flex flex-row items-center justify-between gap-2">
+        <span className="text-xs font-medium text-muted-foreground">
           {label}
-        </CardTitle>
+        </span>
         {badgeNode ? (
           badgeTooltip ? (
             <Tooltip>
@@ -73,25 +78,23 @@ export function KpiCard({
             badgeNode
           )
         ) : icon ? (
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
             {icon}
           </span>
         ) : null}
-      </CardHeader>
-      <CardContent>
-        <div
-          className={cn(
-            "font-heading text-2xl font-semibold tracking-tight tabular-nums",
-            toneClasses[tone],
-            emphasized && "text-3xl",
-          )}
-        >
-          {value}
-        </div>
-        {hint ? (
-          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-        ) : null}
-      </CardContent>
+      </div>
+      <div
+        className={cn(
+          "font-heading text-2xl font-semibold leading-none tracking-tight tabular-nums",
+          toneClasses[tone],
+          emphasized && "text-3xl",
+        )}
+      >
+        {value}
+      </div>
+      {hint ? (
+        <p className="text-xs text-muted-foreground">{hint}</p>
+      ) : null}
     </Card>
   )
 }
