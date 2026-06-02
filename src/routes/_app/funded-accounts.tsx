@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
-import { Landmark, Search, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Landmark, Search, X } from "lucide-react"
 import { AppHeader } from "@/components/common/app-header"
 import { EmptyState } from "@/components/common/empty-state"
 import { SortableTableHead } from "@/components/common/sortable-table-head"
@@ -44,6 +44,7 @@ import {
 } from "@/features/funded-accounts/api/funded-accounts-queries"
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { FundedAccountRowActions } from "@/features/funded-accounts/components/funded-account-row-actions"
+import { FundedAccountsStats } from "@/features/funded-accounts/components/funded-accounts-stats"
 import { formatCurrency, formatDate } from "@/lib/format"
 
 const SORT_KEYS = [
@@ -60,7 +61,10 @@ const SEARCH_SCHEMA = z.object({
   status: z.enum(["active", "breached"]).optional().catch(undefined),
   sort: z.enum(SORT_KEYS).optional().catch(undefined),
   dir: z.enum(["asc", "desc"]).optional().catch(undefined),
+  page: z.coerce.number().int().positive().optional().catch(undefined),
 })
+
+const PAGE_SIZE = 10
 
 export const Route = createFileRoute("/_app/funded-accounts")({
   component: FundedAccountsPage,
@@ -156,7 +160,7 @@ function FundedAccountsPage() {
     })
   }, [all, search.q, search.status])
 
-  const rows = useMemo(() => {
+  const sorted = useMemo(() => {
     if (!search.sort) return filtered
     return sortFundedAccounts(
       filtered,
@@ -166,6 +170,11 @@ function FundedAccountsPage() {
     )
   }, [filtered, search.sort, search.dir, netByAccount])
 
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  const currentPage = Math.min(Math.max(search.page ?? 1, 1), totalPages)
+  const pageStart = (currentPage - 1) * PAGE_SIZE
+  const rows = sorted.slice(pageStart, pageStart + PAGE_SIZE)
+
   const updateSearch = (next: { q?: string; status?: FundedAccountStatus }) => {
     navigate({
       search: (prev) => ({
@@ -173,6 +182,7 @@ function FundedAccountsPage() {
         q: next.q !== undefined ? next.q || undefined : prev.q,
         status:
           next.status !== undefined ? next.status || undefined : prev.status,
+        page: undefined,
       }),
       replace: true,
     })
@@ -183,10 +193,17 @@ function FundedAccountsPage() {
     navigate({
       search: (prev) => {
         if (prev.sort === typedKey) {
-          return { ...prev, dir: prev.dir === "asc" ? "desc" : "asc" }
+          return { ...prev, dir: prev.dir === "asc" ? "desc" : "asc", page: undefined }
         }
-        return { ...prev, sort: typedKey, dir: "asc" }
+        return { ...prev, sort: typedKey, dir: "asc", page: undefined }
       },
+      replace: true,
+    })
+  }
+
+  const goToPage = (next: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: next === 1 ? undefined : next }),
       replace: true,
     })
   }
@@ -200,6 +217,9 @@ function FundedAccountsPage() {
         description="Active and historic funded accounts"
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
+        {!isLoading && all.length > 0 && (
+          <FundedAccountsStats fundedAccounts={all} />
+        )}
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>All funded accounts</CardTitle>
@@ -270,6 +290,7 @@ function FundedAccountsPage() {
                 />
               )
             ) : (
+              <>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -365,6 +386,37 @@ function FundedAccountsPage() {
                   </TableBody>
                 </Table>
               </div>
+              {sorted.length > PAGE_SIZE && (
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  <p className="text-xs text-muted-foreground">
+                    Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, sorted.length)} of {sorted.length}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => goToPage(currentPage - 1)}
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                      Prev
+                    </Button>
+                    <span className="text-xs tabular-nums text-muted-foreground">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => goToPage(currentPage + 1)}
+                    >
+                      Next
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              </>
             )}
           </CardContent>
         </Card>

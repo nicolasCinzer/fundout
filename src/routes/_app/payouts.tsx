@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
-import { Search, Wallet, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Search, Wallet, X } from "lucide-react"
 import { AppHeader } from "@/components/common/app-header"
 import { EmptyState } from "@/components/common/empty-state"
 import { SortableTableHead } from "@/components/common/sortable-table-head"
@@ -29,6 +29,7 @@ import {
   type Payout,
 } from "@/features/payouts/api/payouts-queries"
 import { PayoutRowActions } from "@/features/payouts/components/payout-row-actions"
+import { PayoutsStats } from "@/features/payouts/components/payouts-stats"
 import { formatCurrency, formatDate } from "@/lib/format"
 
 const SORT_KEYS = ["propfirm", "paid_at", "amount", "fee_taken", "net"] as const
@@ -37,7 +38,10 @@ const SEARCH_SCHEMA = z.object({
   q: z.string().optional().catch(undefined),
   sort: z.enum(SORT_KEYS).optional().catch(undefined),
   dir: z.enum(["asc", "desc"]).optional().catch(undefined),
+  page: z.coerce.number().int().positive().optional().catch(undefined),
 })
+
+const PAGE_SIZE = 10
 
 export const Route = createFileRoute("/_app/payouts")({
   component: PayoutsPage,
@@ -99,14 +103,19 @@ function PayoutsPage() {
     )
   }, [all, search.q])
 
-  const rows = useMemo(() => {
+  const sorted = useMemo(() => {
     if (!search.sort) return filtered
     return sortPayouts(filtered, search.sort, search.dir ?? "asc")
   }, [filtered, search.sort, search.dir])
 
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  const currentPage = Math.min(Math.max(search.page ?? 1, 1), totalPages)
+  const pageStart = (currentPage - 1) * PAGE_SIZE
+  const rows = sorted.slice(pageStart, pageStart + PAGE_SIZE)
+
   const updateQuery = (q: string) =>
     navigate({
-      search: (prev) => ({ ...prev, q: q || undefined }),
+      search: (prev) => ({ ...prev, q: q || undefined, page: undefined }),
       replace: true,
     })
 
@@ -115,10 +124,17 @@ function PayoutsPage() {
     navigate({
       search: (prev) => {
         if (prev.sort === typedKey) {
-          return { ...prev, dir: prev.dir === "asc" ? "desc" : "asc" }
+          return { ...prev, dir: prev.dir === "asc" ? "desc" : "asc", page: undefined }
         }
-        return { ...prev, sort: typedKey, dir: "asc" }
+        return { ...prev, sort: typedKey, dir: "asc", page: undefined }
       },
+      replace: true,
+    })
+  }
+
+  const goToPage = (next: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: next === 1 ? undefined : next }),
       replace: true,
     })
   }
@@ -129,6 +145,7 @@ function PayoutsPage() {
     <>
       <AppHeader title="Payouts" description="Every withdrawal you've taken" />
       <main className="flex-1 space-y-4 p-4 md:p-6">
+        {!isLoading && all.length > 0 && <PayoutsStats payouts={all} />}
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>All payouts</CardTitle>
@@ -181,6 +198,7 @@ function PayoutsPage() {
                 />
               )
             ) : (
+              <>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -265,6 +283,37 @@ function PayoutsPage() {
                   </TableBody>
                 </Table>
               </div>
+              {sorted.length > PAGE_SIZE && (
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  <p className="text-xs text-muted-foreground">
+                    Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, sorted.length)} of {sorted.length}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => goToPage(currentPage - 1)}
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                      Prev
+                    </Button>
+                    <span className="text-xs tabular-nums text-muted-foreground">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => goToPage(currentPage + 1)}
+                    >
+                      Next
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              </>
             )}
           </CardContent>
         </Card>
