@@ -4,12 +4,12 @@ import {
   FileText,
   Landmark,
   Wallet,
-  TrendingUp,
   TrendingDown,
   ChevronsUpDown,
   LogOut,
   Calculator,
 } from "lucide-react"
+import { BrandMark } from "@/components/common/brand-mark"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -72,17 +72,7 @@ export function AppSidebar() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <TrendingUp className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="font-heading text-sm font-semibold">
-                  Fundout
-                </span>
-                <span className="truncate text-xs text-muted-foreground">
-                  Propfirm tracker
-                </span>
-              </div>
+              <BrandMark size="sm" tagline />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
