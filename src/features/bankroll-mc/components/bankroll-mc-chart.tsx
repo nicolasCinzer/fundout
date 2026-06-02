@@ -8,6 +8,8 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts'
+import { LineChart } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/format'
 import type { BankrollMcResult } from '../types'
 
@@ -42,11 +44,15 @@ function buildChartData(result: BankrollMcResult): ChartRow[] {
 
 function ChartHeader() {
   return (
-    <div className="mb-3">
-      <h3 className="text-sm font-medium">Bankroll distribution over time</h3>
-      <p className="text-xs text-muted-foreground">
-        Each X point is an attempt (0 → 100). The chart summarizes how your
-        bankroll evolves across the 10&nbsp;000 simulated runs.
+    <div className="flex items-start justify-between gap-2 border-b pb-2">
+      <div className="flex items-center gap-2">
+        <LineChart className="h-4 w-4 text-primary" />
+        <h2 className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
+          Bankroll distribution over time
+        </h2>
+      </div>
+      <p className="hidden text-[10px] text-muted-foreground md:block">
+        Each X point is an attempt (0 → 100). Summarizes 10,000 simulated runs.
       </p>
     </div>
   )
@@ -111,18 +117,18 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 export function BankrollMcChart({ result }: Props) {
   if (!result) {
     return (
-      <div className="flex h-[160px] items-center justify-center rounded-md border bg-muted/20">
+      <Card className="flex h-[200px] items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">
           The chart appears once you calculate with a valid form
         </p>
-      </div>
+      </Card>
     )
   }
 
   const data = buildChartData(result)
 
   return (
-    <div>
+    <Card className="gap-3 p-4">
       <ChartHeader />
       <ResponsiveContainer width="100%" height={420}>
         <ComposedChart data={data} margin={{ top: 8, right: 12, bottom: 20, left: 8 }}>
@@ -167,6 +173,6 @@ export function BankrollMcChart({ result }: Props) {
         </ComposedChart>
       </ResponsiveContainer>
       <ChartLegend />
-    </div>
+    </Card>
   )
 }

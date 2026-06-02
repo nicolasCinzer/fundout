@@ -69,7 +69,7 @@ function BankrollMcPage() {
       />
       <main className="flex-1 p-4 md:p-6">
         <FormProvider {...form}>
-          <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-4">
+          <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-[1fr_440px] lg:gap-4">
             <div className="flex flex-col gap-4">
               <BankrollMcForm onSubmit={form.handleSubmit(onSubmit)} />
               <BankrollMcChart result={computed.result} />
