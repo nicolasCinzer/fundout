@@ -18,7 +18,6 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
-import { Card, CardContent } from '@/components/ui/card'
 import { X } from 'lucide-react'
 import type { CalculatorFormValues } from '../schemas/calculator-form-schema'
 
@@ -67,31 +66,29 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
   const hasConditional = hasConsistency || hasMinDays || isFunded
 
   return (
-    <Card
-      className={`rounded-lg py-0 transition-colors ${isFunded ? 'border-primary/40 bg-primary/8' : ''}`}
-    >
-      <CardContent className="px-3 py-2.5 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Phase {index + 1}
-            {isFunded && (
-              <span className="ml-2 rounded-sm bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
-                FUNDED
-              </span>
-            )}
-          </span>
-          {canRemove && (
-            <Button
-              variant="ghost"
-              size="icon"
-              type="button"
-              onClick={onRemove}
-              className="h-7 w-7 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Phase {index + 1}
+          {isFunded && (
+            <span className="ml-2 rounded-sm bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+              FUNDED
+            </span>
           )}
-        </div>
+        </span>
+        {canRemove && (
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={onRemove}
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+            Remove phase
+          </Button>
+        )}
+      </div>
 
         <div className="grid grid-cols-3 gap-3">
           <FormField
@@ -384,12 +381,11 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
           </div>
         )}
 
-        <FormField
-          control={control}
-          name={`phases.${index}.isFunded`}
-          render={() => <FormMessage />}
-        />
-      </CardContent>
-    </Card>
+      <FormField
+        control={control}
+        name={`phases.${index}.isFunded`}
+        render={() => <FormMessage />}
+      />
+    </div>
   )
 }

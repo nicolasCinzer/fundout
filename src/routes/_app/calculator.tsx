@@ -7,10 +7,9 @@ import { calculatorFormSchema, type CalculatorFormValues } from '@/features/calc
 import { formValuesToCalcInput } from '@/features/calculator/lib/form-to-input'
 import { calculate } from '@/features/calculator/lib/calc-engine'
 import { CalculatorForm } from '@/features/calculator/components/calculator-form'
-import { CalculatorResults } from '@/features/calculator/components/calculator-results'
-import { StrategyLab } from '@/features/calculator/components/strategy-lab/strategy-lab'
-import { Separator } from '@/components/ui/separator'
-import type { CalcResult, CalcInput } from '@/features/calculator/types'
+import { CalculatorKpis } from '@/features/calculator/components/calculator-kpis'
+import { CalculatorPhaseBreakdown } from '@/features/calculator/components/calculator-phase-breakdown'
+import type { CalcResult } from '@/features/calculator/types'
 
 export const Route = createFileRoute('/_app/calculator')({
   component: CalculatorPage,
@@ -83,11 +82,10 @@ function CalculatorPage() {
 
   const values = useWatch({ control: form.control })
 
-  const { calcInput, result } = useMemo<{ calcInput: CalcInput | null; result: CalcResult | null }>(() => {
+  const result = useMemo<CalcResult | null>(() => {
     const parsed = calculatorFormSchema.safeParse(values)
-    if (!parsed.success) return { calcInput: null, result: null }
-    const input = formValuesToCalcInput(parsed.data)
-    return { calcInput: input, result: calculate(input) }
+    if (!parsed.success) return null
+    return calculate(formValuesToCalcInput(parsed.data))
   }, [values])
 
   return (
@@ -98,12 +96,18 @@ function CalculatorPage() {
       />
       <main className="flex-1 p-4 md:p-6">
         <FormProvider {...form}>
-          <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-4 xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_440px]">
-            <CalculatorForm />
-            <CalculatorResults result={result} />
+          <div className="mx-auto max-w-7xl space-y-4">
+            <CalculatorKpis result={result} />
+
+            <div className="grid items-stretch grid-cols-1 gap-4 lg:grid-cols-12">
+              <div className="lg:col-span-8">
+                <CalculatorForm />
+              </div>
+              <div className="lg:col-span-4">
+                <CalculatorPhaseBreakdown result={result} />
+              </div>
+            </div>
           </div>
-          <Separator className="my-6" />
-          <StrategyLab input={calcInput} />
         </FormProvider>
       </main>
     </>

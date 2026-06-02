@@ -1,4 +1,6 @@
 export { CalculatorForm } from './components/calculator-form'
 export { CalculatorResults } from './components/calculator-results'
+export { CalculatorKpis } from './components/calculator-kpis'
+export { CalculatorPhaseBreakdown } from './components/calculator-phase-breakdown'
 export { calculate } from './lib/calc-engine'
 export type { DDType, Strategy, PhaseInput, CalcInput, PhaseResult, CalcResult } from './types'
