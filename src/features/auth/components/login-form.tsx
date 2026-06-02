@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Mail, MailCheck, TrendingUp } from "lucide-react"
+import { ArrowRight, MailCheck } from "lucide-react"
+import { BrandMark } from "@/components/common/brand-mark"
+import { LoginLeftPanel } from "@/features/auth/components/login-left-panel"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -47,86 +48,90 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-gradient-to-br from-background to-primary/5 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="h-5 w-5" />
-          </div>
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">Propfirm tracker</p>
-          <div className="space-y-1">
-            <CardTitle className="text-2xl">
-              {sentTo ? "Check your inbox" : "Sign in to Fundout"}
-            </CardTitle>
-            <CardDescription>
-              {sentTo
-                ? `We sent a magic link to ${sentTo}. Click it to sign in.`
-                : "Enter your email and we'll send you a magic link. No password needed."}
-            </CardDescription>
-          </div>
-        </CardHeader>
-
-        {sentTo ? (
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-3 rounded-md border bg-card p-4">
-              <MailCheck className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <p className="text-sm text-muted-foreground">
-                Open the email and click the link to sign in. You can close this
-                tab — the link will bring you back.
-              </p>
+    <div className="min-h-svh grid md:grid-cols-2 lg:grid-cols-[55fr_45fr] xl:grid-cols-[60fr_40fr]">
+      <LoginLeftPanel />
+      <div
+        role="region"
+        aria-label="Sign in"
+        className="flex flex-col items-center justify-center p-6 lg:p-10"
+      >
+        <div className="md:hidden mb-6 flex justify-center">
+          <BrandMark size="sm" />
+        </div>
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-3">
+            <div className="space-y-1">
+              <CardTitle className="text-2xl">
+                {sentTo ? "Check your inbox" : "Sign in to Fundout"}
+              </CardTitle>
+              <CardDescription>
+                {sentTo
+                  ? `We sent a sign-in link to ${sentTo}. Click it to continue.`
+                  : "Enter your email to receive a secure sign-in link."}
+              </CardDescription>
             </div>
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => {
-                setSentTo(null)
-                form.reset()
-              }}
-            >
-              Use a different email
-            </Button>
-          </CardContent>
-        ) : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          autoComplete="email"
-                          autoFocus
-                          placeholder="you@example.com"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {submitError ? (
-                  <p className="text-sm text-destructive">{submitError}</p>
-                ) : null}
-              </CardContent>
-              <CardFooter>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={form.formState.isSubmitting}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  {form.formState.isSubmitting ? "Sending…" : "Send magic link"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        )}
-      </Card>
+          </CardHeader>
+
+          {sentTo ? (
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3 rounded-md border bg-card p-4">
+                <MailCheck className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <p className="text-sm text-muted-foreground">
+                  Open the email and click the link to continue. You can close
+                  this tab — the link will bring you back.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => {
+                  setSentTo(null)
+                  form.reset()
+                }}
+              >
+                Use a different email
+              </Button>
+            </CardContent>
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            autoComplete="email"
+                            autoFocus
+                            placeholder="you@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {submitError ? (
+                    <p className="text-sm text-destructive">{submitError}</p>
+                  ) : null}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting ? "Sending link…" : "Continue with email"}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </form>
+            </Form>
+          )}
+        </Card>
+      </div>
     </div>
   )
 }
