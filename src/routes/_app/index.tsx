@@ -16,18 +16,19 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { FlowChart } from "@/features/dashboard/components/flow-chart"
 import { PropfirmLeaderboard } from "@/features/dashboard/components/propfirm-leaderboard"
+import { ActivePanel } from "@/features/dashboard/components/active-panel"
 import { TimePeriodSelect } from "@/features/dashboard/components/time-period-select"
 import { computeFlow } from "@/features/dashboard/lib/compute-flow"
 import { computeKpis } from "@/features/dashboard/lib/compute-kpis"
 import { computeLeaderboard } from "@/features/dashboard/lib/compute-leaderboard"
 import { computePnlContext } from "@/features/dashboard/lib/compute-pnl-context"
 import { computeRatioContext } from "@/features/dashboard/lib/compute-ratio-context"
-import { computeActiveContext } from "@/features/dashboard/lib/compute-active-context"
 import {
   DEFAULT_PERIOD,
   PERIODS,
-  PERIOD_LABEL,
   periodRange,
+  periodSubtitle,
+  type CustomRange,
   type Period,
 } from "@/features/dashboard/lib/period"
 import { useEvaluations } from "@/features/evaluations/api/evaluations-queries"
@@ -36,8 +37,12 @@ import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { formatCurrency, formatPercent } from "@/lib/format"
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+
 const SEARCH_SCHEMA = z.object({
   period: z.enum(PERIODS).optional().catch(undefined),
+  from: z.string().regex(DATE_RE).optional().catch(undefined),
+  to: z.string().regex(DATE_RE).optional().catch(undefined),
 })
 
 export const Route = createFileRoute("/_app/")({
@@ -49,6 +54,7 @@ function DashboardPage() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const period: Period = search.period ?? DEFAULT_PERIOD
+  const custom: CustomRange = { from: search.from, to: search.to }
 
   const evaluations = useEvaluations()
   const fundedAccounts = useFundedAccounts()
@@ -60,11 +66,17 @@ function DashboardPage() {
     payouts.data
   )
 
-  const handlePeriodChange = (next: Period) =>
+  const handlePeriodChange = (next: Period, nextCustom?: CustomRange) => {
+    const usingCustom = next === "custom"
     navigate({
-      search: { period: next === DEFAULT_PERIOD ? undefined : next },
+      search: {
+        period: next === DEFAULT_PERIOD ? undefined : next,
+        from: usingCustom ? nextCustom?.from : undefined,
+        to: usingCustom ? nextCustom?.to : undefined,
+      },
       replace: true,
     })
+  }
 
   return (
     <>
@@ -77,11 +89,15 @@ function DashboardPage() {
           <p className="text-sm text-muted-foreground">
             Showing{" "}
             <span className="font-medium text-foreground">
-              {PERIOD_LABEL[period].toLowerCase()}
+              {periodSubtitle(period, periodRange(period, new Date(), custom))}
             </span>
             . Switch the period to compare ranges.
           </p>
-          <TimePeriodSelect value={period} onChange={handlePeriodChange} />
+          <TimePeriodSelect
+            value={period}
+            custom={custom}
+            onChange={handlePeriodChange}
+          />
         </div>
 
         {!ready ? (
@@ -97,6 +113,7 @@ function DashboardPage() {
         ) : (
           <DashboardContent
             period={period}
+            custom={custom}
             evaluations={evaluations.data!}
             fundedAccounts={fundedAccounts.data!}
             payouts={payouts.data!}
@@ -109,6 +126,7 @@ function DashboardPage() {
 
 type DashboardContentProps = {
   period: Period
+  custom: CustomRange
   evaluations: NonNullable<ReturnType<typeof useEvaluations>["data"]>
   fundedAccounts: NonNullable<ReturnType<typeof useFundedAccounts>["data"]>
   payouts: NonNullable<ReturnType<typeof usePayouts>["data"]>
@@ -116,11 +134,12 @@ type DashboardContentProps = {
 
 function DashboardContent({
   period,
+  custom,
   evaluations,
   fundedAccounts,
   payouts,
 }: DashboardContentProps) {
-  const range = periodRange(period)
+  const range = periodRange(period, new Date(), custom)
   const kpis = computeKpis(evaluations, fundedAccounts, payouts, range)
   const flow = computeFlow(evaluations, payouts, range)
   const leaderboard = computeLeaderboard(
@@ -138,7 +157,6 @@ function DashboardContent({
     kpis.fundingRatio,
     kpis.payoutRatio,
   )
-  const activeContext = computeActiveContext(fundedAccounts, range)
   const netPositive = kpis.netPnl >= 0
 
   const noPeriodActivity =
@@ -159,25 +177,22 @@ function DashboardContent({
 
   return (
     <>
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="lg:col-span-1 md:col-span-2">
-          <KpiCard
-            label="Net P&L"
-            value={`${netPositive ? "+" : ""}${formatCurrency(kpis.netPnl)}`}
-            hint={pnlContext.subtitle}
-            icon={
-              netPositive ? (
-                <ArrowUpRight className="h-4 w-4" />
-              ) : (
-                <ArrowDownRight className="h-4 w-4" />
-              )
-            }
-            badge={pnlContext.badge ?? undefined}
-            badgeTooltip={pnlContext.badgeTooltip ?? undefined}
-            tone={netPositive ? "positive" : "negative"}
-            emphasized
-          />
-        </div>
+      <section className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <KpiCard
+          label="Net P&L"
+          value={`${netPositive ? "+" : ""}${formatCurrency(kpis.netPnl)}`}
+          hint={pnlContext.subtitle}
+          icon={
+            netPositive ? (
+              <ArrowUpRight className="h-4 w-4" />
+            ) : (
+              <ArrowDownRight className="h-4 w-4" />
+            )
+          }
+          badge={pnlContext.badge ?? undefined}
+          badgeTooltip={pnlContext.badgeTooltip ?? undefined}
+          tone={netPositive ? "positive" : "negative"}
+        />
         <KpiCard
           label="Total spent"
           value={formatCurrency(kpis.totalSpent)}
@@ -220,18 +235,19 @@ function DashboardContent({
           badgeTone={ratioContext.payoutBadge?.tone}
           badgeTooltip={ratioContext.payoutBadge?.tooltip}
         />
-        <KpiCard
-          label="Active funded"
-          value={String(kpis.activeFunded)}
-          hint="Accounts currently active in this period"
-          icon={<TrendingUp className="h-4 w-4" />}
-          badge={activeContext.badge ?? undefined}
-          badgeTooltip={activeContext.badgeTooltip ?? undefined}
-        />
       </section>
 
-      <section>
-        <FlowChart data={flow} />
+      <section className="grid items-stretch gap-4 lg:grid-cols-12">
+        <div className="lg:col-span-8">
+          <FlowChart data={flow} />
+        </div>
+        <div className="lg:col-span-4">
+          <ActivePanel
+            fundedAccounts={fundedAccounts}
+            evaluations={evaluations}
+            payouts={payouts}
+          />
+        </div>
       </section>
 
       <section>

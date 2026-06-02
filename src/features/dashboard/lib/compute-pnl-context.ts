@@ -1,9 +1,12 @@
 import {
   endOfMonth,
+  endOfQuarter,
   endOfYear,
   format,
   parseISO,
+  setMonth,
   startOfMonth,
+  startOfQuarter,
   startOfYear,
   subMonths,
   subYears,
@@ -72,8 +75,16 @@ function previousRange(period: Period, now: Date): DateRange | null {
       const prev = subMonths(now, 1)
       return { start: startOfMonth(prev), end: endOfMonth(prev) }
     }
+    case "last_month": {
+      const prev = subMonths(now, 2)
+      return { start: startOfMonth(prev), end: endOfMonth(prev) }
+    }
     case "this_year": {
       const prev = subYears(now, 1)
+      return { start: startOfYear(prev), end: endOfYear(prev) }
+    }
+    case "last_year": {
+      const prev = subYears(now, 2)
       return { start: startOfYear(prev), end: endOfYear(prev) }
     }
     case "last_12_months": {
@@ -82,7 +93,17 @@ function previousRange(period: Period, now: Date): DateRange | null {
         end: endOfMonth(subMonths(now, 12)),
       }
     }
+    case "q1":
+    case "q2":
+    case "q3":
+    case "q4": {
+      const quarterIndex = Number(period[1]) - 1
+      const prevYear = subYears(now, 1)
+      const anchor = setMonth(startOfYear(prevYear), quarterIndex * 3)
+      return { start: startOfQuarter(anchor), end: endOfQuarter(anchor) }
+    }
     case "all_time":
+    case "custom":
       return null
   }
 }
@@ -121,32 +142,29 @@ export function computePnlContext(
   // ── Badge ────────────────────────────────────────────────────────────────
   let badge: string | null = null
   let badgeTooltip: string | null = null
-  if (period === "all_time") {
-    if (buckets.length > 0) {
-      const total = buckets.reduce((acc, [, v]) => acc + v, 0)
-      const avg = total / buckets.length
-      badge = `~ ${formatCurrency(avg)}`
-      badgeTooltip = "Your average net P&L per tracked month."
-    }
-  } else {
-    const prev = previousRange(period, now)
-    if (prev) {
-      const prevPnl = netPnlForRange(evaluations, payouts, prev)
-      const currentPnl = netPnlForRange(
-        evaluations,
-        payouts,
-        periodRange(period, now),
-      )
-      badge = formatDeltaPct(currentPnl, prevPnl)
-      if (badge) {
-        const label =
-          period === "this_month"
-            ? "previous month"
+  const prev = previousRange(period, now)
+  if (prev) {
+    const prevPnl = netPnlForRange(evaluations, payouts, prev)
+    const currentPnl = netPnlForRange(
+      evaluations,
+      payouts,
+      periodRange(period, now),
+    )
+    badge = formatDeltaPct(currentPnl, prevPnl)
+    if (badge) {
+      const label =
+        period === "this_month"
+          ? "previous month"
+          : period === "last_month"
+            ? "the month before"
             : period === "this_year"
               ? "previous year"
-              : "the prior 12 months"
-        badgeTooltip = `Net P&L change vs ${label} (${formatCurrency(prevPnl)}).`
-      }
+              : period === "last_year"
+                ? "the year before"
+                : period === "last_12_months"
+                  ? "the prior 12 months"
+                  : "the same quarter last year"
+      badgeTooltip = `Net P&L change vs ${label} (${formatCurrency(prevPnl)}).`
     }
   }
 
@@ -172,8 +190,8 @@ export function computePnlContext(
       const best = yearMonths.reduce((a, b) => (b[1] > a[1] ? b : a))
       subtitle = `Best month this year: ${formatMonthKey(best[0], false)} (${formatCurrency(best[1])})`
     }
-  } else if (period === "last_12_months") {
-    const range = periodRange("last_12_months", now)
+  } else {
+    const range = periodRange(period, now)
     const windowMonths = buckets.filter(([k]) => {
       const d = parseISO(`${k}-01`)
       if (range.start && d < range.start) return false
@@ -185,13 +203,6 @@ export function computePnlContext(
     } else {
       const best = windowMonths.reduce((a, b) => (b[1] > a[1] ? b : a))
       subtitle = `Best month in window: ${formatMonthKey(best[0], true)} (${formatCurrency(best[1])})`
-    }
-  } else {
-    if (buckets.length === 0) {
-      subtitle = "No activity recorded yet"
-    } else {
-      const best = buckets.reduce((a, b) => (b[1] > a[1] ? b : a))
-      subtitle = `Best month ever: ${formatMonthKey(best[0], true)} (${formatCurrency(best[1])})`
     }
   }
 

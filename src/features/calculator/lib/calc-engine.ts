@@ -1,4 +1,5 @@
 import type { CalcInput, CalcResult, PhaseInput, PhaseResult, Strategy } from '../types'
+import { simulateMcCushion } from './mc-cushion'
 
 /**
  * Decides the optimal strategy and returns the per-day target array.
@@ -12,11 +13,6 @@ export function computeStrategy(phase: PhaseInput): {
   const { objective, consistencyPct, minDays, minProfit } = phase
 
   // Branch 1: consistency strategy
-  // Optimal plan under (consistencyPct × objective) per-day cap:
-  //   - Days = ceil(objective / cap). Anything fewer can't reach objective; more is wasteful.
-  //   - Front-load: each day takes the max (cap), residual lands on the last day.
-  //   - This minimizes ∑log(ddEff + t_i), which maximizes ∏ pDay (sum of logs of t-shaped
-  //     concave functions is minimized at the boundary, not the interior).
   if (consistencyPct !== undefined) {
     const cap = objective * consistencyPct
     const days = Math.ceil(objective / cap)
@@ -35,14 +31,6 @@ export function computeStrategy(phase: PhaseInput): {
   }
 
   // Branch 2: min-days strategy
-  // Optimal plan under (minDays, minProfit) constraints:
-  //   - Each day must have target ≥ minProfit.
-  //   - Sum of targets ≥ objective.
-  // Floor = minDays × minProfit. Extra = objective − floor.
-  //   - If extra > 0: concentrate it on day 1 (maximizes the product of
-  //     per-day probs by keeping later days at minProfit, which is the
-  //     cheapest target). Day 1 target = minProfit + extra.
-  //   - If extra ≤ 0: minProfit on every day; plan overshoots harmlessly.
   if (minDays !== undefined && minProfit !== undefined) {
     const floor = minDays * minProfit
     const extra = objective - floor
@@ -59,7 +47,8 @@ export function computeStrategy(phase: PhaseInput): {
     }
   }
 
-  // Branch 3: single-shot strategy
+  // Branch 3: single-shot fallback — only used by eval phases without flags.
+  // Funded phases always use cushion mechanics (see calculate()).
   return {
     strategy: 'single-shot',
     days: 1,
@@ -68,13 +57,7 @@ export function computeStrategy(phase: PhaseInput): {
 }
 
 /**
- * Simulates the drawdown floor day-by-day along the optimal success path
- * (every prior day's target hit exactly). Returns ddEffective per day.
- *
- * `ddFixed` lock logic (applies to ddType 'eod' and future 'trailing'; ignored for 'static'):
- *   - Pre-lock (cumulativeProfit_atStartOfDay < dd): behaves as the base type
- *   - Post-lock (cumulativeProfit_atStartOfDay >= dd): floor permanently locked at
- *     phaseStartBalance → ddEffective = cumulativeProfit_atStartOfDay
+ * Simulates the drawdown floor day-by-day along the optimal success path.
  */
 export function simulateDDFloor(
   phase: PhaseInput,
@@ -100,7 +83,6 @@ export function simulateDDFloor(
         ddEffective.push(dd)
       }
     } else {
-      // 'trailing' — currently unsupported, fall back to eod semantics
       if (ddFixed && locked) {
         ddEffective.push(cumulativeProfit)
       } else {
@@ -130,7 +112,12 @@ export function pPhase(
 }
 
 /**
- * Main entry point. Computes full probability + financial metrics for a multi-phase evaluation.
+ * Main entry point. Funded phase uses Monte Carlo cushion mechanics when
+ * minDays + minProfit are set; falls back to analytic otherwise. Eval phases
+ * always use the analytic per-day formula.
+ *
+ * Lifetime EV applies the geometric repeat-payout multiplier 1 / (1 − pFunded),
+ * since the funded cushion can be re-cycled with the same per-attempt odds.
  */
 export function calculate(input: CalcInput): CalcResult {
   const { cEval, cActivation, phases } = input
@@ -147,28 +134,86 @@ export function calculate(input: CalcInput): CalcResult {
       days,
       dailyTargets,
       ddEffective: ddEff,
+      isFunded: phase.isFunded,
     })
   }
 
-  // pEval: product of non-funded phases only
+  // Run MC for the funded phase (if any has cushion mechanics) and use its
+  // pFunded / expectedPayout to override the analytic values.
+  const fundedIdx = phases.findIndex((p) => p.isFunded)
+  const fundedPhase = fundedIdx >= 0 ? phases[fundedIdx] : null
+  const mcResult = fundedPhase ? simulateMcCushion(fundedPhase) : null
+
+  if (mcResult && fundedIdx >= 0 && fundedPhase) {
+    phaseResults[fundedIdx] = {
+      ...phaseResults[fundedIdx],
+      pPhase: mcResult.pFunded,
+      cushion: {
+        day1Risk: fundedPhase.dd,
+        day1Target: fundedPhase.objective,
+        betSize: fundedPhase.minProfit ?? 0,
+        profitDays: fundedPhase.minDays ?? 0,
+      },
+    }
+  }
+
   const pEval = phaseResults.reduce((acc, r, i) => {
     return phases[i].isFunded ? acc : acc * r.pPhase
   }, 1)
 
-  // pTotal: product of all phases
   const pTotal = phaseResults.reduce((acc, r) => acc * r.pPhase, 1)
 
-  // W: payout from the funded phase
-  const fundedPhase = phases.find((p) => p.isFunded)
-  const fundedResult = phaseResults.find((_, i) => phases[i].isFunded)
-  const rawW = fundedPhase && fundedResult
-    ? fundedPhase.objective * (fundedPhase.payoutCapPct ?? 0) * (fundedPhase.splitPct ?? 0)
-    : 0
-  const minPayoutRequest = fundedPhase?.minPayoutRequest ?? 0
-  const w = rawW < minPayoutRequest ? 0 : rawW
+  // Per-cycle expected payout.
+  let w: number
+  if (mcResult) {
+    w = mcResult.expectedPayout
+  } else if (fundedPhase) {
+    const rawW =
+      fundedPhase.objective * (fundedPhase.payoutCapPct ?? 0) * (fundedPhase.splitPct ?? 0)
+    const minPayoutRequest = fundedPhase.minPayoutRequest ?? 0
+    w = rawW < minPayoutRequest ? 0 : rawW
+  } else {
+    w = 0
+  }
 
-  const ev = pTotal * w - cEval - pEval * cActivation
+  // Lifetime repeat multiplier — geometric series 1 / (1 − pRepeat) where
+  // pRepeat is the probability of completing a *subsequent* cushion cycle.
+  //
+  // Cycle 2+ has different mechanics than cycle 1: after a payout the trader
+  // keeps cushion = (1 − cap) × objective above the locked DD floor, and needs
+  // to recover (cap × objective) to retrigger payout. So:
+  //
+  //   day-1 risk : target = (1 − cap)·obj : cap·obj  →  P(win) = 1 − cap
+  //
+  // Multiply by the probability of surviving the min-profit random walk
+  // (= pFunded / pWinDay1_cycle1 = pFunded × (dd + obj) / dd, capped at 1).
+  let repeatMultiplier = 1
+  if (mcResult && fundedPhase && mcResult.pFunded > 0) {
+    const cap = fundedPhase.payoutCapPct ?? 0
+    const pWinDay1Cycle1 = fundedPhase.dd / (fundedPhase.dd + fundedPhase.objective)
+    const pSurviveMinDays = Math.min(1, mcResult.pFunded / pWinDay1Cycle1)
+    const pRepeat = (1 - cap) * pSurviveMinDays
+    repeatMultiplier = Math.min(1 / Math.max(1 - pRepeat, 0.01), 100)
+  }
+  const lifetimePayout = w * repeatMultiplier
+
+  const ev = pTotal * lifetimePayout - cEval - pEval * cActivation
   const roi = cEval === 0 ? null : ev / cEval
+
+  const mc = mcResult
+    ? {
+        expectedPayout: mcResult.expectedPayout,
+        payoutP5: mcResult.payoutP5,
+        payoutP50: mcResult.payoutP50,
+        payoutP95: mcResult.payoutP95,
+        payoutStdDev: mcResult.payoutStdDev,
+        payoutP5IfPass: mcResult.payoutP5IfPass,
+        payoutP50IfPass: mcResult.payoutP50IfPass,
+        payoutP95IfPass: mcResult.payoutP95IfPass,
+        repeatMultiplier,
+        lifetimePayout,
+      }
+    : null
 
   return {
     pEval,
@@ -177,5 +222,6 @@ export function calculate(input: CalcInput): CalcResult {
     ev,
     roi,
     phases: phaseResults,
+    mc,
   }
 }

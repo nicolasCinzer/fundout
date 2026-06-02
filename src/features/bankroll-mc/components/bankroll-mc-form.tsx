@@ -1,4 +1,6 @@
 import { useFormContext, type ControllerRenderProps, type FieldPath } from 'react-hook-form'
+import { SlidersHorizontal } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 import {
   FormField,
   FormItem,
@@ -53,8 +55,15 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
   const { control, formState } = useFormContext<BankrollMcFormValues>()
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+    <Card className="gap-3 p-4">
+      <div className="flex items-center gap-2 border-b pb-2">
+        <SlidersHorizontal className="h-4 w-4 text-primary" />
+        <h2 className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
+          Simulation inputs
+        </h2>
+      </div>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
         <FormField
           control={control}
           name="bankroll"
@@ -130,6 +139,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           Calculate
         </Button>
       </div>
-    </form>
+      </form>
+    </Card>
   )
 }

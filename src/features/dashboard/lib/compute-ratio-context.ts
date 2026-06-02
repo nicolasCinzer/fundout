@@ -19,21 +19,16 @@ export type RatioContext = {
 /**
  * Lifetime ratios are the long-run baseline. The period card's badge compares
  * current ratio against that baseline: above → tone "default" (primary),
- * below → tone "negative" (muted rose). Hidden on all_time (no baseline to
- * compare to) and when the period covers all the data (current === lifetime).
+ * below → tone "negative" (muted rose).
  */
 export function computeRatioContext(
   evaluations: Evaluation[],
   fundedAccounts: FundedAccount[],
   payouts: Payout[],
-  period: Period,
+  _period: Period,
   currentFundingRatio: number,
   currentPayoutRatio: number,
 ): RatioContext {
-  if (period === "all_time") {
-    return { fundingBadge: null, payoutBadge: null }
-  }
-
   const lifetime = computeKpis(
     evaluations,
     fundedAccounts,

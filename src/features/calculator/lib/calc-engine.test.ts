@@ -22,7 +22,6 @@ describe('computeStrategy', () => {
   })
 
   it('consistency branch — front-loads cap, residual on last day (not equal targets)', () => {
-    // obj=3000, consistencyPct=0.4 → cap=1200, days=3 → [1200, 1200, 600], NOT [1200, 1200, 1200]
     const result = computeStrategy({ dd: 2000, objective: 3000, ddType: 'eod', ddFixed: false, isFunded: false, consistencyPct: 0.4 })
     expect(result.strategy).toBe('consistency')
     expect(result.days).toBe(3)
@@ -37,7 +36,6 @@ describe('computeStrategy', () => {
   })
 
   it('min-days branch — extra concentrated on day 1 when minProfit floor < objective', () => {
-    // obj=3000, minDays=3, minProfit=100 → floor=300, extra=2700 → day 1 = 2800
     const result = computeStrategy({ dd: 2000, objective: 3000, ddType: 'eod', ddFixed: false, isFunded: false, minDays: 3, minProfit: 100 })
     expect(result.strategy).toBe('min-days')
     expect(result.days).toBe(3)
@@ -45,7 +43,6 @@ describe('computeStrategy', () => {
   })
 
   it('min-days branch — minProfit floor satisfies objective, all days at minProfit', () => {
-    // obj=1000, minDays=3, minProfit=400 → floor=1200 ≥ obj, all days at minProfit (overshoots)
     const result = computeStrategy({ dd: 2000, objective: 1000, ddType: 'eod', ddFixed: false, isFunded: false, minDays: 3, minProfit: 400 })
     expect(result.strategy).toBe('min-days')
     expect(result.days).toBe(3)
@@ -60,7 +57,6 @@ describe('computeStrategy', () => {
   })
 
   it('min-days branch — lowering objective reduces day-1 target (extra shrinks)', () => {
-    // Same dd/minDays/minProfit, two objectives. Lower objective → smaller day 1 → higher pPhase.
     const base = { dd: 1000, ddType: 'eod' as const, ddFixed: true, isFunded: false, minDays: 5, minProfit: 100 }
     const high = computeStrategy({ ...base, objective: 1400 })
     const low = computeStrategy({ ...base, objective: 1000 })
@@ -68,7 +64,7 @@ describe('computeStrategy', () => {
     expect(low.dailyTargets).toEqual([600, 100, 100, 100, 100])
   })
 
-  it('single-shot branch — no consistency or min-days', () => {
+  it('single-shot fallback — no consistency or min-days set', () => {
     const result = computeStrategy({ dd: 2000, objective: 4000, ddType: 'eod', ddFixed: false, isFunded: false })
     expect(result.strategy).toBe('single-shot')
     expect(result.days).toBe(1)
@@ -148,35 +144,45 @@ describe('calculate', () => {
     ],
   }
 
-  it('Lucid Flex 50k — pPhase1 ≈ 0.3265', () => {
+  it('eval phase pPhase still computed analytically', () => {
     const result = calculate(lucidFlex50k)
     expect(result.phases[0].pPhase).toBeCloseTo(0.3265, 3)
   })
 
-  it('Lucid Flex 50k — pPhase2 ≈ 0.3846', () => {
+  it('funded phase pPhase comes from MC simulation (cushion mechanics)', () => {
     const result = calculate(lucidFlex50k)
-    expect(result.phases[1].pPhase).toBeCloseTo(0.3846, 3)
+    // Analytic min-days would yield ~0.3846. MC cushion yields ~0.44 with seed=42.
+    expect(result.phases[1].pPhase).toBeGreaterThan(0.40)
+    expect(result.phases[1].pPhase).toBeLessThan(0.48)
   })
 
-  it('Lucid Flex 50k — pTotal ≈ 0.1255', () => {
+  it('w is the MC expected payout per cycle (close to analytic 1170 in symmetric streak)', () => {
     const result = calculate(lucidFlex50k)
-    expect(result.pTotal).toBeCloseTo(0.1255, 3)
+    expect(result.w).toBeGreaterThan(1100)
+    expect(result.w).toBeLessThan(1240)
   })
 
-  it('Lucid Flex 50k — W = 1170.00', () => {
+  it('mc stats are exposed when funded phase has cushion mechanics', () => {
     const result = calculate(lucidFlex50k)
-    expect(result.w).toBeCloseTo(1170.0, 2)
+    expect(result.mc).not.toBeNull()
+    expect(result.mc!.repeatMultiplier).toBeGreaterThan(1.5)
+    expect(result.mc!.payoutP50).toBeGreaterThanOrEqual(0)
+    expect(result.mc!.payoutP95).toBeGreaterThan(result.mc!.payoutP5)
   })
 
-  it('Lucid Flex 50k — EV ≈ 6.94 (full-precision; spec stated 6.84 due to rounded pTotal)', () => {
+  it('lifetime EV applies repeat multiplier — meaningfully higher than per-cycle EV', () => {
     const result = calculate(lucidFlex50k)
-    expect(result.ev).toBeCloseTo(6.94, 1)
+    const perCycleEv = result.pTotal * result.w - 140
+    // Lifetime EV is ~multiplier× per-cycle EV; with multiplier ~1.7, lifetime is markedly higher
+    expect(result.ev).toBeGreaterThan(perCycleEv)
+    expect(result.ev).toBeGreaterThan(100)
   })
 
-  it('Lucid Flex 50k — ROI ≈ 0.0496 (full-precision)', () => {
+  it('roi reflects the lifetime EV', () => {
     const result = calculate(lucidFlex50k)
     expect(result.roi).not.toBeNull()
-    expect(result.roi!).toBeCloseTo(0.0496, 3)
+    // Lifetime EV / 140 should yield a ROI > 0.5
+    expect(result.roi!).toBeGreaterThan(0.5)
   })
 
   it('cEval=0 → roi === null', () => {
@@ -189,7 +195,7 @@ describe('calculate', () => {
     expect(result.roi).toBeNull()
   })
 
-  it('splitPct=0 → w === 0, ev === -cEval', () => {
+  it('no MC when funded phase lacks minDays → falls back to analytic single-shot w', () => {
     const input: CalcInput = {
       cEval: 140,
       cActivation: 0,
@@ -198,6 +204,7 @@ describe('calculate', () => {
       ],
     }
     const result = calculate(input)
+    expect(result.mc).toBeNull()
     expect(result.w).toBe(0)
     expect(result.ev).toBeCloseTo(-140, 2)
   })
@@ -216,42 +223,17 @@ describe('calculate', () => {
     expect(result.pTotal).toBeCloseTo(result.phases[0].pPhase * result.phases[1].pPhase, 6)
   })
 
-  it('minPayoutRequest above raw payout → w = 0 (withdrawal blocked)', () => {
-    const input: CalcInput = {
-      cEval: 50,
-      cActivation: 0,
-      phases: [
-        {
-          dd: 1000,
-          objective: 500,
-          ddType: 'eod',
-          ddFixed: false,
-          isFunded: true,
-          payoutCapPct: 0.5,
-          splitPct: 0.9,
-          minPayoutRequest: 500,
-        },
-      ],
-    }
-    // raw w = 500 × 0.5 × 0.9 = 225 < 500 floor → w = 0
-    const result = calculate(input)
-    expect(result.w).toBe(0)
-  })
-
-  it('minPayoutRequest below raw payout → w unchanged', () => {
+  it('minPayoutRequest above all MC payouts → pFunded=0, lifetime payout=0, EV negative', () => {
     const input: CalcInput = {
       ...lucidFlex50k,
       phases: lucidFlex50k.phases.map((p) =>
-        p.isFunded ? { ...p, minPayoutRequest: 500 } : p,
+        p.isFunded ? { ...p, minPayoutRequest: 99999 } : p,
       ),
     }
-    // raw w = 1170 > 500 floor → unchanged
     const result = calculate(input)
-    expect(result.w).toBeCloseTo(1170.0, 2)
-  })
-
-  it('minPayoutRequest undefined → no floor applied (back-compat)', () => {
-    const result = calculate(lucidFlex50k)
-    expect(result.w).toBeCloseTo(1170.0, 2)
+    expect(result.mc).not.toBeNull()
+    expect(result.phases[1].pPhase).toBe(0)
+    expect(result.w).toBe(0)
+    expect(result.ev).toBeCloseTo(-140, 2)
   })
 })

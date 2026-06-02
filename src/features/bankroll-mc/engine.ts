@@ -1,4 +1,4 @@
-import { mulberry32 } from '../calculator/strategies/prng'
+import { mulberry32 } from '../calculator/lib/prng'
 import type { BankrollMcInput, BankrollMcResult, PercentileBand } from './types'
 
 // ---------------------------------------------------------------------------

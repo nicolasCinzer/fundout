@@ -8,7 +8,9 @@ import {
   ChevronsUpDown,
   LogOut,
   Calculator,
+  Plus,
 } from "lucide-react"
+import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { BrandMark } from "@/components/common/brand-mark"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -110,6 +112,19 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem className="mb-2">
+            <EvaluationFormDialog
+              trigger={
+                <SidebarMenuButton
+                  tooltip="New evaluation"
+                  className="h-10 gap-2.5 px-3.5 bg-linear-to-b from-primary to-primary/85 font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/40 transition-all hover:from-primary hover:to-primary hover:text-primary-foreground hover:shadow-primary/50 hover:ring-primary/60 active:scale-[0.98] active:text-primary-foreground [&_svg]:size-4.5 [&_svg]:transition-transform hover:[&_svg]:rotate-90"
+                >
+                  <Plus />
+                  <span>New evaluation</span>
+                </SidebarMenuButton>
+              }
+            />
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

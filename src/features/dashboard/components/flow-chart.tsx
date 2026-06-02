@@ -1,4 +1,4 @@
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardContent,
@@ -38,7 +38,7 @@ type FlowChartProps = {
 
 export function FlowChart({ data }: FlowChartProps) {
   return (
-    <Card className="pt-0">
+    <Card className="flex h-full flex-col pt-0">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle>Daily flow</CardTitle>
@@ -48,10 +48,10 @@ export function FlowChart({ data }: FlowChartProps) {
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="flex flex-1 flex-col px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-full min-h-[250px] w-full flex-1"
         >
           <AreaChart data={data}>
             <defs>
@@ -92,13 +92,21 @@ export function FlowChart({ data }: FlowChartProps) {
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="dayLabel"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={64}
+              tickFormatter={(value) => formatCurrency(Number(value), true)}
+              className="text-[10px]"
             />
             <ChartTooltip
               cursor={false}
