@@ -117,6 +117,37 @@ describe("computeStats — worstStreak (Amendment 1: lifecycle-status based)", (
   })
 })
 
+describe("computeStats — success rate (funded-paid count, NOT payout count)", () => {
+  it("one funded account with multiple payouts counts as 1 success, not N", () => {
+    // [E, F, P, P, P] → 1 evaluation, 1 funded, 3 payouts, 1 funded-paid lifecycle.
+    // % Success should be 1/1 = 100%, NOT 3/1 = 300%.
+    const stats = computeStats(events("E", "F", ["P", 100], ["P", 100], ["P", 100]), BASE_BACKTEST)
+    expect(stats.counts.P).toBe(3)
+    expect(stats.rates.success).toBeCloseTo(1) // 1 successful funded / 1 evaluation
+    expect(stats.rates.success).toBeLessThanOrEqual(stats.rates.funded)
+  })
+
+  it("2 funded (1 paid 4x + 1 breached) of 22 evals → success=1/22, NOT 4/22", () => {
+    // Replicate the user's reported scenario:
+    //   22 evaluations total, 2 funded, 1 of them produced 4 payouts, the other breached without payout.
+    // Build: 1st eval funds + 4 payouts, then a breached funded run, then 19 lost evals.
+    const log = events(
+      "E", "F", ["P", 500], ["P", 500], ["P", 500], ["P", 500],
+      "E", "F", // funded that gets breached by next E
+      // 20 more lost evals (E without F)
+      "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+      "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+    )
+    const stats = computeStats(log, BASE_BACKTEST)
+    expect(stats.counts.E).toBe(22)
+    expect(stats.counts.F).toBe(2)
+    expect(stats.counts.P).toBe(4)
+    expect(stats.rates.funded).toBeCloseTo(2 / 22)
+    expect(stats.rates.success).toBeCloseTo(1 / 22) // 1 funded that paid / 22 evals
+    expect(stats.rates.success).toBeLessThan(stats.rates.funded) // KEY invariant
+  })
+})
+
 describe("computeStats — zero-division guards", () => {
   it("no E → all rates = 0", () => {
     const stats = computeStats([], BASE_BACKTEST)

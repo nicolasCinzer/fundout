@@ -14,8 +14,8 @@ function deriveStatus(lc: MutableLifecycle, isOpen: boolean): LifecycleStatus {
   if (isOpen) {
     // Last lifecycle — not yet closed by another E
     if (lc.fundedEvent !== null && lc.payouts.length > 0) return "funded_paid"
-    // open: no F, or F with no payouts yet
-    return "open"
+    if (lc.fundedEvent !== null) return "funded_active" // F but no P yet
+    return "open" // only E, not yet funded
   }
   // Closed lifecycle (another E arrived after this one)
   if (lc.fundedEvent === null) return "lost"

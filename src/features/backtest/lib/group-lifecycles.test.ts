@@ -36,10 +36,10 @@ describe("groupLifecycles", () => {
     expect(lcs[0].index).toBe(1)
   })
 
-  it("[E, F] → 1 lifecycle, status=open (funded, no payout, still open)", () => {
+  it("[E, F] → 1 lifecycle, status=funded_active (funded, no payout yet)", () => {
     const lcs = groupLifecycles(events("E", "F"))
     expect(lcs).toHaveLength(1)
-    expect(lcs[0].status).toBe("open")
+    expect(lcs[0].status).toBe("funded_active")
     expect(lcs[0].fundedEvent).not.toBeNull()
     expect(lcs[0].payouts).toHaveLength(0)
   })

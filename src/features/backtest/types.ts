@@ -5,11 +5,17 @@ export type BacktestEvent = Tables<"backtest_events">
 export type BacktestEventType = "E" | "F" | "P"
 
 // Lifecycle status — Amendment 1 vocabulary (overrides design's outcome names)
-// - open                : last lifecycle, still in-progress
+// - open                : last lifecycle, only E (not yet funded)
+// - funded_active       : last lifecycle, E + F but no P yet (funded, awaiting payout)
 // - lost                : closed lifecycle, no F (another E followed)
 // - breached_no_payout  : has F, but breached by next E with zero P events
 // - funded_paid         : has F AND at least one P event
-export type LifecycleStatus = "open" | "lost" | "breached_no_payout" | "funded_paid"
+export type LifecycleStatus =
+  | "open"
+  | "funded_active"
+  | "lost"
+  | "breached_no_payout"
+  | "funded_paid"
 
 // Derived view type produced by group-lifecycles.ts
 export type Lifecycle = {

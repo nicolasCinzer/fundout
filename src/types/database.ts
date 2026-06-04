@@ -57,27 +57,36 @@ export type Database = {
       }
       backtests: {
         Row: {
+          asset: string | null
           bankroll_initial: number
           created_at: string
           eval_cost: number
           id: string
           name: string
+          period: string | null
+          strategy: string | null
           user_id: string
         }
         Insert: {
+          asset?: string | null
           bankroll_initial: number
           created_at?: string
           eval_cost: number
           id?: string
           name: string
+          period?: string | null
+          strategy?: string | null
           user_id: string
         }
         Update: {
+          asset?: string | null
           bankroll_initial?: number
           created_at?: string
           eval_cost?: number
           id?: string
           name?: string
+          period?: string | null
+          strategy?: string | null
           user_id?: string
         }
         Relationships: []

@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { backtestCreateSchema } from "@/features/backtest/schemas/backtest-form-schema"
 import type { z } from "zod"
@@ -42,6 +43,9 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
       name: "",
       bankroll_initial: 10000,
       eval_cost: 100,
+      asset: "",
+      period: "",
+      strategy: "",
     },
   })
 
@@ -134,6 +138,55 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                 }}
               />
             </div>
+
+            {/* Optional metadata */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="asset"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Asset (optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="NQ, ES, EUR/USD…" {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="period"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Period (optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Q1 2024, Jan–Mar…" {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="strategy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Strategy (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Brief description of the tested strategy…"
+                      rows={2}
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"

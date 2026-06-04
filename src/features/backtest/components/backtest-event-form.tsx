@@ -83,7 +83,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
         {/* Type selector buttons */}
         <div className="space-y-2">
           <p className="text-sm font-medium leading-none">Event type</p>
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {(["E", "F", "P"] as BacktestEventType[]).map((t) => {
               const allowed = allowedTypes.includes(t)
               const isSelected = selectedType === t
@@ -95,7 +95,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
                   size="sm"
                   disabled={!allowed || isGameOver || appendMutation.isPending}
                   onClick={() => handleTypeSelect(t)}
-                  className="w-full justify-start"
+                  className="w-full text-xs"
                 >
                   {TYPE_LABEL[t]}
                 </Button>

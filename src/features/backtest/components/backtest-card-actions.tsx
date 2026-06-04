@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ConfirmDelete } from "@/components/common/confirm-delete"
-import { RenameBacktestDialog } from "./rename-backtest-dialog"
+import { EditBacktestMetaDialog } from "./edit-backtest-meta-dialog"
 import { useDeleteBacktest } from "@/features/backtest/api/backtests-queries"
 import type { Backtest } from "@/features/backtest/types"
 
@@ -60,7 +60,7 @@ export function BacktestCardActions({ backtest }: Props) {
             }}
           >
             <Pencil className="mr-2 h-4 w-4" />
-            Rename
+            Edit
           </DropdownMenuItem>
           <ConfirmDelete
             trigger={
@@ -82,7 +82,7 @@ export function BacktestCardActions({ backtest }: Props) {
           />
         </DropdownMenuContent>
       </DropdownMenu>
-      <RenameBacktestDialog
+      <EditBacktestMetaDialog
         backtest={backtest}
         open={renameOpen}
         onOpenChange={setRenameOpen}

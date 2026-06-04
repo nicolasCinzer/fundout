@@ -15,35 +15,26 @@ const STATUS_LABEL: Record<LifecycleStatus, string> = {
   lost: "Lost",
   breached_no_payout: "Breached",
   funded_paid: "Paid",
+  funded_active: "Funded",
   open: "Open",
 }
 
+const STATUS_BADGE_CLASS: Record<LifecycleStatus, string> = {
+  lost: "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400",
+  breached_no_payout:
+    "border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  funded_paid:
+    "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  funded_active: "border-primary/40 bg-primary/10 text-primary",
+  open: "border-muted-foreground/30 bg-muted/40 text-muted-foreground",
+}
+
 function StatusBadge({ status }: { status: LifecycleStatus }) {
-  if (status === "lost") {
-    return (
-      <span className="inline-flex h-5 items-center rounded-4xl border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-xs font-medium text-rose-600 dark:text-rose-400">
-        {STATUS_LABEL.lost}
-      </span>
-    )
-  }
-  if (status === "breached_no_payout") {
-    return (
-      <span className="inline-flex h-5 items-center rounded-4xl border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-600 dark:text-orange-400">
-        {STATUS_LABEL.breached_no_payout}
-      </span>
-    )
-  }
-  if (status === "funded_paid") {
-    return (
-      <span className="inline-flex h-5 items-center rounded-4xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-        {STATUS_LABEL.funded_paid}
-      </span>
-    )
-  }
-  // open
   return (
-    <span className="inline-flex h-5 items-center rounded-4xl border border-muted-foreground/30 bg-muted/40 px-2 py-0.5 text-xs font-medium text-muted-foreground">
-      {STATUS_LABEL.open}
+    <span
+      className={`inline-flex h-5 items-center rounded-4xl border px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASS[status]}`}
+    >
+      {STATUS_LABEL[status]}
     </span>
   )
 }

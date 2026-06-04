@@ -33,11 +33,19 @@ export function computeStats(
     }
   }
 
+  // --- Lifecycles (used for worstStreak and successful-funded count) ---
+  const lifecycles = groupLifecycles(events)
+
+  // Successful funded = lifecycles that produced at least one payout.
+  // % Success = successful-funded / evaluations (NOT count(P) / count(E),
+  // since one funded account can produce many payouts).
+  const successfulFunded = lifecycles.filter((lc) => lc.status === "funded_paid").length
+
   // --- Rates (guard zero-div) ---
   const rates = {
     funded: countE > 0 ? countF / countE : 0,
     payout: countF > 0 ? countP / countF : 0,
-    success: countE > 0 ? countP / countE : 0,
+    success: countE > 0 ? successfulFunded / countE : 0,
   }
 
   // --- Payout mean ---
@@ -50,13 +58,12 @@ export function computeStats(
   const roi = bankrollInitial > 0 ? netProfit / bankrollInitial : 0
 
   // --- Worst streak (Amendment 1: lifecycle-status based) ---
-  const lifecycles = groupLifecycles(events)
   let worstStreak = 0
   let currentStreak = 0
 
   for (const lc of lifecycles) {
-    if (lc.status === "open") {
-      // Skip the tail lifecycle — it's still in-progress, doesn't count
+    if (lc.status === "open" || lc.status === "funded_active") {
+      // Skip in-progress lifecycles — not yet resolved, neither extend nor break the streak
       continue
     }
     if (lc.status === "lost" || lc.status === "breached_no_payout") {
