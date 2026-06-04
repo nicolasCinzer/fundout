@@ -26,11 +26,11 @@ export function BacktestCardActions({ backtest }: Props) {
     await new Promise<void>((resolve, reject) => {
       deleteBacktest.mutate(backtest.id, {
         onSuccess: () => {
-          toast.success("Backtest eliminado")
+          toast.success("Backtest deleted")
           resolve()
         },
         onError: (e) => {
-          toast.error(e.message || "No se pudo eliminar")
+          toast.error(e.message || "Could not delete backtest")
           reject(e)
         },
       })
@@ -48,7 +48,7 @@ export function BacktestCardActions({ backtest }: Props) {
             onClick={(e) => e.preventDefault()}
           >
             <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Acciones</span>
+            <span className="sr-only">Actions</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
@@ -60,7 +60,7 @@ export function BacktestCardActions({ backtest }: Props) {
             }}
           >
             <Pencil className="mr-2 h-4 w-4" />
-            Renombrar
+            Rename
           </DropdownMenuItem>
           <ConfirmDelete
             trigger={
@@ -69,11 +69,11 @@ export function BacktestCardActions({ backtest }: Props) {
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Eliminar
+                Delete
               </DropdownMenuItem>
             }
-            title="¿Eliminar este backtest?"
-            description="Se eliminará el backtest y todos sus eventos. Esta acción no se puede deshacer."
+            title="Delete this backtest?"
+            description="This will permanently delete the backtest and all its events. This action cannot be undone."
             pending={deleteBacktest.isPending}
             onConfirm={async () => {
               await handleDelete()

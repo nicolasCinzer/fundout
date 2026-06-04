@@ -67,10 +67,10 @@ describe("groupLifecycles", () => {
     expect(lcs[1].status).toBe("open")
   })
 
-  it("[E, F, E] → 2 lifecycles; first=blown_no_payout, second=open", () => {
+  it("[E, F, E] → 2 lifecycles; first=breached_no_payout, second=open", () => {
     const lcs = groupLifecycles(events("E", "F", "E"))
     expect(lcs).toHaveLength(2)
-    expect(lcs[0].status).toBe("blown_no_payout")
+    expect(lcs[0].status).toBe("breached_no_payout")
     expect(lcs[0].fundedEvent).not.toBeNull()
     expect(lcs[0].payouts).toHaveLength(0)
     expect(lcs[1].status).toBe("open")
@@ -88,14 +88,14 @@ describe("groupLifecycles", () => {
   it("Amendment 1 (Peor Racha streak input): [E,E,F,P,E,F,E,E] → 5 lifecycles with correct statuses", () => {
     // LC1: E1 → closed by E2 → lost
     // LC2: E2+F+P → closed by E5 → funded_paid
-    // LC3: E5+F → closed by E7 → blown_no_payout
+    // LC3: E5+F → closed by E7 → breached_no_payout
     // LC4: E7 → closed by E8 → lost
     // LC5: E8 → end of log → open
     const lcs = groupLifecycles(events("E", "E", "F", "P", "E", "F", "E", "E"))
     expect(lcs).toHaveLength(5)
     expect(lcs[0].status).toBe("lost")
     expect(lcs[1].status).toBe("funded_paid")
-    expect(lcs[2].status).toBe("blown_no_payout")
+    expect(lcs[2].status).toBe("breached_no_payout")
     expect(lcs[3].status).toBe("lost")
     expect(lcs[4].status).toBe("open")
   })

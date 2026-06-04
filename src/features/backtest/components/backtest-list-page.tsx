@@ -17,13 +17,13 @@ export function BacktestListPage() {
     <>
       <AppHeader
         title="Backtest"
-        description="Simulá runs de evaluaciones y medí outcomes."
+        description="Simulate evaluation runs and measure outcomes."
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         <div className="flex items-center justify-end">
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <FlaskConical className="mr-2 h-4 w-4" />
-            Nueva backtest
+            New backtest
           </Button>
         </div>
 

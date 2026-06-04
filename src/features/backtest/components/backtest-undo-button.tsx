@@ -19,9 +19,9 @@ export function BacktestUndoButton({ backtestId, events }: Props) {
   const handleUndo = async () => {
     try {
       await undoMutation.mutateAsync()
-      toast.success("Evento deshecho")
+      toast.success("Event undone")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "No se pudo deshacer.")
+      toast.error(err instanceof Error ? err.message : "Could not undo the event.")
     }
   }
 
@@ -34,16 +34,16 @@ export function BacktestUndoButton({ backtestId, events }: Props) {
           disabled={!last || undoMutation.isPending}
         >
           <Undo2 className="mr-2 h-4 w-4" />
-          Deshacer último evento
+          Undo last event
         </Button>
       }
-      title="¿Deshacer el último evento?"
+      title="Undo last event?"
       description={
         last
-          ? `Se eliminará el evento ${last.type} en posición ${last.position}. Esta acción no se puede revertir.`
-          : "No hay eventos para deshacer."
+          ? `This will remove the ${last.type} event at position ${last.position}. This action cannot be reversed.`
+          : "There are no events to undo."
       }
-      confirmLabel="Deshacer"
+      confirmLabel="Undo"
       pending={undoMutation.isPending}
       onConfirm={handleUndo}
     />

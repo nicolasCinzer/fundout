@@ -19,7 +19,7 @@ function deriveStatus(lc: MutableLifecycle, isOpen: boolean): LifecycleStatus {
   }
   // Closed lifecycle (another E arrived after this one)
   if (lc.fundedEvent === null) return "lost"
-  if (lc.payouts.length === 0) return "blown_no_payout"
+  if (lc.payouts.length === 0) return "breached_no_payout"
   return "funded_paid"
 }
 

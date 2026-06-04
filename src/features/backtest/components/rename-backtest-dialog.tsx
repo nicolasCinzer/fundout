@@ -42,10 +42,10 @@ export function RenameBacktestDialog({ backtest, open, onOpenChange }: Props) {
   const onSubmit = async (values: BacktestUpdateInput) => {
     try {
       await updateMutation.mutateAsync({ id: backtest.id, name: values.name })
-      toast.success("Backtest renombrado")
+      toast.success("Backtest renamed")
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "No se pudo renombrar.")
+      toast.error(err instanceof Error ? err.message : "Could not rename backtest.")
     }
   }
 
@@ -53,7 +53,7 @@ export function RenameBacktestDialog({ backtest, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Renombrar backtest</DialogTitle>
+          <DialogTitle>Rename backtest</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -62,7 +62,7 @@ export function RenameBacktestDialog({ backtest, open, onOpenChange }: Props) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input autoFocus {...field} />
                   </FormControl>
@@ -77,10 +77,10 @@ export function RenameBacktestDialog({ backtest, open, onOpenChange }: Props) {
                 onClick={() => onOpenChange(false)}
                 disabled={updateMutation.isPending}
               >
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Guardando…" : "Guardar"}
+                {updateMutation.isPending ? "Saving…" : "Save"}
               </Button>
             </div>
           </form>

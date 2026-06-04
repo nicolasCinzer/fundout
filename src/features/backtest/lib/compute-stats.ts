@@ -6,7 +6,7 @@ import { groupLifecycles } from "./group-lifecycles"
  *
  * Amendment 1: worstStreak uses lifecycle-status algorithm (not a simple
  * consecutive-E counter). Scans lifecycles for the longest contiguous run
- * of "lost" or "blown_no_payout" statuses. "funded_paid" breaks the streak.
+ * of "lost" or "breached_no_payout" statuses. "funded_paid" breaks the streak.
  * "open" (the tail lifecycle) is skipped entirely.
  *
  * Amendment 2: isGameOver = bankrollCurrent <= 0.
@@ -59,7 +59,7 @@ export function computeStats(
       // Skip the tail lifecycle — it's still in-progress, doesn't count
       continue
     }
-    if (lc.status === "lost" || lc.status === "blown_no_payout") {
+    if (lc.status === "lost" || lc.status === "breached_no_payout") {
       currentStreak++
       if (currentStreak > worstStreak) worstStreak = currentStreak
     } else {

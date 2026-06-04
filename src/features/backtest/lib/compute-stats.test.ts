@@ -80,17 +80,17 @@ describe("computeStats — worstStreak (Amendment 1: lifecycle-status based)", (
     expect(stats.worstStreak).toBe(2)
   })
 
-  it("[E, F, E, F, E, F] → worstStreak=2 (LC1=blown_no_payout, LC2=blown_no_payout, LC3=open)", () => {
-    // LC1: E1+F, closed by E2 → blown_no_payout (counts toward streak)
-    // LC2: E2+F, closed by E3 → blown_no_payout (counts toward streak)
+  it("[E, F, E, F, E, F] → worstStreak=2 (LC1=breached_no_payout, LC2=breached_no_payout, LC3=open)", () => {
+    // LC1: E1+F, closed by E2 → breached_no_payout (counts toward streak)
+    // LC2: E2+F, closed by E3 → breached_no_payout (counts toward streak)
     // LC3: E3+F, end of log → open (skipped)
-    // Streak: blown_no_payout(1), blown_no_payout(2), skip open → worstStreak=2
+    // Streak: breached_no_payout(1), breached_no_payout(2), skip open → worstStreak=2
     const stats = computeStats(events("E", "F", "E", "F", "E", "F"), BASE_BACKTEST)
     expect(stats.worstStreak).toBe(2)
   })
 
-  it("[E, F, E, F, E] → worstStreak=2 (2 blown_no_payout before open)", () => {
-    // LC1=blown_no_payout, LC2=blown_no_payout, LC3=open (skip)
+  it("[E, F, E, F, E] → worstStreak=2 (2 breached_no_payout before open)", () => {
+    // LC1=breached_no_payout, LC2=breached_no_payout, LC3=open (skip)
     const stats = computeStats(events("E", "F", "E", "F", "E"), BASE_BACKTEST)
     expect(stats.worstStreak).toBe(2)
   })

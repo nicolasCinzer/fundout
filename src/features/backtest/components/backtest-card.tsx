@@ -26,7 +26,7 @@ export function BacktestCard({ backtest, isGameOver = false }: Props) {
               </h3>
               {isGameOver && (
                 <Badge variant="destructive" className="shrink-0">
-                  Terminado
+                  Ended
                 </Badge>
               )}
             </div>

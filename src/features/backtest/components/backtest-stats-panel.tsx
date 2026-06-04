@@ -1,3 +1,12 @@
+import {
+  Banknote,
+  Flame,
+  FlaskConical,
+  Percent,
+  ShieldCheck,
+  Target,
+  TrendingUp,
+} from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { formatCurrency, formatPercent } from "@/lib/format"
@@ -38,19 +47,67 @@ export function BacktestStatsPanel({ stats }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* KPI grid — counts & rates */}
-      <div className="grid grid-cols-2 gap-2">
-        <KpiCard label="Evaluaciones" value={String(s.countE)} />
-        <KpiCard label="Fondeadas" value={String(s.countF)} />
-        <KpiCard label="Retiros" value={String(s.countP)} />
-        <KpiCard label="% Fondeado" value={formatPercent(s.funded)} />
-        <KpiCard label="% Retiro" value={formatPercent(s.payout)} />
-        <KpiCard label="% Éxito" value={formatPercent(s.success)} />
-        <KpiCard
-          label="Peor Racha"
-          value={String(s.worstStreak)}
-          tone={s.worstStreak >= 5 ? "negative" : s.worstStreak >= 3 ? "negative" : "default"}
-        />
+      {/* Volumes */}
+      <div>
+        <p className="mb-1.5 text-[10px] font-heading uppercase tracking-wide text-muted-foreground px-0.5">
+          Volumes
+        </p>
+        <div className="grid grid-cols-1 gap-2">
+          <KpiCard
+            label="Evaluations"
+            value={String(s.countE)}
+            icon={<FlaskConical className="h-3.5 w-3.5" />}
+          />
+          <KpiCard
+            label="Funded"
+            value={String(s.countF)}
+            icon={<ShieldCheck className="h-3.5 w-3.5" />}
+          />
+          <KpiCard
+            label="Payouts"
+            value={String(s.countP)}
+            icon={<Banknote className="h-3.5 w-3.5" />}
+          />
+        </div>
+      </div>
+
+      {/* Rates */}
+      <div>
+        <p className="mb-1.5 text-[10px] font-heading uppercase tracking-wide text-muted-foreground px-0.5">
+          Rates
+        </p>
+        <div className="grid grid-cols-1 gap-2">
+          <KpiCard
+            label="% Funded"
+            value={formatPercent(s.funded)}
+            icon={<TrendingUp className="h-3.5 w-3.5" />}
+          />
+          <KpiCard
+            label="% Payout"
+            value={formatPercent(s.payout)}
+            icon={<Percent className="h-3.5 w-3.5" />}
+          />
+          <KpiCard
+            label="% Success"
+            value={formatPercent(s.success)}
+            icon={<Target className="h-3.5 w-3.5" />}
+          />
+        </div>
+      </div>
+
+      {/* Risk */}
+      <div>
+        <p className="mb-1.5 text-[10px] font-heading uppercase tracking-wide text-muted-foreground px-0.5">
+          Risk
+        </p>
+        <div className="grid grid-cols-1 gap-2">
+          <KpiCard
+            label="Worst Streak"
+            value={String(s.worstStreak)}
+            tone={s.worstStreak >= 3 ? "negative" : "default"}
+            icon={<Flame className="h-3.5 w-3.5" />}
+          />
+        </div>
       </div>
 
       {/* Financial summary */}
@@ -60,14 +117,14 @@ export function BacktestStatsPanel({ stats }: Props) {
           stats.isGameOver && "border-amber-400/50 bg-amber-50/50 dark:bg-amber-950/20",
         )}
       >
-        <p className="text-xs font-medium text-muted-foreground">Resumen financiero</p>
+        <p className="text-xs font-medium text-muted-foreground">Financial summary</p>
         <div className="space-y-1.5">
-          <Row label="Bankroll inicial" value={formatCurrency(s.bankrollInitial, true)} />
-          <Row label="Gasto evals" value={formatCurrency(s.evalsSpend, true)} tone="negative" />
-          <Row label="Total retirado" value={formatCurrency(s.payoutsTotal, true)} />
+          <Row label="Initial bankroll" value={formatCurrency(s.bankrollInitial, true)} />
+          <Row label="Spent on evaluations" value={formatCurrency(s.evalsSpend, true)} tone="negative" />
+          <Row label="Total withdrawn" value={formatCurrency(s.payoutsTotal, true)} />
           <div className="my-1 border-t" />
           <Row
-            label="Beneficio neto"
+            label="Net profit"
             value={formatCurrency(s.netProfit, true)}
             tone={profitTone}
           />
@@ -78,7 +135,7 @@ export function BacktestStatsPanel({ stats }: Props) {
           />
           <div className="my-1 border-t" />
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Bankroll actual</span>
+            <span className="text-xs font-medium text-muted-foreground">Current bankroll</span>
             <span
               className={cn(
                 "font-heading text-xl font-semibold tabular-nums",

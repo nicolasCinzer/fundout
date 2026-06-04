@@ -11,11 +11,11 @@ export function BacktestEmptyState() {
     <>
       <EmptyState
         icon={<FlaskConical className="h-5 w-5" />}
-        title="Sin backtests"
-        description="Todavía no tenés backtests. Creá uno para empezar a simular."
+        title="No backtests yet"
+        description="Create your first backtest to start simulating evaluation runs."
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
-            Crear backtest
+            Create backtest
           </Button>
         }
       />

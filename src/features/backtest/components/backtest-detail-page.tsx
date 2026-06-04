@@ -54,8 +54,8 @@ export function BacktestDetailPage({ id }: Props) {
         <AppHeader title="Backtest" />
         <main className="flex-1 p-4 md:p-6">
           <EmptyState
-            title="Backtest no encontrado"
-            description="Este backtest no existe o no tenés acceso."
+            title="Backtest not found"
+            description="This backtest does not exist or you don't have access."
           />
         </main>
       </>
@@ -68,7 +68,7 @@ export function BacktestDetailPage({ id }: Props) {
     <>
       <AppHeader
         title={backtest.name}
-        description="Detalle de backtest"
+        description="Backtest detail"
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {/* Rename button */}
@@ -79,7 +79,7 @@ export function BacktestDetailPage({ id }: Props) {
             onClick={() => setRenameOpen(true)}
           >
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
-            Renombrar
+            Rename
           </Button>
         </div>
 
@@ -89,10 +89,10 @@ export function BacktestDetailPage({ id }: Props) {
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
             <div>
               <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                Tu simulación terminó.
+                Your simulation has ended.
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-400">
-                Revisá tu estrategia — es peor que la aleatoriedad. Podés deshacer eventos para explorar escenarios alternativos.
+                Review your strategy — it performs worse than random. You can undo events to explore alternative scenarios.
               </p>
             </div>
           </div>
@@ -104,7 +104,7 @@ export function BacktestDetailPage({ id }: Props) {
           <div className="space-y-3">
             <Card>
               <CardHeader className="pb-2">
-                <p className="text-sm font-medium">Registrar evento</p>
+                <p className="text-sm font-medium">Record event</p>
               </CardHeader>
               <CardContent className="space-y-3">
                 <BacktestEventForm

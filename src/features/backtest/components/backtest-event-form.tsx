@@ -18,9 +18,9 @@ import { nextAllowedEvent } from "@/features/backtest/lib/next-allowed-event"
 import type { BacktestEvent, BacktestEventType } from "@/features/backtest/types"
 
 const TYPE_LABEL: Record<BacktestEventType, string> = {
-  E: "Comprar Eval",
-  F: "Funded",
-  P: "Retiro",
+  E: "Buy Evaluation",
+  F: "Mark Funded",
+  P: "Record Payout",
 }
 
 // Flat form values — discriminated union handled manually at submit
@@ -73,7 +73,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
       setSelectedType(null)
       form.reset({ type: "E", amount: "", notes: "" })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "No se pudo registrar el evento.")
+      toast.error(err instanceof Error ? err.message : "Could not record the event.")
     }
   }
 
@@ -82,8 +82,8 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Type selector buttons */}
         <div className="space-y-2">
-          <p className="text-sm font-medium leading-none">Tipo de evento</p>
-          <div className="flex gap-2">
+          <p className="text-sm font-medium leading-none">Event type</p>
+          <div className="flex flex-col gap-2">
             {(["E", "F", "P"] as BacktestEventType[]).map((t) => {
               const allowed = allowedTypes.includes(t)
               const isSelected = selectedType === t
@@ -95,12 +95,9 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
                   size="sm"
                   disabled={!allowed || isGameOver || appendMutation.isPending}
                   onClick={() => handleTypeSelect(t)}
-                  className="flex-1 font-mono"
+                  className="w-full justify-start"
                 >
-                  {t}
-                  <span className="ml-1 hidden text-xs font-normal sm:inline">
-                    — {TYPE_LABEL[t]}
-                  </span>
+                  {TYPE_LABEL[t]}
                 </Button>
               )
             })}
@@ -114,7 +111,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
             name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Monto del retiro (USD)</FormLabel>
+                <FormLabel>Payout amount (USD)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -138,10 +135,10 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notas (opcional)</FormLabel>
+              <FormLabel>Notes (optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Observaciones sobre este evento…"
+                  placeholder="Notes about this event…"
                   rows={2}
                   disabled={isGameOver || appendMutation.isPending}
                   {...field}
@@ -157,7 +154,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
           className="w-full"
           disabled={!selectedType || isGameOver || appendMutation.isPending}
         >
-          {appendMutation.isPending ? "Registrando…" : "Registrar evento"}
+          {appendMutation.isPending ? "Recording…" : "Record event"}
         </Button>
       </form>
     </Form>

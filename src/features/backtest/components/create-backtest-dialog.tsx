@@ -52,7 +52,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
       onOpenChange(false)
       navigate({ to: "/backtest/$id", params: { id: created.id } })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "No se pudo crear el backtest.")
+      toast.error(err instanceof Error ? err.message : "Could not create backtest.")
     }
   }
 
@@ -60,9 +60,9 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nuevo backtest</DialogTitle>
+          <DialogTitle>New backtest</DialogTitle>
           <DialogDescription>
-            Configurá los parámetros iniciales. El costo de eval no se puede cambiar después.
+            Set the initial parameters. The evaluation cost cannot be changed after creation.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -72,7 +72,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ej: FTMO 100K — Julio"
@@ -92,7 +92,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Bankroll inicial (USD)</FormLabel>
+                      <FormLabel>Initial bankroll (USD)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -116,7 +116,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Costo de eval (USD)</FormLabel>
+                      <FormLabel>Evaluation cost (USD)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -141,10 +141,10 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                 onClick={() => onOpenChange(false)}
                 disabled={createMutation.isPending}
               >
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creando…" : "Crear backtest"}
+                {createMutation.isPending ? "Creating…" : "Create backtest"}
               </Button>
             </div>
           </form>
