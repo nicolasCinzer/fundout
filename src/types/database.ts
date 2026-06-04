@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      backtest_events: {
+        Row: {
+          amount: number | null
+          backtest_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          position: number
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          backtest_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position: number
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          backtest_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          position?: number
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backtest_events_backtest_id_fkey"
+            columns: ["backtest_id"]
+            isOneToOne: false
+            referencedRelation: "backtests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backtests: {
+        Row: {
+          asset: string | null
+          bankroll_initial: number
+          created_at: string
+          eval_cost: number
+          id: string
+          name: string
+          period: string | null
+          strategy: string | null
+          user_id: string
+        }
+        Insert: {
+          asset?: string | null
+          bankroll_initial: number
+          created_at?: string
+          eval_cost: number
+          id?: string
+          name: string
+          period?: string | null
+          strategy?: string | null
+          user_id: string
+        }
+        Update: {
+          asset?: string | null
+          bankroll_initial?: number
+          created_at?: string
+          eval_cost?: number
+          id?: string
+          name?: string
+          period?: string | null
+          strategy?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       evaluation_resets: {
         Row: {
           created_at: string

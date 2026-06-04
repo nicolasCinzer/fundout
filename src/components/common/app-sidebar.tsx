@@ -9,6 +9,7 @@ import {
   LogOut,
   Calculator,
   Plus,
+  FlaskConical,
 } from "lucide-react"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { BrandMark } from "@/components/common/brand-mark"
@@ -50,6 +51,7 @@ const navGroups = [
     items: [
       { to: "/calculator", label: "Evaluation Calculator", icon: Calculator },
       { to: "/bankroll-mc", label: "Bankroll Calculator", icon: TrendingDown },
+      { to: "/backtest", label: "Backtest", icon: FlaskConical },
     ],
   },
 ] as const
