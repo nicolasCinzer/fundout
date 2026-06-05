@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight, MailCheck } from "lucide-react"
-import { BrandMark } from "@/components/common/brand-mark"
+import { BrandMark, FundoutSymbol } from "@/components/common/brand-mark"
 import { LoginLeftPanel } from "@/features/auth/components/login-left-panel"
 import { Button } from "@/components/ui/button"
 import {
@@ -53,12 +53,15 @@ export function LoginForm() {
       <div
         role="region"
         aria-label="Sign in"
-        className="flex flex-col items-center justify-center p-6 lg:p-10"
+        className="relative overflow-hidden flex flex-col items-center justify-center p-6 lg:p-10"
       >
+        <FundoutSymbol
+          className="pointer-events-none absolute -bottom-24 -right-24 size-[720px] -rotate-12 text-primary opacity-[0.30]"
+        />
         <div className="md:hidden mb-6 flex justify-center">
           <BrandMark size="sm" />
         </div>
-        <Card className="w-full max-w-md">
+        <Card className="relative z-10 w-full max-w-md m-2 shadow-[0_0_20px_24px_var(--background)]">
           <CardHeader className="space-y-3">
             <div className="space-y-1">
               <CardTitle className="text-2xl">

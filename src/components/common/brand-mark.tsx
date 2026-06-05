@@ -21,7 +21,7 @@ const sizeConfig = {
   },
 }
 
-function FundoutSymbol({ className }: { className?: string }) {
+export function FundoutSymbol({ className }: { className?: string }) {
   return (
     <div className={cn("shrink-0", className)}>
       <svg
