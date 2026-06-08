@@ -1,7 +1,9 @@
 import {
   Banknote,
+  Dice5,
   Flame,
   FlaskConical,
+  HandCoins,
   Percent,
   ShieldCheck,
   Target,
@@ -34,11 +36,15 @@ export function BacktestStatsPanel({ stats }: Props) {
     countE: stats.counts.E,
     countF: stats.counts.F,
     countP: stats.counts.P,
+    paidFunded: stats.counts.paidFunded,
     funded: safeNum(stats.rates.funded),
     payout: safeNum(stats.rates.payout),
     success: safeNum(stats.rates.success),
+    payoutProbability: safeNum(stats.rates.payoutProbability),
     worstStreak: stats.worstStreak,
     payoutsTotal: safeNum(stats.payoutsTotal),
+    payoutsMedian: safeNum(stats.payoutsMedian),
+    payoutsPerFunded: safeNum(stats.payoutsPerFunded),
     bankrollInitial: safeNum(stats.bankrollInitial),
     evalsSpend: safeNum(stats.evalsSpend),
     netProfit: safeNum(stats.netProfit),
@@ -77,6 +83,11 @@ export function BacktestStatsPanel({ stats }: Props) {
             value={String(s.countF)}
           />
           <MetricRow
+            icon={<HandCoins className="h-3.5 w-3.5" />}
+            label="Funded w/ payout"
+            value={String(s.paidFunded)}
+          />
+          <MetricRow
             icon={<Banknote className="h-3.5 w-3.5" />}
             label="Payouts"
             value={String(s.countP)}
@@ -95,18 +106,28 @@ export function BacktestStatsPanel({ stats }: Props) {
             label="% Funded"
             value={formatPercent(s.funded)}
             bar={Math.min(1, s.funded)}
+            hint="Share of evaluations that reached funded status."
           />
           <MetricRow
             icon={<Percent className="h-3.5 w-3.5" />}
             label="% Payout"
             value={formatPercent(s.payout)}
             bar={Math.min(1, s.payout)}
+            hint="Share of funded accounts that produced at least one payout."
           />
           <MetricRow
             icon={<Target className="h-3.5 w-3.5" />}
             label="% Success"
             value={formatPercent(s.success)}
             bar={Math.min(1, s.success)}
+            hint="Share of evaluations that ended in a paid funded account — the end-to-end conversion."
+          />
+          <MetricRow
+            icon={<Dice5 className="h-3.5 w-3.5" />}
+            label="Payout Probability"
+            value={formatPercent(s.payoutProbability)}
+            bar={Math.min(1, s.payoutProbability)}
+            hint="Expected payout events per evaluation. Can exceed 100% when funded accounts produce multiple payouts."
           />
         </div>
       </Card>
@@ -143,6 +164,11 @@ export function BacktestStatsPanel({ stats }: Props) {
             tone="negative"
           />
           <Row label="Total withdrawn" value={formatCurrency(s.payoutsTotal, true)} />
+          <Row label="Median payout" value={formatCurrency(s.payoutsMedian, true)} />
+          <Row
+            label="Avg payouts / funded"
+            value={s.payoutsPerFunded.toFixed(2)}
+          />
           <div className="my-1 border-t" />
           <Row
             label="Net profit"

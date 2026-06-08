@@ -23,13 +23,16 @@ export function computeStats(
   let countF = 0
   let countP = 0
   let payoutsTotal = 0
+  const payoutAmounts: number[] = []
 
   for (const ev of events) {
     if (ev.type === "E") countE++
     else if (ev.type === "F") countF++
     else if (ev.type === "P") {
       countP++
-      payoutsTotal += Number(ev.amount ?? 0)
+      const amt = Number(ev.amount ?? 0)
+      payoutsTotal += amt
+      payoutAmounts.push(amt)
     }
   }
 
@@ -42,14 +45,23 @@ export function computeStats(
   const successfulFunded = lifecycles.filter((lc) => lc.status === "funded_paid").length
 
   // --- Rates (guard zero-div) ---
+  // payout = funded lifecycles that produced ≥1 payout / funded lifecycles.
+  // Bounded to [0, 1]: a single funded account can produce many payout events,
+  // so countP/countF can exceed 100% — use successfulFunded/countF instead.
+  // payoutProbability = raw P events / evaluations. NOT bounded to [0, 1] —
+  // a funded account producing many payouts can push this above 100% (by design,
+  // it's an expected-payouts-per-eval metric, not a probability in the strict sense).
   const rates = {
     funded: countE > 0 ? countF / countE : 0,
-    payout: countF > 0 ? countP / countF : 0,
+    payout: countF > 0 ? successfulFunded / countF : 0,
     success: countE > 0 ? successfulFunded / countE : 0,
+    payoutProbability: countE > 0 ? countP / countE : 0,
   }
 
-  // --- Payout mean ---
+  // --- Payout aggregates ---
   const payoutsMean = countP > 0 ? payoutsTotal / countP : 0
+  const payoutsMedian = median(payoutAmounts)
+  const payoutsPerFunded = countF > 0 ? countP / countF : 0
 
   // --- Financial ---
   const evalsSpend = countE * evalCost
@@ -79,11 +91,13 @@ export function computeStats(
   const isGameOver = bankrollCurrent <= 0
 
   return {
-    counts: { E: countE, F: countF, P: countP },
+    counts: { E: countE, F: countF, P: countP, paidFunded: successfulFunded },
     rates,
     worstStreak,
     payoutsTotal,
     payoutsMean,
+    payoutsMedian,
+    payoutsPerFunded,
     bankrollInitial,
     evalsSpend,
     netProfit,
@@ -91,4 +105,11 @@ export function computeStats(
     roi,
     isGameOver,
   }
+}
+
+function median(values: number[]): number {
+  if (values.length === 0) return 0
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
 }
