@@ -66,10 +66,10 @@ export function BacktestCard({ backtest, stats }: Props) {
           {/* Setup meta */}
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
             <span>
-              {formatCurrency(Number(backtest.bankroll_initial), true)} start
+              {formatCurrency(Number(backtest.bankroll_initial))} start
             </span>
             <span aria-hidden>·</span>
-            <span>{formatCurrency(Number(backtest.eval_cost), true)} / eval</span>
+            <span>{formatCurrency(Number(backtest.eval_cost))} / eval</span>
             <span aria-hidden>·</span>
             <span>{formatDate(backtest.created_at)}</span>
           </div>
@@ -88,7 +88,7 @@ export function BacktestCard({ backtest, stats }: Props) {
                       bankrollTone,
                     )}
                   >
-                    {formatCurrency(stats.bankrollCurrent, true)}
+                    {formatCurrency(stats.bankrollCurrent)}
                   </p>
                 </div>
                 <div className="space-y-0.5 text-right">

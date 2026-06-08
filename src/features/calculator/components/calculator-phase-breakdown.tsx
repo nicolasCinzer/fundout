@@ -146,17 +146,17 @@ export function CalculatorPhaseBreakdown({ result }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <Kpi
                   label="Median (P50)"
-                  value={formatCurrency(mc.payoutP50IfPass, true)}
+                  value={formatCurrency(mc.payoutP50IfPass)}
                   hint="when passing"
                 />
                 <Kpi
                   label="Range P5–P95"
-                  value={`${formatCurrency(mc.payoutP5IfPass, true)} – ${formatCurrency(mc.payoutP95IfPass, true)}`}
+                  value={`${formatCurrency(mc.payoutP5IfPass)} – ${formatCurrency(mc.payoutP95IfPass)}`}
                   hint="when passing"
                 />
                 <Kpi
                   label="Std deviation"
-                  value={formatCurrency(mc.payoutStdDev, true)}
+                  value={formatCurrency(mc.payoutStdDev)}
                   hint="payout volatility"
                   tone="muted"
                 />
@@ -172,10 +172,10 @@ export function CalculatorPhaseBreakdown({ result }: Props) {
                   Lifetime expected payout
                 </p>
                 <p className="text-lg font-semibold tabular-nums leading-none text-emerald-600 dark:text-emerald-400">
-                  {formatCurrency(mc.lifetimePayout, true)}
+                  {formatCurrency(mc.lifetimePayout)}
                 </p>
                 <p className="text-[10px] text-muted-foreground/80">
-                  {formatCurrency(mc.expectedPayout, true)} per cycle ×{' '}
+                  {formatCurrency(mc.expectedPayout)} per cycle ×{' '}
                   {mc.repeatMultiplier.toFixed(2)} expected cycles
                 </p>
               </div>

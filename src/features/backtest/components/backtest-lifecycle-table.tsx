@@ -92,7 +92,7 @@ export function BacktestLifecycleTable({ lifecycles }: Props) {
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {lc.payoutsTotal > 0
-                    ? formatCurrency(lc.payoutsTotal, true)
+                    ? formatCurrency(lc.payoutsTotal)
                     : "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground max-w-[120px] truncate">

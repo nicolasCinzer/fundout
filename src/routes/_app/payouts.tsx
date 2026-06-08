@@ -264,15 +264,15 @@ function PayoutsPage() {
                           </TableCell>
                           <TableCell>{formatDate(p.paid_at)}</TableCell>
                           <TableCell className="text-right tabular-nums">
-                            {formatCurrency(Number(p.amount), true)}
+                            {formatCurrency(Number(p.amount))}
                           </TableCell>
                           <TableCell className="text-right tabular-nums text-muted-foreground">
                             {Number(p.fee_taken) > 0
-                              ? formatCurrency(Number(p.fee_taken), true)
+                              ? formatCurrency(Number(p.fee_taken))
                               : "—"}
                           </TableCell>
                           <TableCell className="text-right tabular-nums font-medium">
-                            {formatCurrency(net, true)}
+                            {formatCurrency(net)}
                           </TableCell>
                           <TableCell>
                             <PayoutRowActions payout={p} />

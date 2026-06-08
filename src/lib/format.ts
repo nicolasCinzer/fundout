@@ -56,7 +56,7 @@ export function formatNumber(
  */
 export function formatDate(
   value: Date | string,
-  locale: string,
+  locale: string = "en-US",
   opts?: Intl.DateTimeFormatOptions,
 ): string {
   let d: Date

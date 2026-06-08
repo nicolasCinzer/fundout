@@ -41,7 +41,7 @@ function KpiCard({ label, value, hint, tone = 'default' }: KpiCardProps) {
 
 export function CalculatorKpis({ result }: Props) {
   const payoutProb = result ? formatPercent(result.pTotal) : '—'
-  const ev = result ? formatCurrency(result.ev, true) : '—'
+  const ev = result ? formatCurrency(result.ev) : '—'
   const roi = result
     ? result.roi !== null
       ? formatPercent(result.roi)
@@ -76,11 +76,11 @@ export function CalculatorKpis({ result }: Props) {
     : undefined
 
   const evHint =
-    result && result.w > 0 ? `Gross payout: ${formatCurrency(result.w, true)}` : undefined
+    result && result.w > 0 ? `Gross payout: ${formatCurrency(result.w)}` : undefined
 
   const roiHint =
     maxCost !== null && maxCost > 0
-      ? `Break-even cost: ${formatCurrency(maxCost, true)}`
+      ? `Break-even cost: ${formatCurrency(maxCost)}`
       : undefined
 
   return (

@@ -160,23 +160,23 @@ export function BacktestStatsPanel({ stats }: Props) {
         <div className="space-y-1.5">
           <Row
             label="Initial bankroll"
-            value={formatCurrency(s.bankrollInitial, true)}
+            value={formatCurrency(s.bankrollInitial)}
             hint="Starting capital for this backtest. ROI is computed against this number."
           />
           <Row
             label="Spent on evaluations"
-            value={formatCurrency(s.evalsSpend, true)}
+            value={formatCurrency(s.evalsSpend)}
             tone="negative"
             hint="Total cost of evaluation attempts: count(E) × eval_cost."
           />
           <Row
             label="Total withdrawn"
-            value={formatCurrency(s.payoutsTotal, true)}
+            value={formatCurrency(s.payoutsTotal)}
             hint="Sum of every payout event amount across all funded accounts."
           />
           <Row
             label="Median payout"
-            value={formatCurrency(s.payoutsMedian, true)}
+            value={formatCurrency(s.payoutsMedian)}
             hint="Middle value of all payout amounts — resists outliers better than the mean."
           />
           <Row
@@ -187,7 +187,7 @@ export function BacktestStatsPanel({ stats }: Props) {
           <div className="my-1 border-t" />
           <Row
             label="Net profit"
-            value={formatCurrency(s.netProfit, true)}
+            value={formatCurrency(s.netProfit)}
             tone={profitTone}
             hint="Total withdrawn minus spent on evaluations."
           />
@@ -216,7 +216,7 @@ export function BacktestStatsPanel({ stats }: Props) {
                 toneClasses[bankrollTone],
               )}
             >
-              {formatCurrency(s.bankrollCurrent, true)}
+              {formatCurrency(s.bankrollCurrent)}
             </span>
           </div>
         </div>

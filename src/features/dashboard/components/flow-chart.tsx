@@ -105,7 +105,7 @@ export function FlowChart({ data }: FlowChartProps) {
               axisLine={false}
               tickMargin={8}
               width={64}
-              tickFormatter={(value) => formatCurrency(Number(value), true)}
+              tickFormatter={(value) => formatCurrency(Number(value))}
               className="text-[10px]"
             />
             <ChartTooltip
@@ -124,7 +124,7 @@ export function FlowChart({ data }: FlowChartProps) {
                           {chartConfig[name as keyof typeof chartConfig]?.label ?? name}
                         </span>
                         <span className="font-mono font-medium text-foreground tabular-nums">
-                          {formatCurrency(Number(value), true)}
+                          {formatCurrency(Number(value))}
                         </span>
                       </div>
                     </>

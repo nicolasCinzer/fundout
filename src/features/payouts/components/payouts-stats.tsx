@@ -73,17 +73,17 @@ export function PayoutsStats({ payouts }: Props) {
               : undefined
           }
           badge={
-            stats.total > 0 ? `avg ${formatCurrency(avgNet, true)}` : undefined
+            stats.total > 0 ? `avg ${formatCurrency(avgNet)}` : undefined
           }
         />
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
           label="Net total"
-          value={formatCurrency(stats.totalNet, true)}
+          value={formatCurrency(stats.totalNet)}
           hint={
             stats.topNet
-              ? `${stats.topNet[0]} · ${formatCurrency(stats.topNet[1], true)}`
+              ? `${stats.topNet[0]} · ${formatCurrency(stats.topNet[1])}`
               : undefined
           }
           tone="positive"
@@ -92,10 +92,10 @@ export function PayoutsStats({ payouts }: Props) {
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
           label="Fees withheld"
-          value={formatCurrency(stats.totalFees, true)}
+          value={formatCurrency(stats.totalFees)}
           hint={
             stats.totalAmount > 0
-              ? `${formatCurrency(stats.totalAmount, true)} gross`
+              ? `${formatCurrency(stats.totalAmount)} gross`
               : undefined
           }
           badge={stats.totalAmount > 0 ? formatPercent(feePct) : undefined}
@@ -185,7 +185,7 @@ function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
                     {name}
                   </p>
                   <p className={cn("tabular-nums text-muted-foreground", col.countSize)}>
-                    {formatCurrency(value, true)}
+                    {formatCurrency(value)}
                   </p>
                 </div>
               </div>

@@ -82,7 +82,7 @@ export function BankrollMcResults({ result, input }: Props) {
       <Card className="gap-2 border-primary/40 px-4 py-3.5 shadow-sm">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-medium text-muted-foreground">Ruin rate</p>
-          <TopBadge tone={evTone}>EV {formatCurrency(result.evPerAttempt, true)}/attempt</TopBadge>
+          <TopBadge tone={evTone}>EV {formatCurrency(result.evPerAttempt)}/attempt</TopBadge>
         </div>
         <p
           className={cn(

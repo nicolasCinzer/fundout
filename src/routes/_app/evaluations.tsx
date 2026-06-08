@@ -349,7 +349,7 @@ function EvaluationsPage() {
                             {formatCurrency(e.account_size)}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">
-                            <span>{formatCurrency(e.fee_paid, true)}</span>
+                            <span>{formatCurrency(e.fee_paid)}</span>
                             {resetSum > 0 ? (
                               <>
                                 <span className="text-muted-foreground"> + </span>
@@ -357,7 +357,7 @@ function EvaluationsPage() {
                                   className="text-amber-600 dark:text-amber-400"
                                   title={`${resetCount} reset${resetCount === 1 ? "" : "s"}`}
                                 >
-                                  {formatCurrency(resetSum, true)}
+                                  {formatCurrency(resetSum)}
                                 </span>
                               </>
                             ) : null}

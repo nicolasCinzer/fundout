@@ -97,7 +97,7 @@ export function BacktestBankrollChart({ data, initialBankroll }: Props) {
                             {item.payload.event ? `${item.payload.event} →` : "Initial"}
                           </span>
                           <span className="font-mono font-medium text-foreground tabular-nums">
-                            {formatCurrency(Number(value), true)}
+                            {formatCurrency(Number(value))}
                           </span>
                         </div>
                       </>
