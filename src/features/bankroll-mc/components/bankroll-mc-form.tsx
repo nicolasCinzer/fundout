@@ -1,4 +1,5 @@
 import { useFormContext, type ControllerRenderProps, type FieldPath } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import {
@@ -52,6 +53,7 @@ function NumberFieldInput({
 }
 
 export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
+  const { t } = useTranslation('bankroll-mc')
   const { control, formState } = useFormContext<BankrollMcFormValues>()
 
   return (
@@ -59,7 +61,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
       <div className="flex items-center gap-2 border-b pb-2">
         <SlidersHorizontal className="h-4 w-4 text-primary" />
         <h2 className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
-          Simulation inputs
+          {t('form.simulationInputs')}
         </h2>
       </div>
       <form onSubmit={onSubmit} className="space-y-3">
@@ -69,7 +71,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="bankroll"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Bankroll ($)</FormLabel>
+              <FormLabel className="text-xs">{t('form.fields.bankroll')}</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -82,7 +84,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="cost"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Cost per attempt ($)</FormLabel>
+              <FormLabel className="text-xs">{t('form.fields.costPerAttempt')}</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -98,7 +100,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="payoutProbPct"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Payout probability (%)</FormLabel>
+              <FormLabel className="text-xs">{t('form.fields.payoutProbability')}</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.1} max={99.9} />
               </FormControl>
@@ -111,7 +113,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="payoutNet"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Net payout ($)</FormLabel>
+              <FormLabel className="text-xs">{t('form.fields.netPayout')}</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -127,7 +129,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           name="targetBankroll"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Target bankroll ($, optional)</FormLabel>
+              <FormLabel className="text-xs">{t('form.fields.targetBankroll')}</FormLabel>
               <FormControl>
                 <NumberFieldInput field={field} min={0.01} />
               </FormControl>
@@ -136,7 +138,7 @@ export function BankrollMcForm({ onSubmit }: BankrollMcFormProps) {
           )}
         />
         <Button type="submit" disabled={formState.isSubmitting} className="px-8">
-          Calculate
+          {formState.isSubmitting ? t('form.running') : t('form.submit')}
         </Button>
       </div>
       </form>

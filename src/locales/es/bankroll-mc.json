@@ -2,8 +2,14 @@
   "title": "Calculadora de bankroll",
   "description": "Simulaciones Monte Carlo para estresear tu bankroll.",
   "form": {
+    "simulationInputs": "Parámetros de simulación",
     "fields": {
       "initialBankroll": "Bankroll inicial (USD)",
+      "bankroll": "Bankroll ($)",
+      "costPerAttempt": "Costo por intento ($)",
+      "payoutProbability": "Probabilidad de retiro (%)",
+      "netPayout": "Retiro neto ($)",
+      "targetBankroll": "Bankroll objetivo ($, opcional)",
       "winRate": "Tasa de éxito (%)",
       "avgWin": "Ganancia promedio (USD)",
       "avgLoss": "Pérdida promedio (USD)",
@@ -11,8 +17,8 @@
       "numSimulations": "Simulaciones",
       "riskPerTrade": "Riesgo por operación (%)"
     },
-    "submit": "Ejecutar simulación",
-    "running": "Ejecutando…"
+    "submit": "Calcular",
+    "running": "Calculando…"
   },
   "results": {
     "title": "Resultados",
@@ -20,7 +26,34 @@
     "medianFinal": "Bankroll final mediano",
     "percentile10": "Percentil 10",
     "percentile90": "Percentil 90",
-    "noResults": "Ejecutá la simulación para ver los resultados."
+    "noResults": "Completá el formulario para ver los resultados",
+    "ruinRate": "Tasa de ruina",
+    "evPerAttempt": "VE {{amount}}/intento",
+    "accountsLost": "{{lost}} cuentas perdidas · {{survived}} sobrevivieron",
+    "worstCaseAttempts": "Máximo de intentos antes de la ruina:",
+    "whereYouEndUp": "Dónde terminás",
+    "whereYouEndUpHint": "Bankroll final tras 100 intentos. Cada fila es un segmento de las {{count}} simulaciones.",
+    "pessimistic": "Pesimista",
+    "pessimisticSub": "El 10% de las simulaciones terminó por debajo",
+    "typical": "Típico",
+    "typicalSub": "mediana — la mitad terminó cerca",
+    "optimistic": "Optimista",
+    "optimisticSub": "El 10% superó este valor",
+    "avgAcrossRuns": "Promedio en todas las simulaciones",
+    "vsStart": "vs inicio",
+    "runMetrics": "Métricas por simulación",
+    "runMetricsHint": "Promedios en las {{count}} simulaciones.",
+    "attemptsToRuin": "Intentos hasta la ruina",
+    "attemptsToRuinHintNone": "Ninguna simulación se fue a cero.",
+    "attemptsToRuinHint": "Promedio de intentos antes de quedarse sin bankroll (solo simulaciones fallidas).",
+    "payoutsCollected": "Retiros obtenidos",
+    "payoutsCollectedHint": "De hasta 100 intentos. Esperado: {{expected}} al {{rate}} de probabilidad.",
+    "maxDrawdown": "Drawdown máximo",
+    "maxDrawdownHint": "Pérdida promedio de pico a valle en una simulación. Más del 50% implica oscilaciones severas.",
+    "pReachTarget": "Probabilidad de alcanzar {{target}}",
+    "pReachTargetHint": "Proporción de simulaciones que alcanzaron el bankroll objetivo en algún momento durante los 100 intentos.",
+    "basedOnRuns": "Basado en {{count}} simulaciones.",
+    "negativeEv": "VE negativo: la ruina solo crece con el tiempo con esta estrategia."
   },
   "chart": {
     "title": "Distribución del bankroll",

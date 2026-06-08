@@ -2,6 +2,7 @@
   "title": "Calculadora de evaluación",
   "description": "Estimá la probabilidad de éxito y el ROI antes de comprar un challenge.",
   "form": {
+    "challengeSetup": "Configuración del challenge",
     "fields": {
       "accountSize": "Tamaño de cuenta",
       "fee": "Comisión del challenge (USD)",
@@ -9,17 +10,52 @@
       "profitTarget": "Objetivo de ganancia (%)",
       "maxDrawdown": "Drawdown máximo (%)",
       "payoutPct": "Split de retiro (%)",
-      "numSimulations": "Simulaciones"
+      "numSimulations": "Simulaciones",
+      "evalCost": "Costo de evaluación ($)",
+      "activationFee": "Comisión de activación ($)",
+      "drawdown": "Drawdown ($)",
+      "objective": "Objetivo ($)",
+      "ddType": "Tipo de DD",
+      "ddTypeStatic": "Estático",
+      "ddTypeEod": "EOD",
+      "ddTypeTrailing": "Trailing — próximamente",
+      "consistencyPct": "Ganancia diaria máx. (% del objetivo)",
+      "minDays": "Días mínimos",
+      "minProfit": "Ganancia diaria mínima ($)",
+      "payoutCap": "Tope de retiro (%)",
+      "profitSplit": "Split de ganancia (%)",
+      "minPayoutRequest": "Retiro mínimo solicitado ($)",
+      "minPayoutRequestHint": "Monto mínimo que permite solicitar la propfirm"
     },
+    "toggles": {
+      "consistency": "Consistencia",
+      "minTradingDays": "Días mínimos de trading",
+      "ddFixed": "DD fijo",
+      "fundedPhase": "Fase fondeada"
+    },
+    "phase": "Fase {{number}}",
+    "funded": "FONDEADO",
+    "addPhase": "Agregar fase",
+    "removePhase": "Eliminar fase",
     "submit": "Calcular",
     "calculating": "Calculando…"
   },
   "results": {
     "title": "Resultados",
     "passProbability": "Probabilidad de aprobar",
+    "payoutProbability": "Probabilidad de retiro",
     "expectedROI": "ROI esperado",
-    "breakEven": "Tasa de éxito de equilibrio",
+    "breakEven": "Tasa de equilibrio",
     "expectedValue": "Valor esperado",
-    "noResults": "Ejecutá la calculadora para ver los resultados."
+    "roi": "ROI",
+    "phaseBreakdown": "Desglose por fase",
+    "plan": "Plan",
+    "attempts": "{{count}} intento",
+    "attempts_other": "{{count}} intentos",
+    "attemptsHint": "~{{count}} intento por retiro",
+    "attemptsHint_other": "~{{count}} intentos por retiro",
+    "grossPayout": "Retiro bruto: {{amount}}",
+    "breakEvenCost": "Costo de equilibrio: {{amount}}",
+    "noResults": "Completá el formulario para ver los resultados"
   }
 }

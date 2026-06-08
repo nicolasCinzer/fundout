@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { formatCurrency, formatDate, formatPercent } from "@/lib/format"
+import { formatCurrency, formatPercent } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
 import { cn } from "@/lib/utils"
 import { BacktestCardActions } from "./backtest-card-actions"
 import type { Backtest, BacktestStats } from "@/features/backtest/types"
@@ -12,6 +13,7 @@ type Props = {
 }
 
 export function BacktestCard({ backtest, stats }: Props) {
+  const { date: formatDate } = useFormatters()
   const isGameOver = stats.isGameOver
   const hasEvents = stats.counts.E > 0
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useFormContext, useFieldArray } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -16,6 +17,7 @@ import type { CalculatorFormValues } from '../schemas/calculator-form-schema'
 import { CalculatorPhaseCard } from './calculator-phase-card'
 
 export function CalculatorForm() {
+  const { t } = useTranslation('calculator')
   const { control } = useFormContext<CalculatorFormValues>()
   const { fields, append, remove } = useFieldArray({ name: 'phases', control })
   const [activePhase, setActivePhase] = useState('0')
@@ -50,7 +52,7 @@ export function CalculatorForm() {
         <div className="flex items-center gap-2 border-b pb-2">
           <Landmark className="h-4 w-4 text-primary" />
           <h2 className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
-            Challenge setup
+            {t('form.challengeSetup')}
           </h2>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -59,7 +61,7 @@ export function CalculatorForm() {
             name="cEval"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">Evaluation cost ($)</FormLabel>
+                <FormLabel className="text-xs">{t('form.fields.evalCost')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -78,7 +80,7 @@ export function CalculatorForm() {
             name="cActivation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">Activation fee ($)</FormLabel>
+                <FormLabel className="text-xs">{t('form.fields.activationFee')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -105,7 +107,7 @@ export function CalculatorForm() {
                   value={String(i)}
                   className="px-3 text-[11px] font-heading uppercase tracking-wide"
                 >
-                  Phase {i + 1}
+                  {t('form.phase', { number: i + 1 })}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -118,7 +120,7 @@ export function CalculatorForm() {
               onClick={handleAddPhase}
             >
               <Plus className="h-3.5 w-3.5" />
-              Add phase
+              {t('form.addPhase')}
             </Button>
           </div>
           {fields.map((field, i) => (

@@ -2,6 +2,7 @@
   "title": "Evaluation Calculator",
   "description": "Estimate win probability and ROI before buying a challenge.",
   "form": {
+    "challengeSetup": "Challenge setup",
     "fields": {
       "accountSize": "Account size",
       "fee": "Challenge fee (USD)",
@@ -9,17 +10,52 @@
       "profitTarget": "Profit target (%)",
       "maxDrawdown": "Max drawdown (%)",
       "payoutPct": "Payout split (%)",
-      "numSimulations": "Simulations"
+      "numSimulations": "Simulations",
+      "evalCost": "Evaluation cost ($)",
+      "activationFee": "Activation fee ($)",
+      "drawdown": "Drawdown ($)",
+      "objective": "Objective ($)",
+      "ddType": "DD type",
+      "ddTypeStatic": "Static",
+      "ddTypeEod": "EOD",
+      "ddTypeTrailing": "Trailing — soon",
+      "consistencyPct": "Max daily profit (% of objective)",
+      "minDays": "Min days",
+      "minProfit": "Daily min profit ($)",
+      "payoutCap": "Payout cap (%)",
+      "profitSplit": "Profit split (%)",
+      "minPayoutRequest": "Min payout request ($)",
+      "minPayoutRequestHint": "Minimum amount the propfirm allows to request"
     },
+    "toggles": {
+      "consistency": "Consistency",
+      "minTradingDays": "Min trading days",
+      "ddFixed": "DD fixed",
+      "fundedPhase": "Funded phase"
+    },
+    "phase": "Phase {{number}}",
+    "funded": "FUNDED",
+    "addPhase": "Add phase",
+    "removePhase": "Remove phase",
     "submit": "Calculate",
     "calculating": "Calculating…"
   },
   "results": {
     "title": "Results",
     "passProbability": "Pass probability",
+    "payoutProbability": "Payout probability",
     "expectedROI": "Expected ROI",
     "breakEven": "Break-even win rate",
     "expectedValue": "Expected value",
-    "noResults": "Run the calculator to see results."
+    "roi": "ROI",
+    "phaseBreakdown": "Phase breakdown",
+    "plan": "Plan",
+    "attempts": "{{count}} attempt",
+    "attempts_other": "{{count}} attempts",
+    "attemptsHint": "~{{count}} attempt per payout",
+    "attemptsHint_other": "~{{count}} attempts per payout",
+    "grossPayout": "Gross payout: {{amount}}",
+    "breakEvenCost": "Break-even cost: {{amount}}",
+    "noResults": "Fill in the form to see results"
   }
 }

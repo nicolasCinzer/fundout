@@ -30,7 +30,8 @@ import {
 } from "@/features/payouts/api/payouts-queries"
 import { PayoutRowActions } from "@/features/payouts/components/payout-row-actions"
 import { PayoutsStats } from "@/features/payouts/components/payouts-stats"
-import { formatCurrency, formatDate } from "@/lib/format"
+import { formatCurrency } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
 
 const SORT_KEYS = ["propfirm", "paid_at", "amount", "fee_taken", "net"] as const
 
@@ -85,6 +86,7 @@ function sortPayouts(
 }
 
 function PayoutsPage() {
+  const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const { data, isLoading } = usePayouts()

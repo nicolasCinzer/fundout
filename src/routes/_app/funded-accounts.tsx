@@ -45,7 +45,8 @@ import {
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { FundedAccountRowActions } from "@/features/funded-accounts/components/funded-account-row-actions"
 import { FundedAccountsStats } from "@/features/funded-accounts/components/funded-accounts-stats"
-import { formatCurrency, formatDate } from "@/lib/format"
+import { formatCurrency } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
 
 const SORT_KEYS = [
   "propfirm",
@@ -126,6 +127,7 @@ function sortFundedAccounts(
 }
 
 function FundedAccountsPage() {
+  const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const fundedAccounts = useFundedAccounts()

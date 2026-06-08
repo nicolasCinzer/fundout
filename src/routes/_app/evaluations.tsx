@@ -32,7 +32,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { formatCurrency, formatDate } from "@/lib/format"
+import { formatCurrency } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
 import {
   compareDates,
   compareNullableDates,
@@ -125,6 +126,7 @@ function sortEvaluations(
 }
 
 function EvaluationsPage() {
+  const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const { data, isLoading } = useEvaluations()
