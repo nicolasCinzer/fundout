@@ -1,0 +1,78 @@
+{
+  "title": "Evaluations",
+  "description": "Track your propfirm challenges.",
+  "status": {
+    "inProgress": "In progress",
+    "passed": "Passed",
+    "failed": "Failed"
+  },
+  "form": {
+    "new": {
+      "title": "New evaluation",
+      "description": "Record a propfirm challenge you've purchased. You can edit details later as the evaluation progresses."
+    },
+    "edit": {
+      "title": "Edit evaluation",
+      "description": "Update the details of this evaluation."
+    },
+    "fields": {
+      "propfirm": "Propfirm",
+      "propfirmPlaceholder": "Pick a propfirm…",
+      "propfirmLoading": "Loading…",
+      "propfirmHint": "Don't see your propfirm? Type its name and hit \"Create\".",
+      "accountSize": "Account size",
+      "feePaid": "Fee paid (USD)",
+      "feePlaceholder": "540.00",
+      "purchasedOn": "Purchased on",
+      "status": "Status",
+      "closedOn": "Closed on",
+      "closedOnHint": "Required when status is anything other than in progress.",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Anything worth remembering about this challenge…"
+    },
+    "editStatusHint": "To change status (mark as funded, failed, or log a reset), use the row actions menu.",
+    "submit": {
+      "add": "Add evaluation",
+      "save": "Save changes",
+      "saving": "Saving…"
+    }
+  },
+  "actions": {
+    "markFunded": "Mark as funded",
+    "logReset": "Log reset",
+    "edit": "Edit",
+    "delete": "Delete evaluation"
+  },
+  "toasts": {
+    "added": "Evaluation added",
+    "updated": "Evaluation updated",
+    "deleted": "Evaluation deleted",
+    "errorSave": "Could not save the evaluation.",
+    "errorUpdate": "Could not update the evaluation.",
+    "errorDelete": "Could not delete the evaluation."
+  },
+  "stats": {
+    "total": "Total",
+    "funded": "Funded",
+    "failed": "Failed",
+    "active": "active",
+    "attempt": "attempt",
+    "attempts": "attempts",
+    "topPropfirms": "Top propfirms",
+    "noData": "No data yet",
+    "nothingActive": "Nothing active"
+  },
+  "emptyState": {
+    "title": "No evaluations yet",
+    "description": "Add your first challenge to start tracking your journey."
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Account size",
+    "fee": "Fee",
+    "purchaseDate": "Purchased",
+    "status": "Status",
+    "closedAt": "Closed",
+    "actions": "Actions"
+  }
+}

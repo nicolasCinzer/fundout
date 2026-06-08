@@ -1,0 +1,112 @@
+{
+  "title": "Backtest",
+  "description": "Simulá tu estrategia de trading sobre secuencias históricas.",
+  "list": {
+    "empty": {
+      "title": "Todavía no hay backtests",
+      "description": "Creá tu primer backtest para empezar a simular tu estrategia."
+    },
+    "createButton": "Nuevo backtest"
+  },
+  "form": {
+    "new": {
+      "title": "Nuevo backtest",
+      "description": "Configurá los parámetros de tu simulación."
+    },
+    "edit": {
+      "title": "Editar backtest",
+      "description": "Actualizá los parámetros de la simulación."
+    },
+    "fields": {
+      "name": "Nombre",
+      "namePlaceholder": "Mi estrategia v1",
+      "initialBankroll": "Bankroll inicial (USD)",
+      "evalCost": "Costo de evaluación (USD)",
+      "accountSize": "Tamaño de cuenta (USD)",
+      "notes": "Notas (opcional)"
+    },
+    "submit": {
+      "create": "Crear backtest",
+      "save": "Guardar cambios",
+      "saving": "Guardando…"
+    }
+  },
+  "event": {
+    "type": {
+      "E": "Evaluación",
+      "F": "Fondeado",
+      "P": "Retiro"
+    },
+    "add": "Agregar evento",
+    "undo": "Deshacer último evento"
+  },
+  "stats": {
+    "volumes": {
+      "title": "Volúmenes",
+      "evaluations": "Evaluaciones",
+      "funded": "Fondeados",
+      "fundedWithPayout": "Fondeados con retiro",
+      "payouts": "Retiros"
+    },
+    "rates": {
+      "title": "Tasas",
+      "percentFunded": "% Fondeado",
+      "percentPayout": "% Retiro",
+      "percentSuccess": "% Éxito",
+      "payoutProbability": "Probabilidad de retiro"
+    },
+    "risk": {
+      "title": "Riesgo",
+      "worstStreak": "Peor racha"
+    },
+    "financial": {
+      "title": "Resumen financiero",
+      "initialBankroll": "Bankroll inicial",
+      "spentOnEvaluations": "Gastado en evaluaciones",
+      "totalWithdrawn": "Total retirado",
+      "medianPayout": "Retiro mediano",
+      "avgPayoutsPerFunded": "Retiros prom. / fondeado",
+      "netProfit": "Ganancia neta",
+      "roi": "ROI",
+      "currentBankroll": "Bankroll actual"
+    }
+  },
+  "tooltips": {
+    "percentFunded": "Proporción de evaluaciones que alcanzaron el estado fondeado.",
+    "percentPayout": "Proporción de cuentas fondeadas que produjeron al menos un retiro.",
+    "percentSuccess": "Proporción de evaluaciones que terminaron en una cuenta fondeada con retiro — la conversión de extremo a extremo.",
+    "payoutProbability": "Eventos de retiro esperados por evaluación. Puede superar el 100% cuando las cuentas fondeadas producen múltiples retiros.",
+    "worstStreak": "Racha consecutiva más larga de evaluaciones sin producir un retiro.",
+    "initialBankroll": "Capital inicial para este backtest. El ROI se calcula sobre este número.",
+    "spentOnEvaluations": "Costo total de los intentos de evaluación: count(E) × costo_eval.",
+    "totalWithdrawn": "Suma de todos los montos de retiro en todas las cuentas fondeadas.",
+    "medianPayout": "Valor central de todos los montos de retiro — más resistente a valores atípicos que el promedio.",
+    "avgPayoutsPerFunded": "Número medio de eventos de retiro por cuenta fondeada: count(P) / count(F).",
+    "netProfit": "Total retirado menos gastado en evaluaciones.",
+    "roi": "Ganancia neta / bankroll inicial. Medido contra el capital inicial, no el total invertido — puede superar el 100% cuando los retiros superan ampliamente el inicial.",
+    "currentBankroll": "Bankroll inicial + ganancia neta. Capital disponible en este punto de la simulación."
+  },
+  "lifecycle": {
+    "status": {
+      "open": "Abierto",
+      "fundedActive": "Fondeado (activo)",
+      "lost": "Perdido",
+      "breachedNoPayout": "Incumplido (sin retiro)",
+      "fundedPaid": "Fondeado (con retiro)"
+    }
+  },
+  "toasts": {
+    "created": "Backtest creado",
+    "updated": "Backtest actualizado",
+    "deleted": "Backtest eliminado",
+    "eventAdded": "Evento agregado",
+    "eventUndone": "Último evento eliminado",
+    "errorSave": "No se pudo guardar el backtest.",
+    "errorDelete": "No se pudo eliminar el backtest."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar backtest",
+    "viewDetail": "Ver detalle"
+  }
+}

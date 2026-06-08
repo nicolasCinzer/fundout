@@ -1,0 +1,30 @@
+{
+  "title": "Calculadora de bankroll",
+  "description": "Simulaciones Monte Carlo para estresear tu bankroll.",
+  "form": {
+    "fields": {
+      "initialBankroll": "Bankroll inicial (USD)",
+      "winRate": "Tasa de éxito (%)",
+      "avgWin": "Ganancia promedio (USD)",
+      "avgLoss": "Pérdida promedio (USD)",
+      "numTrades": "Número de operaciones",
+      "numSimulations": "Simulaciones",
+      "riskPerTrade": "Riesgo por operación (%)"
+    },
+    "submit": "Ejecutar simulación",
+    "running": "Ejecutando…"
+  },
+  "results": {
+    "title": "Resultados",
+    "ruinProbability": "Probabilidad de ruina",
+    "medianFinal": "Bankroll final mediano",
+    "percentile10": "Percentil 10",
+    "percentile90": "Percentil 90",
+    "noResults": "Ejecutá la simulación para ver los resultados."
+  },
+  "chart": {
+    "title": "Distribución del bankroll",
+    "xAxis": "Bankroll final (USD)",
+    "yAxis": "Frecuencia"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "title": "Retiros",
+  "description": "Seguí todos tus retiros.",
+  "form": {
+    "new": {
+      "title": "Registrar retiro",
+      "description": "Registrá un retiro de una cuenta fondeada."
+    },
+    "edit": {
+      "title": "Editar retiro",
+      "description": "Actualizá los detalles de este retiro."
+    },
+    "fields": {
+      "amount": "Monto (USD)",
+      "amountPlaceholder": "1000.00",
+      "fee": "Comisión (USD)",
+      "feePlaceholder": "0.00",
+      "paidOn": "Pagado el",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "Método, tipo de cambio, algo que recordar…"
+    },
+    "submit": {
+      "record": "Registrar retiro",
+      "save": "Guardar cambios",
+      "saving": "Guardando…"
+    }
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "amount": "Monto",
+    "fee": "Comisión",
+    "net": "Neto",
+    "paidOn": "Pagado el",
+    "actions": "Acciones"
+  },
+  "stats": {
+    "total": "Total retiros",
+    "totalAmount": "Total retirado",
+    "avgAmount": "Retiro promedio",
+    "lastPayout": "Último retiro"
+  },
+  "emptyState": {
+    "title": "Todavía no hay retiros",
+    "description": "Registrá tu primer retiro para empezar a seguir tus ingresos."
+  },
+  "toasts": {
+    "recorded": "Retiro registrado",
+    "updated": "Retiro actualizado",
+    "deleted": "Retiro eliminado",
+    "errorSave": "No se pudo guardar el retiro.",
+    "errorUpdate": "No se pudo actualizar el retiro.",
+    "errorDelete": "No se pudo eliminar el retiro."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar retiro"
+  },
+  "errors": {
+    "dateBeforeStart": "La fecha del retiro no puede ser anterior a la fecha de inicio del fondeado",
+    "dateInFuture": "La fecha del retiro no puede ser en el futuro"
+  }
+}

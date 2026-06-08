@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "continue": "Continuar"
+  },
+  "status": {
+    "loading": "Cargando…",
+    "error": "Algo salió mal",
+    "noData": "Sin datos"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "language": {
+    "toggle": "Cambiar idioma",
+    "es": "Español",
+    "en": "English"
+  },
+  "nav": {
+    "groups": {
+      "tracking": "Seguimiento",
+      "tools": "Herramientas"
+    },
+    "items": {
+      "dashboard": "Panel",
+      "evaluations": "Evaluaciones",
+      "fundedAccounts": "Cuentas fondeadas",
+      "payouts": "Retiros",
+      "calculator": "Calculadora de evaluación",
+      "bankrollMc": "Calculadora de bankroll",
+      "backtest": "Backtest"
+    },
+    "newEvaluation": "Nueva evaluación",
+    "signedIn": "Sesión iniciada",
+    "account": "Cuenta",
+    "signOut": "Cerrar sesión"
+  },
+  "confirmDelete": {
+    "title": "¿Eliminar esto?",
+    "confirmLabel": "Eliminar",
+    "cancel": "Cancelar",
+    "deleting": "Eliminando…"
+  },
+  "emptyState": {
+    "noResults": "Sin resultados",
+    "noDataYet": "Todavía no hay datos"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente"
+  }
+}

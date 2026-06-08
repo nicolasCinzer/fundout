@@ -1,0 +1,30 @@
+{
+  "title": "Bankroll Calculator",
+  "description": "Monte Carlo simulations to stress-test your bankroll.",
+  "form": {
+    "fields": {
+      "initialBankroll": "Initial bankroll (USD)",
+      "winRate": "Win rate (%)",
+      "avgWin": "Average win (USD)",
+      "avgLoss": "Average loss (USD)",
+      "numTrades": "Number of trades",
+      "numSimulations": "Simulations",
+      "riskPerTrade": "Risk per trade (%)"
+    },
+    "submit": "Run simulation",
+    "running": "Running…"
+  },
+  "results": {
+    "title": "Results",
+    "ruinProbability": "Ruin probability",
+    "medianFinal": "Median final bankroll",
+    "percentile10": "10th percentile",
+    "percentile90": "90th percentile",
+    "noResults": "Run the simulation to see results."
+  },
+  "chart": {
+    "title": "Bankroll distribution",
+    "xAxis": "Final bankroll (USD)",
+    "yAxis": "Frequency"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Funded accounts",
+  "description": "Track your active and closed funded accounts.",
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Account size",
+    "startDate": "Start date",
+    "status": "Status",
+    "payouts": "Payouts",
+    "actions": "Actions"
+  },
+  "emptyState": {
+    "title": "No funded accounts yet",
+    "description": "When an evaluation is marked as funded it will appear here."
+  },
+  "stats": {
+    "total": "Total",
+    "active": "Active",
+    "closed": "Closed",
+    "totalWithdrawn": "Total withdrawn"
+  },
+  "toasts": {
+    "deleted": "Funded account deleted",
+    "errorDelete": "Could not delete the funded account.",
+    "closed": "Account closed",
+    "errorClose": "Could not close the account."
+  },
+  "actions": {
+    "addPayout": "Add payout",
+    "close": "Close account",
+    "delete": "Delete"
+  }
+}

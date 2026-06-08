@@ -1,0 +1,25 @@
+{
+  "title": "Calculadora de evaluación",
+  "description": "Estimá la probabilidad de éxito y el ROI antes de comprar un challenge.",
+  "form": {
+    "fields": {
+      "accountSize": "Tamaño de cuenta",
+      "fee": "Comisión del challenge (USD)",
+      "winRate": "Tasa de éxito estimada (%)",
+      "profitTarget": "Objetivo de ganancia (%)",
+      "maxDrawdown": "Drawdown máximo (%)",
+      "payoutPct": "Split de retiro (%)",
+      "numSimulations": "Simulaciones"
+    },
+    "submit": "Calcular",
+    "calculating": "Calculando…"
+  },
+  "results": {
+    "title": "Resultados",
+    "passProbability": "Probabilidad de aprobar",
+    "expectedROI": "ROI esperado",
+    "breakEven": "Tasa de éxito de equilibrio",
+    "expectedValue": "Valor esperado",
+    "noResults": "Ejecutá la calculadora para ver los resultados."
+  }
+}

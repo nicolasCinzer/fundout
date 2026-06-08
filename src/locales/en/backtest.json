@@ -1,0 +1,112 @@
+{
+  "title": "Backtest",
+  "description": "Simulate your trading strategy over historical sequences.",
+  "list": {
+    "empty": {
+      "title": "No backtests yet",
+      "description": "Create your first backtest to start simulating your strategy."
+    },
+    "createButton": "New backtest"
+  },
+  "form": {
+    "new": {
+      "title": "New backtest",
+      "description": "Configure your simulation parameters."
+    },
+    "edit": {
+      "title": "Edit backtest",
+      "description": "Update simulation parameters."
+    },
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "My strategy v1",
+      "initialBankroll": "Initial bankroll (USD)",
+      "evalCost": "Evaluation cost (USD)",
+      "accountSize": "Account size (USD)",
+      "notes": "Notes (optional)"
+    },
+    "submit": {
+      "create": "Create backtest",
+      "save": "Save changes",
+      "saving": "Saving…"
+    }
+  },
+  "event": {
+    "type": {
+      "E": "Evaluation",
+      "F": "Funded",
+      "P": "Payout"
+    },
+    "add": "Add event",
+    "undo": "Undo last event"
+  },
+  "stats": {
+    "volumes": {
+      "title": "Volumes",
+      "evaluations": "Evaluations",
+      "funded": "Funded",
+      "fundedWithPayout": "Funded w/ payout",
+      "payouts": "Payouts"
+    },
+    "rates": {
+      "title": "Rates",
+      "percentFunded": "% Funded",
+      "percentPayout": "% Payout",
+      "percentSuccess": "% Success",
+      "payoutProbability": "Payout Probability"
+    },
+    "risk": {
+      "title": "Risk",
+      "worstStreak": "Worst Streak"
+    },
+    "financial": {
+      "title": "Financial summary",
+      "initialBankroll": "Initial bankroll",
+      "spentOnEvaluations": "Spent on evaluations",
+      "totalWithdrawn": "Total withdrawn",
+      "medianPayout": "Median payout",
+      "avgPayoutsPerFunded": "Avg payouts / funded",
+      "netProfit": "Net profit",
+      "roi": "ROI",
+      "currentBankroll": "Current bankroll"
+    }
+  },
+  "tooltips": {
+    "percentFunded": "Share of evaluations that reached funded status.",
+    "percentPayout": "Share of funded accounts that produced at least one payout.",
+    "percentSuccess": "Share of evaluations that ended in a paid funded account — the end-to-end conversion.",
+    "payoutProbability": "Expected payout events per evaluation. Can exceed 100% when funded accounts produce multiple payouts.",
+    "worstStreak": "Longest consecutive run of evaluations without producing a payout.",
+    "initialBankroll": "Starting capital for this backtest. ROI is computed against this number.",
+    "spentOnEvaluations": "Total cost of evaluation attempts: count(E) × eval_cost.",
+    "totalWithdrawn": "Sum of every payout event amount across all funded accounts.",
+    "medianPayout": "Middle value of all payout amounts — resists outliers better than the mean.",
+    "avgPayoutsPerFunded": "Mean number of payout events per funded account: count(P) / count(F).",
+    "netProfit": "Total withdrawn minus spent on evaluations.",
+    "roi": "Net profit / initial bankroll. Measured against the starting capital, not total invested — can exceed 100% when payouts dwarf the initial.",
+    "currentBankroll": "Initial bankroll + net profit. Live capital at this point in the simulation."
+  },
+  "lifecycle": {
+    "status": {
+      "open": "Open",
+      "fundedActive": "Funded (active)",
+      "lost": "Lost",
+      "breachedNoPayout": "Breached (no payout)",
+      "fundedPaid": "Funded (paid)"
+    }
+  },
+  "toasts": {
+    "created": "Backtest created",
+    "updated": "Backtest updated",
+    "deleted": "Backtest deleted",
+    "eventAdded": "Event added",
+    "eventUndone": "Last event removed",
+    "errorSave": "Could not save the backtest.",
+    "errorDelete": "Could not delete the backtest."
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete backtest",
+    "viewDetail": "View detail"
+  }
+}

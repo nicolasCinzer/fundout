@@ -1,0 +1,62 @@
+{
+  "title": "Payouts",
+  "description": "Track all your withdrawals.",
+  "form": {
+    "new": {
+      "title": "Record payout",
+      "description": "Log a withdrawal from a funded account."
+    },
+    "edit": {
+      "title": "Edit payout",
+      "description": "Update the details of this payout."
+    },
+    "fields": {
+      "amount": "Amount (USD)",
+      "amountPlaceholder": "1000.00",
+      "fee": "Fee (USD)",
+      "feePlaceholder": "0.00",
+      "paidOn": "Paid on",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Method, exchange rate, anything to remember…"
+    },
+    "submit": {
+      "record": "Record payout",
+      "save": "Save changes",
+      "saving": "Saving…"
+    }
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "amount": "Amount",
+    "fee": "Fee",
+    "net": "Net",
+    "paidOn": "Paid on",
+    "actions": "Actions"
+  },
+  "stats": {
+    "total": "Total payouts",
+    "totalAmount": "Total withdrawn",
+    "avgAmount": "Avg payout",
+    "lastPayout": "Last payout"
+  },
+  "emptyState": {
+    "title": "No payouts yet",
+    "description": "Record your first withdrawal to start tracking your income."
+  },
+  "toasts": {
+    "recorded": "Payout recorded",
+    "updated": "Payout updated",
+    "deleted": "Payout deleted",
+    "errorSave": "Could not save the payout.",
+    "errorUpdate": "Could not update the payout.",
+    "errorDelete": "Could not delete the payout."
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete payout"
+  },
+  "errors": {
+    "dateBeforeStart": "Payout date cannot be before the funding start date",
+    "dateInFuture": "Payout date cannot be in the future"
+  }
+}

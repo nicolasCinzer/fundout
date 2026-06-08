@@ -1,0 +1,33 @@
+{
+  "title": "Cuentas fondeadas",
+  "description": "Seguí tus cuentas fondeadas activas y cerradas.",
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Tamaño de cuenta",
+    "startDate": "Fecha de inicio",
+    "status": "Estado",
+    "payouts": "Retiros",
+    "actions": "Acciones"
+  },
+  "emptyState": {
+    "title": "Todavía no hay cuentas fondeadas",
+    "description": "Cuando una evaluación se marca como fondeada aparecerá acá."
+  },
+  "stats": {
+    "total": "Total",
+    "active": "Activas",
+    "closed": "Cerradas",
+    "totalWithdrawn": "Total retirado"
+  },
+  "toasts": {
+    "deleted": "Cuenta fondeada eliminada",
+    "errorDelete": "No se pudo eliminar la cuenta fondeada.",
+    "closed": "Cuenta cerrada",
+    "errorClose": "No se pudo cerrar la cuenta."
+  },
+  "actions": {
+    "addPayout": "Agregar retiro",
+    "close": "Cerrar cuenta",
+    "delete": "Eliminar"
+  }
+}

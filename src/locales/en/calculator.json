@@ -1,0 +1,25 @@
+{
+  "title": "Evaluation Calculator",
+  "description": "Estimate win probability and ROI before buying a challenge.",
+  "form": {
+    "fields": {
+      "accountSize": "Account size",
+      "fee": "Challenge fee (USD)",
+      "winRate": "Estimated win rate (%)",
+      "profitTarget": "Profit target (%)",
+      "maxDrawdown": "Max drawdown (%)",
+      "payoutPct": "Payout split (%)",
+      "numSimulations": "Simulations"
+    },
+    "submit": "Calculate",
+    "calculating": "Calculating…"
+  },
+  "results": {
+    "title": "Results",
+    "passProbability": "Pass probability",
+    "expectedROI": "Expected ROI",
+    "breakEven": "Break-even win rate",
+    "expectedValue": "Expected value",
+    "noResults": "Run the calculator to see results."
+  }
+}
