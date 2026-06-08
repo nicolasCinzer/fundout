@@ -16,8 +16,16 @@
   "stats": {
     "total": "Total",
     "active": "Active",
+    "breached": "Breached",
     "closed": "Closed",
-    "totalWithdrawn": "Total withdrawn"
+    "totalWithdrawn": "Total withdrawn",
+    "fundedLifetime": "Funded accounts lifetime",
+    "nothingActive": "Nothing active",
+    "activeHint": "active",
+    "breachedHint": "breached",
+    "fundedCount": "funded",
+    "topPropfirms": "Top propfirms by funded accounts",
+    "noData": "No data yet"
   },
   "toasts": {
     "deleted": "Funded account deleted",

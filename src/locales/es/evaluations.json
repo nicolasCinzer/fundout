@@ -62,6 +62,46 @@
     "noData": "Sin datos aún",
     "nothingActive": "Ninguna activa"
   },
+  "logReset": {
+    "title": "Registrar reset",
+    "descriptionWithName": "Registrá un reset en tu evaluación de {{name}}. La comisión se suma al total de la evaluación.",
+    "description": "Registrá un reset en esta evaluación. La comisión se suma al total de la evaluación.",
+    "fields": {
+      "resetFee": "Comisión de reset (USD)",
+      "resetDate": "Fecha del reset",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "¿Por qué hiciste el reset?"
+    },
+    "submit": {
+      "save": "Registrar reset",
+      "saving": "Guardando…"
+    },
+    "toasts": {
+      "logged": "Reset registrado",
+      "errorLog": "No se pudo registrar el reset."
+    }
+  },
+  "markFunded": {
+    "title": "Marcar como fondeada",
+    "description": "¿Cuándo se fondeó esta evaluación? Esto define el inicio de la ventana de retiros.",
+    "fields": {
+      "fundedOn": "Fondeada el"
+    },
+    "submit": {
+      "save": "Marcar como fondeada",
+      "saving": "Guardando…"
+    },
+    "toasts": {
+      "marked": "Marcada como fondeada",
+      "undone": "Deshecho",
+      "errorMark": "No se pudo marcar como fondeada",
+      "errorUndo": "La reversión falló parcialmente — actualizá la página y verificá."
+    },
+    "errors": {
+      "dateBeforePurchase": "La fecha de fondeo no puede ser anterior a la fecha de compra",
+      "dateInFuture": "La fecha de fondeo no puede ser en el futuro"
+    }
+  },
   "emptyState": {
     "title": "Todavía no hay evaluaciones",
     "description": "Agregá tu primer challenge para empezar a seguir tu recorrido."

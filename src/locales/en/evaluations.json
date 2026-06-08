@@ -62,6 +62,46 @@
     "noData": "No data yet",
     "nothingActive": "Nothing active"
   },
+  "logReset": {
+    "title": "Log a reset",
+    "descriptionWithName": "Record a reset on your {{name}} evaluation. The fee is added to the evaluation's total.",
+    "description": "Record a reset on this evaluation. The fee is added to the evaluation's total.",
+    "fields": {
+      "resetFee": "Reset fee (USD)",
+      "resetDate": "Reset date",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Why did you reset?"
+    },
+    "submit": {
+      "save": "Log reset",
+      "saving": "Saving…"
+    },
+    "toasts": {
+      "logged": "Reset logged",
+      "errorLog": "Could not log the reset."
+    }
+  },
+  "markFunded": {
+    "title": "Mark as funded",
+    "description": "When did this evaluation get funded? This sets the start of the payout window.",
+    "fields": {
+      "fundedOn": "Funded on"
+    },
+    "submit": {
+      "save": "Mark as funded",
+      "saving": "Saving…"
+    },
+    "toasts": {
+      "marked": "Marked as funded",
+      "undone": "Undone",
+      "errorMark": "Could not mark as funded",
+      "errorUndo": "Undo partially failed — please refresh and check."
+    },
+    "errors": {
+      "dateBeforePurchase": "Funded date cannot be before purchase date",
+      "dateInFuture": "Funded date cannot be in the future"
+    }
+  },
   "emptyState": {
     "title": "No evaluations yet",
     "description": "Add your first challenge to start tracking your journey."

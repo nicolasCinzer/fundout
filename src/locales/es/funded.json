@@ -16,8 +16,16 @@
   "stats": {
     "total": "Total",
     "active": "Activas",
+    "breached": "Violadas",
     "closed": "Cerradas",
-    "totalWithdrawn": "Total retirado"
+    "totalWithdrawn": "Total retirado",
+    "fundedLifetime": "Cuentas fondeadas históricas",
+    "nothingActive": "Ninguna activa",
+    "activeHint": "activa",
+    "breachedHint": "violada",
+    "fundedCount": "fondeada",
+    "topPropfirms": "Mejores propfirms por cuentas fondeadas",
+    "noData": "Sin datos aún"
   },
   "toasts": {
     "deleted": "Cuenta fondeada eliminada",
