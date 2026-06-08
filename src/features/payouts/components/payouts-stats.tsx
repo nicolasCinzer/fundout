@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { formatCurrency, formatPercent } from "@/lib/format"
@@ -20,6 +21,7 @@ function topEntry(map: Map<string, number>): [string, number] | null {
 }
 
 export function PayoutsStats({ payouts }: Props) {
+  const { t } = useTranslation("payouts")
   const stats = useMemo(() => {
     const total = payouts.length
     let totalNet = 0
@@ -65,21 +67,21 @@ export function PayoutsStats({ payouts }: Props) {
     <div className="grid items-stretch gap-3 grid-cols-2 lg:grid-cols-6">
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Total"
+          label={t("stats.totalLabel")}
           value={String(stats.total)}
           hint={
             stats.topCount
-              ? `${stats.topCount[0]} · ${stats.topCount[1]} ${stats.topCount[1] === 1 ? "payout" : "payouts"}`
+              ? `${stats.topCount[0]} · ${stats.topCount[1]} ${stats.topCount[1] === 1 ? t("stats.payout") : t("stats.payouts")}`
               : undefined
           }
           badge={
-            stats.total > 0 ? `avg ${formatCurrency(avgNet)}` : undefined
+            stats.total > 0 ? `${t("stats.avg")} ${formatCurrency(avgNet)}` : undefined
           }
         />
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Net total"
+          label={t("stats.netTotal")}
           value={formatCurrency(stats.totalNet)}
           hint={
             stats.topNet
@@ -91,11 +93,11 @@ export function PayoutsStats({ payouts }: Props) {
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Fees withheld"
+          label={t("stats.feesWithheld")}
           value={formatCurrency(stats.totalFees)}
           hint={
             stats.totalAmount > 0
-              ? `${formatCurrency(stats.totalAmount)} gross`
+              ? `${formatCurrency(stats.totalAmount)} ${t("stats.gross")}`
               : undefined
           }
           badge={stats.totalAmount > 0 ? formatPercent(feePct) : undefined}
@@ -104,7 +106,7 @@ export function PayoutsStats({ payouts }: Props) {
         />
       </div>
       <div className="col-span-2 lg:col-span-3 [&>*]:h-full">
-        <TopPropfirmsCard topFirms={stats.topFirms} />
+        <TopPropfirmsCard topFirms={stats.topFirms} t={t} />
       </div>
     </div>
   )
@@ -132,14 +134,20 @@ const COLUMNS: StepConfig[] = [
   { rank: 3, span: "col-span-3", medalSize: "h-5 w-5", medalText: "text-[10px]", nameSize: "text-xs font-medium", countSize: "text-[10px]" },
 ]
 
-function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
+function TopPropfirmsCard({
+  topFirms,
+  t,
+}: {
+  topFirms: [string, number][]
+  t: ReturnType<typeof useTranslation<"payouts">>["t"]
+}) {
   return (
     <Card className="gap-2 px-4 py-3.5">
       <p className="text-xs font-medium text-muted-foreground">
-        Top propfirms by net paid
+        {t("stats.topPropfirms")}
       </p>
       {topFirms.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No payouts yet</p>
+        <p className="text-xs text-muted-foreground">{t("stats.noPayouts")}</p>
       ) : (
         <div className="grid grid-cols-12 items-stretch gap-2">
           {COLUMNS.map((col) => {

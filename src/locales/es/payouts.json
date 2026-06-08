@@ -37,7 +37,16 @@
     "total": "Total retiros",
     "totalAmount": "Total retirado",
     "avgAmount": "Retiro promedio",
-    "lastPayout": "Último retiro"
+    "lastPayout": "Último retiro",
+    "totalLabel": "Total",
+    "payout": "retiro",
+    "payouts": "retiros",
+    "avg": "prom.",
+    "netTotal": "Neto total",
+    "feesWithheld": "Comisiones retenidas",
+    "gross": "bruto",
+    "topPropfirms": "Mejores propfirms por neto pagado",
+    "noPayouts": "Todavía no hay retiros"
   },
   "emptyState": {
     "title": "Todavía no hay retiros",
@@ -53,7 +62,24 @@
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Eliminar retiro"
+    "delete": "Eliminar retiro",
+    "moreActions": "Más acciones"
+  },
+  "rowActions": {
+    "confirmTitle": "¿Eliminar este retiro?",
+    "confirmDescription": "El retiro se eliminará permanentemente de tus registros."
+  },
+  "dialog": {
+    "new": {
+      "title": "Registrar retiro",
+      "descriptionWithName": "Registrá un retiro de tu cuenta {{name}}.",
+      "description": "Registrá un retiro de esta cuenta fondeada."
+    },
+    "edit": {
+      "title": "Editar retiro",
+      "descriptionWithName": "Actualizá el retiro de {{name}}. La cuenta fondeada vinculada no cambia.",
+      "description": "Actualizá este retiro."
+    }
   },
   "errors": {
     "dateBeforeStart": "La fecha del retiro no puede ser anterior a la fecha de inicio del fondeado",

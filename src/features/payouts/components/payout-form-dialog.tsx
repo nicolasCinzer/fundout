@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react"
+import { useTranslation } from "react-i18next"
 import {
   Dialog,
   DialogContent,
@@ -23,15 +24,16 @@ export function PayoutFormDialog({
   startDate,
   propfirmName,
 }: PayoutFormDialogProps) {
+  const { t } = useTranslation("payouts")
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Record payout</DialogTitle>
+          <DialogTitle>{t("dialog.new.title")}</DialogTitle>
           <DialogDescription>
             {propfirmName
-              ? `Log a withdrawal from your ${propfirmName} account.`
-              : "Log a withdrawal from this funded account."}
+              ? t("dialog.new.descriptionWithName", { name: propfirmName })
+              : t("dialog.new.description")}
           </DialogDescription>
         </DialogHeader>
         <PayoutForm

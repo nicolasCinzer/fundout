@@ -37,7 +37,16 @@
     "total": "Total payouts",
     "totalAmount": "Total withdrawn",
     "avgAmount": "Avg payout",
-    "lastPayout": "Last payout"
+    "lastPayout": "Last payout",
+    "totalLabel": "Total",
+    "payout": "payout",
+    "payouts": "payouts",
+    "avg": "avg",
+    "netTotal": "Net total",
+    "feesWithheld": "Fees withheld",
+    "gross": "gross",
+    "topPropfirms": "Top propfirms by net paid",
+    "noPayouts": "No payouts yet"
   },
   "emptyState": {
     "title": "No payouts yet",
@@ -53,7 +62,24 @@
   },
   "actions": {
     "edit": "Edit",
-    "delete": "Delete payout"
+    "delete": "Delete payout",
+    "moreActions": "More actions"
+  },
+  "rowActions": {
+    "confirmTitle": "Delete this payout?",
+    "confirmDescription": "The payout will be permanently removed from your records."
+  },
+  "dialog": {
+    "new": {
+      "title": "Record payout",
+      "descriptionWithName": "Log a withdrawal from your {{name}} account.",
+      "description": "Log a withdrawal from this funded account."
+    },
+    "edit": {
+      "title": "Edit payout",
+      "descriptionWithName": "Update the {{name}} payout. Linked funded account stays the same.",
+      "description": "Update this payout."
+    }
   },
   "errors": {
     "dateBeforeStart": "Payout date cannot be before the funding start date",

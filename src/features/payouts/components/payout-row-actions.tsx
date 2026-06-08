@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ type PayoutRowActionsProps = {
 }
 
 export function PayoutRowActions({ payout }: PayoutRowActionsProps) {
+  const { t } = useTranslation("payouts")
   const [menuOpen, setMenuOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const deletePayout = useDeletePayout()
@@ -33,11 +35,11 @@ export function PayoutRowActions({ payout }: PayoutRowActionsProps) {
     await new Promise<void>((resolve, reject) => {
       deletePayout.mutate(payout.id, {
         onSuccess: () => {
-          toast.success("Payout deleted")
+          toast.success(t("toasts.deleted"))
           resolve()
         },
         onError: (e) => {
-          toast.error(e.message || "Could not delete")
+          toast.error(e.message || t("toasts.errorDelete"))
           reject(e)
         },
       })
@@ -57,16 +59,16 @@ export function PayoutRowActions({ payout }: PayoutRowActionsProps) {
               disabled={deletePayout.isPending}
             >
               <Pencil className="h-4 w-4" />
-              <span className="sr-only">Edit</span>
+              <span className="sr-only">{t("actions.edit")}</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Edit</TooltipContent>
+          <TooltipContent>{t("actions.edit")}</TooltipContent>
         </Tooltip>
         <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More actions</span>
+              <span className="sr-only">{t("actions.moreActions")}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
@@ -80,8 +82,8 @@ export function PayoutRowActions({ payout }: PayoutRowActionsProps) {
                   Delete
                 </DropdownMenuItem>
               }
-              title="Delete this payout?"
-              description="The payout will be permanently removed from your records."
+              title={t("rowActions.confirmTitle")}
+              description={t("rowActions.confirmDescription")}
               pending={deletePayout.isPending}
               onConfirm={async () => {
                 await handleDelete()

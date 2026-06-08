@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -36,6 +37,7 @@ export function PayoutForm({
   onSuccess,
   onCancel,
 }: PayoutFormProps) {
+  const { t } = useTranslation(["payouts", "common"])
   const createMutation = useCreatePayout()
   const today = format(new Date(), "yyyy-MM-dd")
 
@@ -53,13 +55,13 @@ export function PayoutForm({
   const onSubmit = (values: PayoutFormValues) => {
     if (values.paid_at < startDate) {
       form.setError("paid_at", {
-        message: "Payout date cannot be before the funding start date",
+        message: t("errors.dateBeforeStart"),
       })
       return
     }
     if (values.paid_at > today) {
       form.setError("paid_at", {
-        message: "Payout date cannot be in the future",
+        message: t("errors.dateInFuture"),
       })
       return
     }
@@ -73,12 +75,12 @@ export function PayoutForm({
       },
       {
         onSuccess: () => {
-          toast.success("Payout recorded")
+          toast.success(t("toasts.recorded"))
           form.reset()
           onSuccess?.()
         },
         onError: (error) => {
-          toast.error(error.message || "Could not save the payout.")
+          toast.error(error.message || t("toasts.errorSave"))
         },
       },
     )
@@ -95,7 +97,7 @@ export function PayoutForm({
               const { value, ...rest } = field
               return (
                 <FormItem>
-                  <FormLabel>Amount (USD)</FormLabel>
+                  <FormLabel>{t("form.fields.amount")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -121,7 +123,7 @@ export function PayoutForm({
               const { value, ...rest } = field
               return (
                 <FormItem>
-                  <FormLabel>Fee (USD)</FormLabel>
+                  <FormLabel>{t("form.fields.fee")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -145,7 +147,7 @@ export function PayoutForm({
           name="paid_at"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Paid on</FormLabel>
+              <FormLabel>{t("form.fields.paidOn")}</FormLabel>
               <FormControl>
                 <Input type="date" min={startDate} max={today} {...field} />
               </FormControl>
@@ -159,10 +161,10 @@ export function PayoutForm({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes (optional)</FormLabel>
+              <FormLabel>{t("form.fields.notes")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Method, exchange rate, anything to remember…"
+                  placeholder={t("form.fields.notesPlaceholder")}
                   rows={3}
                   {...field}
                   value={field.value ?? ""}
@@ -181,11 +183,11 @@ export function PayoutForm({
               onClick={onCancel}
               disabled={createMutation.isPending}
             >
-              Cancel
+              {t("common:actions.cancel")}
             </Button>
           ) : null}
           <Button type="submit" disabled={createMutation.isPending}>
-            {createMutation.isPending ? "Saving…" : "Record payout"}
+            {createMutation.isPending ? t("payouts:form.submit.saving") : t("payouts:form.submit.record")}
           </Button>
         </div>
       </form>
