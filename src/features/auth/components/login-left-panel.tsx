@@ -32,7 +32,7 @@ export function LoginLeftPanel() {
           Track your propfirm journey.
         </h1>
         <p className="mt-3 text-muted-foreground text-base lg:text-lg">
-          Pass more evaluations. Keep more payouts.
+          Plan. Withdraw. Scale.
         </p>
       </div>
 
