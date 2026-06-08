@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { MoreHorizontal, Wallet, AlertTriangle, Trash2 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ type FundedAccountRowActionsProps = {
 export function FundedAccountRowActions({
   account,
 }: FundedAccountRowActionsProps) {
+  const { t } = useTranslation("funded")
   const [menuOpen, setMenuOpen] = useState(false)
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false)
   const markBreached = useMarkFundedAccountBreached()
@@ -43,7 +45,7 @@ export function FundedAccountRowActions({
   const handleMarkBreached = () => {
     markBreached.mutate(account.id, {
       onSuccess: () => {
-        toast.success("Marked as breached", {
+        toast.success(t("toasts.closed"), {
           duration: 6000,
           action: {
             label: "Undo",
@@ -57,7 +59,7 @@ export function FundedAccountRowActions({
           },
         })
       },
-      onError: (e) => toast.error(e.message || "Could not update status"),
+      onError: (e) => toast.error(e.message || t("toasts.errorClose")),
     })
   }
 
@@ -65,11 +67,11 @@ export function FundedAccountRowActions({
     await new Promise<void>((resolve, reject) => {
       deleteAccount.mutate(account.id, {
         onSuccess: () => {
-          toast.success("Funded account deleted")
+          toast.success(t("toasts.deleted"))
           resolve()
         },
         onError: (e) => {
-          toast.error(e.message || "Could not delete")
+          toast.error(e.message || t("toasts.errorDelete"))
           reject(e)
         },
       })

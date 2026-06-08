@@ -8,6 +8,7 @@ import {
   Trash2,
 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -37,6 +38,7 @@ type EvaluationRowActionsProps = {
 }
 
 export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) {
+  const { t } = useTranslation("evaluations")
   const [menuOpen, setMenuOpen] = useState(false)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -57,7 +59,7 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
       { id: evaluation.id, status: "failed" },
       {
         onSuccess: () => {
-          toast.warning("Marked as failed", {
+          toast.warning(t("status.failed"), {
             duration: 6000,
             action: {
               label: "Undo",
@@ -71,7 +73,7 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
             },
           })
         },
-        onError: (e) => toast.error(e.message || "Could not update status"),
+        onError: (e) => toast.error(e.message || t("toasts.errorUpdate")),
       },
     )
   }
@@ -80,11 +82,11 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
     await new Promise<void>((resolve, reject) => {
       deleteEvaluation.mutate(evaluation.id, {
         onSuccess: () => {
-          toast.success("Evaluation deleted")
+          toast.success(t("toasts.deleted"))
           resolve()
         },
         onError: (e) => {
-          toast.error(e.message || "Could not delete")
+          toast.error(e.message || t("toasts.errorDelete"))
           reject(e)
         },
       })

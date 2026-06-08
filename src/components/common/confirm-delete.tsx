@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react"
 import { Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,13 +24,17 @@ type ConfirmDeleteProps = {
 
 export function ConfirmDelete({
   trigger,
-  title = "Delete this?",
+  title,
   description,
-  confirmLabel = "Delete",
+  confirmLabel,
   onConfirm,
   pending = false,
 }: ConfirmDeleteProps) {
+  const { t } = useTranslation("common")
   const [open, setOpen] = useState(false)
+
+  const resolvedTitle = title ?? t("confirmDelete.title")
+  const resolvedConfirmLabel = confirmLabel ?? t("confirmDelete.confirmLabel")
 
   const handleConfirm = async () => {
     await onConfirm()
@@ -43,12 +48,14 @@ export function ConfirmDelete({
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <Trash2 className="h-4 w-4 text-destructive" />
-            {title}
+            {resolvedTitle}
           </AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={pending}>
+            {t("confirmDelete.cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault()
@@ -57,7 +64,7 @@ export function ConfirmDelete({
             disabled={pending}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {pending ? "Deleting…" : confirmLabel}
+            {pending ? t("confirmDelete.deleting") : resolvedConfirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

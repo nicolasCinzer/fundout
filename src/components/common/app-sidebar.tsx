@@ -11,6 +11,7 @@ import {
   Plus,
   FlaskConical,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { BrandMark } from "@/components/common/brand-mark"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -36,22 +37,22 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/features/auth/api/auth-provider"
 
-const navGroups = [
+const navGroupItems = [
   {
-    label: "Tracking",
+    labelKey: "nav.groups.tracking" as const,
     items: [
-      { to: "/", label: "Dashboard", icon: LayoutDashboard },
-      { to: "/evaluations", label: "Evaluations", icon: FileText },
-      { to: "/funded-accounts", label: "Funded accounts", icon: Landmark },
-      { to: "/payouts", label: "Payouts", icon: Wallet },
+      { to: "/", labelKey: "nav.items.dashboard" as const, icon: LayoutDashboard },
+      { to: "/evaluations", labelKey: "nav.items.evaluations" as const, icon: FileText },
+      { to: "/funded-accounts", labelKey: "nav.items.fundedAccounts" as const, icon: Landmark },
+      { to: "/payouts", labelKey: "nav.items.payouts" as const, icon: Wallet },
     ],
   },
   {
-    label: "Tools",
+    labelKey: "nav.groups.tools" as const,
     items: [
-      { to: "/calculator", label: "Evaluation Calculator", icon: Calculator },
-      { to: "/bankroll-mc", label: "Bankroll Calculator", icon: TrendingDown },
-      { to: "/backtest", label: "Backtest", icon: FlaskConical },
+      { to: "/calculator", labelKey: "nav.items.calculator" as const, icon: Calculator },
+      { to: "/bankroll-mc", labelKey: "nav.items.bankrollMc" as const, icon: TrendingDown },
+      { to: "/backtest", labelKey: "nav.items.backtest" as const, icon: FlaskConical },
     ],
   },
 ] as const
@@ -63,6 +64,7 @@ function getInitials(email: string | null | undefined): string {
 }
 
 export function AppSidebar() {
+  const { t } = useTranslation("common")
   const { location } = useRouterState()
   const { user, signOut } = useAuth()
   const email = user?.email ?? ""
@@ -82,9 +84,9 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+        {navGroupItems.map((group) => (
+          <SidebarGroup key={group.labelKey}>
+            <SidebarGroupLabel>{t(group.labelKey)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
@@ -92,16 +94,17 @@ export function AppSidebar() {
                     item.to === "/"
                       ? location.pathname === "/"
                       : location.pathname.startsWith(item.to)
+                  const label = t(item.labelKey)
                   return (
                     <SidebarMenuItem key={item.to}>
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
-                        tooltip={item.label}
+                        tooltip={label}
                       >
                         <Link to={item.to}>
                           <item.icon />
-                          <span>{item.label}</span>
+                          <span>{label}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -118,11 +121,11 @@ export function AppSidebar() {
             <EvaluationFormDialog
               trigger={
                 <SidebarMenuButton
-                  tooltip="New evaluation"
+                  tooltip={t("nav.newEvaluation")}
                   className="h-10 gap-2.5 px-3.5 bg-linear-to-b from-primary to-primary/85 font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/40 transition-all hover:from-primary hover:to-primary hover:text-primary-foreground hover:shadow-primary/50 hover:ring-primary/60 active:scale-[0.98] active:text-primary-foreground [&_svg]:size-4.5 [&_svg]:transition-transform hover:[&_svg]:rotate-90"
                 >
                   <Plus />
-                  <span>New evaluation</span>
+                  <span>{t("nav.newEvaluation")}</span>
                 </SidebarMenuButton>
               }
             />
@@ -141,7 +144,9 @@ export function AppSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Signed in</span>
+                    <span className="truncate font-medium">
+                      {t("nav.signedIn")}
+                    </span>
                     <span className="truncate text-xs text-muted-foreground">
                       {email}
                     </span>
@@ -156,7 +161,7 @@ export function AppSidebar() {
               >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">Account</span>
+                    <span className="text-sm font-medium">{t("nav.account")}</span>
                     <span className="text-xs text-muted-foreground">
                       {email}
                     </span>
@@ -165,7 +170,7 @@ export function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  {t("nav.signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

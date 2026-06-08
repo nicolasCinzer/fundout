@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight, MailCheck } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { BrandMark, FundoutSymbol } from "@/components/common/brand-mark"
 import { LoginLeftPanel } from "@/features/auth/components/login-left-panel"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ import {
 } from "@/features/auth/schemas/login-schema"
 
 export function LoginForm() {
+  const { t } = useTranslation("auth")
   const { signInWithEmail } = useAuth()
   const [sentTo, setSentTo] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -52,7 +54,7 @@ export function LoginForm() {
       <LoginLeftPanel />
       <div
         role="region"
-        aria-label="Sign in"
+        aria-label={t("login.signInRegion")}
         className="relative overflow-hidden flex flex-col items-center justify-center p-6 lg:p-10"
       >
         <FundoutSymbol
@@ -65,12 +67,12 @@ export function LoginForm() {
           <CardHeader className="space-y-3">
             <div className="space-y-1">
               <CardTitle className="text-2xl">
-                {sentTo ? "Check your inbox" : "Sign in to Fundout"}
+                {sentTo ? t("login.checkInbox") : t("login.title")}
               </CardTitle>
               <CardDescription>
                 {sentTo
-                  ? `We sent a sign-in link to ${sentTo}. Click it to continue.`
-                  : "Enter your email to receive a secure sign-in link."}
+                  ? t("login.checkInboxDescription", { email: sentTo })
+                  : t("login.description")}
               </CardDescription>
             </div>
           </CardHeader>
@@ -80,8 +82,7 @@ export function LoginForm() {
               <div className="flex items-center gap-3 rounded-md border bg-card p-4">
                 <MailCheck className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 <p className="text-sm text-muted-foreground">
-                  Open the email and click the link to continue. You can close
-                  this tab — the link will bring you back.
+                  {t("login.checkInboxHint")}
                 </p>
               </div>
               <Button
@@ -92,7 +93,7 @@ export function LoginForm() {
                   form.reset()
                 }}
               >
-                Use a different email
+                {t("login.useDifferentEmail")}
               </Button>
             </CardContent>
           ) : (
@@ -104,13 +105,13 @@ export function LoginForm() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t("login.emailLabel")}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
                             autoComplete="email"
                             autoFocus
-                            placeholder="you@example.com"
+                            placeholder={t("login.emailPlaceholder")}
                             {...field}
                           />
                         </FormControl>
@@ -126,7 +127,9 @@ export function LoginForm() {
                     className="w-full"
                     disabled={form.formState.isSubmitting}
                   >
-                    {form.formState.isSubmitting ? "Sending link…" : "Continue with email"}
+                    {form.formState.isSubmitting
+                      ? t("login.submitting")
+                      : t("login.submit")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
