@@ -30,8 +30,8 @@ function events(...types: Array<"E" | "F" | "P" | [type: "P", amount: number]>):
 describe("computeStats — empty log", () => {
   it("returns all-zeros stats, bankrollCurrent = bankroll_initial, roi = 0, isGameOver = false", () => {
     const stats = computeStats([], BASE_BACKTEST)
-    expect(stats.counts).toEqual({ E: 0, F: 0, P: 0 })
-    expect(stats.rates).toEqual({ funded: 0, payout: 0, success: 0 })
+    expect(stats.counts).toEqual({ E: 0, F: 0, P: 0, paidFunded: 0 })
+    expect(stats.rates).toEqual({ funded: 0, payout: 0, success: 0, payoutProbability: 0 })
     expect(stats.worstStreak).toBe(0)
     expect(stats.payoutsTotal).toBe(0)
     expect(stats.payoutsMean).toBe(0)
@@ -59,7 +59,7 @@ describe("computeStats — single E", () => {
 describe("computeStats — E, F, P(500)", () => {
   it("counts correct, rates correct, payoutsTotal=500", () => {
     const stats = computeStats(events("E", "F", ["P", 500]), BASE_BACKTEST)
-    expect(stats.counts).toEqual({ E: 1, F: 1, P: 1 })
+    expect(stats.counts).toEqual({ E: 1, F: 1, P: 1, paidFunded: 1 })
     expect(stats.payoutsTotal).toBe(500)
     expect(stats.payoutsMean).toBe(500)
     expect(stats.evalsSpend).toBe(100)
@@ -145,6 +145,92 @@ describe("computeStats — success rate (funded-paid count, NOT payout count)", 
     expect(stats.rates.funded).toBeCloseTo(2 / 22)
     expect(stats.rates.success).toBeCloseTo(1 / 22) // 1 funded that paid / 22 evals
     expect(stats.rates.success).toBeLessThan(stats.rates.funded) // KEY invariant
+  })
+})
+
+describe("computeStats — new aggregates (median, perFunded, paidFunded count, payoutProbability)", () => {
+  it("payoutsMedian: odd count → middle value", () => {
+    const stats = computeStats(
+      events("E", "F", ["P", 100], ["P", 500], ["P", 200]),
+      BASE_BACKTEST,
+    )
+    expect(stats.payoutsMedian).toBe(200) // sorted: [100, 200, 500] → middle = 200
+  })
+
+  it("payoutsMedian: even count → average of two middles", () => {
+    const stats = computeStats(
+      events("E", "F", ["P", 100], ["P", 200], ["P", 300], ["P", 600]),
+      BASE_BACKTEST,
+    )
+    expect(stats.payoutsMedian).toBe(250) // (200 + 300) / 2
+  })
+
+  it("payoutsMedian = 0 when no payouts", () => {
+    const stats = computeStats(events("E"), BASE_BACKTEST)
+    expect(stats.payoutsMedian).toBe(0)
+  })
+
+  it("payoutsPerFunded = P/F", () => {
+    // 2 funded, 4 payouts → 2.0 average payouts per funded
+    const stats = computeStats(
+      events("E", "F", "P", "P", "P", "P", "E", "F", "E"),
+      BASE_BACKTEST,
+    )
+    expect(stats.counts.F).toBe(2)
+    expect(stats.counts.P).toBe(4)
+    expect(stats.payoutsPerFunded).toBe(2)
+  })
+
+  it("paidFunded counts only funded lifecycles with ≥1 payout", () => {
+    // LC1: E+F+P+P → funded_paid
+    // LC2: E+F → closed by E → breached_no_payout (counts as funded, NOT paid)
+    const stats = computeStats(events("E", "F", "P", "P", "E", "F", "E"), BASE_BACKTEST)
+    expect(stats.counts.F).toBe(2)
+    expect(stats.counts.paidFunded).toBe(1)
+  })
+
+  it("payoutProbability = P/E (can exceed 1 by design)", () => {
+    // 1 eval, 1 funded, 3 payouts → P/E = 3.0 (expected payout events per eval)
+    const stats = computeStats(events("E", "F", "P", "P", "P"), BASE_BACKTEST)
+    expect(stats.rates.payoutProbability).toBe(3)
+  })
+
+  it("payoutProbability typical case < 1", () => {
+    // 10 evals, 1 funded, 1 payout → 0.1
+    const stats = computeStats(
+      events("E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "F", "P"),
+      BASE_BACKTEST,
+    )
+    expect(stats.counts.E).toBe(10)
+    expect(stats.counts.P).toBe(1)
+    expect(stats.rates.payoutProbability).toBeCloseTo(0.1)
+  })
+})
+
+describe("computeStats — payout rate (paid-funded count, NOT payout count)", () => {
+  it("2 funded with 4 total payouts → payout=1/2=50%, NOT 4/2=200%", () => {
+    // LC1: E+F+P+P+P+P → funded_paid (1 paid funded, 4 payout events)
+    // LC2: E+F → funded_active (open, not yet paid) — skipped for paid count? No: still counts toward countF.
+    // To keep LC2 resolved as "breached_no_payout" (counts as funded but not paid), close it with another E.
+    const stats = computeStats(
+      events("E", "F", "P", "P", "P", "P", "E", "F", "E"),
+      BASE_BACKTEST,
+    )
+    expect(stats.counts.F).toBe(2)
+    expect(stats.counts.P).toBe(4)
+    expect(stats.rates.payout).toBeCloseTo(0.5) // 1 paid funded / 2 funded
+    expect(stats.rates.payout).toBeLessThanOrEqual(1) // KEY invariant: never >100%
+  })
+
+  it("payout rate is always bounded to [0, 1]", () => {
+    // 1 funded, 10 payouts → still 1/1 = 100%, not 1000%
+    const stats = computeStats(
+      events("E", "F", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"),
+      BASE_BACKTEST,
+    )
+    expect(stats.counts.F).toBe(1)
+    expect(stats.counts.P).toBe(10)
+    expect(stats.rates.payout).toBeCloseTo(1)
   })
 })
 

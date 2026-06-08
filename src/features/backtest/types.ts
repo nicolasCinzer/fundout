@@ -30,11 +30,23 @@ export type Lifecycle = {
 
 // Stats output from compute-stats.ts
 export type BacktestStats = {
-  counts: { E: number; F: number; P: number }
-  rates: { funded: number; payout: number; success: number } // F/E, P/F, P/E
+  counts: {
+    E: number
+    F: number
+    P: number
+    paidFunded: number // funded lifecycles with ≥1 payout (subset of F)
+  }
+  rates: {
+    funded: number // F/E
+    payout: number // paidFunded/F
+    success: number // paidFunded/E
+    payoutProbability: number // P/E — probability of a payout event per evaluation
+  }
   worstStreak: number
   payoutsTotal: number
   payoutsMean: number
+  payoutsMedian: number // median amount across all P events
+  payoutsPerFunded: number // mean payout events per funded account (P/F)
   bankrollInitial: number
   evalsSpend: number
   netProfit: number
