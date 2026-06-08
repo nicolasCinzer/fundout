@@ -40,6 +40,8 @@
   "actions": {
     "markFunded": "Mark as funded",
     "logReset": "Log reset",
+    "markFailed": "Mark as failed",
+    "moreActions": "More actions",
     "edit": "Edit",
     "delete": "Delete evaluation"
   },
@@ -50,6 +52,16 @@
     "errorSave": "Could not save the evaluation.",
     "errorUpdate": "Could not update the evaluation.",
     "errorDelete": "Could not delete the evaluation."
+  },
+  "markFailed": {
+    "toasts": {
+      "undone": "Undone"
+    }
+  },
+  "delete": {
+    "title": "Delete this evaluation?",
+    "descriptionWithRelations": "This will also delete the linked funded account, any payouts recorded against it, and all reset events.",
+    "descriptionStandalone": "This will permanently remove the evaluation and any reset events linked to it."
   },
   "stats": {
     "total": "Total",

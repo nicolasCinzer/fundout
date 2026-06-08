@@ -31,11 +31,19 @@
     "deleted": "Funded account deleted",
     "errorDelete": "Could not delete the funded account.",
     "closed": "Account closed",
-    "errorClose": "Could not close the account."
+    "errorClose": "Could not close the account.",
+    "undone": "Undone"
   },
   "actions": {
     "addPayout": "Add payout",
+    "logPayout": "Log payout",
+    "markBreached": "Mark as breached",
+    "moreActions": "More actions",
     "close": "Close account",
     "delete": "Delete"
+  },
+  "delete": {
+    "title": "Delete this funded account?",
+    "description": "This will also delete any payouts logged against it. The original evaluation will remain."
   }
 }

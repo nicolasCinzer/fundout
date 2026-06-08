@@ -56,6 +56,9 @@
     "noResults": "No results",
     "noDataYet": "No data yet"
   },
+  "errors": {
+    "undoFailed": "Undo failed"
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next"

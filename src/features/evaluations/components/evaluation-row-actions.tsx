@@ -38,7 +38,7 @@ type EvaluationRowActionsProps = {
 }
 
 export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) {
-  const { t } = useTranslation("evaluations")
+  const { t } = useTranslation(["evaluations", "common"])
   const [menuOpen, setMenuOpen] = useState(false)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -62,12 +62,13 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
           toast.warning(t("status.failed"), {
             duration: 6000,
             action: {
-              label: "Undo",
+              label: t("common:actions.undo"),
               onClick: () => {
                 undoMarkFailed.mutate(evaluation.id, {
-                  onSuccess: () => toast.success("Undone", { duration: 3000 }),
+                  onSuccess: () =>
+                    toast.success(t("markFailed.toasts.undone"), { duration: 3000 }),
                   onError: (e) =>
-                    toast.error(e.message || "Undo failed"),
+                    toast.error(e.message || t("common:errors.undoFailed")),
                 })
               },
             },
@@ -108,10 +109,10 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   disabled={isPending}
                 >
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="sr-only">Mark as funded</span>
+                  <span className="sr-only">{t("actions.markFunded")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Mark as funded</TooltipContent>
+              <TooltipContent>{t("actions.markFunded")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -123,10 +124,10 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   disabled={isPending}
                 >
                   <RotateCcw className="h-4 w-4" />
-                  <span className="sr-only">Log reset</span>
+                  <span className="sr-only">{t("actions.logReset")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Log reset</TooltipContent>
+              <TooltipContent>{t("actions.logReset")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -138,16 +139,16 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   disabled={isPending}
                 >
                   <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                  <span className="sr-only">Mark as failed</span>
+                  <span className="sr-only">{t("actions.markFailed")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Mark as failed</TooltipContent>
+              <TooltipContent>{t("actions.markFailed")}</TooltipContent>
             </Tooltip>
             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">More actions</span>
+                  <span className="sr-only">{t("actions.moreActions")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -159,7 +160,7 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   disabled={isPending}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {t("actions.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <ConfirmDelete
@@ -169,14 +170,14 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                       className="text-destructive focus:text-destructive"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
+                      {t("actions.delete")}
                     </DropdownMenuItem>
                   }
-                  title="Delete this evaluation?"
+                  title={t("delete.title")}
                   description={
                     evaluation.status === "passed"
-                      ? "This will also delete the linked funded account, any payouts recorded against it, and all reset events."
-                      : "This will permanently remove the evaluation and any reset events linked to it."
+                      ? t("delete.descriptionWithRelations")
+                      : t("delete.descriptionStandalone")
                   }
                   pending={deleteEvaluation.isPending}
                   onConfirm={async () => {
@@ -199,16 +200,16 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                   disabled={isPending}
                 >
                   <Pencil className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
+                  <span className="sr-only">{t("actions.edit")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit</TooltipContent>
+              <TooltipContent>{t("actions.edit")}</TooltipContent>
             </Tooltip>
             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">More actions</span>
+                  <span className="sr-only">{t("actions.moreActions")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -219,14 +220,14 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
                       className="text-destructive focus:text-destructive"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
+                      {t("actions.delete")}
                     </DropdownMenuItem>
                   }
-                  title="Delete this evaluation?"
+                  title={t("delete.title")}
                   description={
                     evaluation.status === "passed"
-                      ? "This will also delete the linked funded account, any payouts recorded against it, and all reset events."
-                      : "This will permanently remove the evaluation and any reset events linked to it."
+                      ? t("delete.descriptionWithRelations")
+                      : t("delete.descriptionStandalone")
                   }
                   pending={deleteEvaluation.isPending}
                   onConfirm={async () => {

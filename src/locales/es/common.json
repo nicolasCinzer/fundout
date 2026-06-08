@@ -56,6 +56,9 @@
     "noResults": "Sin resultados",
     "noDataYet": "Todavía no hay datos"
   },
+  "errors": {
+    "undoFailed": "No se pudo deshacer"
+  },
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente"

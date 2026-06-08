@@ -31,11 +31,19 @@
     "deleted": "Cuenta fondeada eliminada",
     "errorDelete": "No se pudo eliminar la cuenta fondeada.",
     "closed": "Cuenta cerrada",
-    "errorClose": "No se pudo cerrar la cuenta."
+    "errorClose": "No se pudo cerrar la cuenta.",
+    "undone": "Deshecho"
   },
   "actions": {
     "addPayout": "Agregar retiro",
+    "logPayout": "Registrar retiro",
+    "markBreached": "Marcar como violada",
+    "moreActions": "Más acciones",
     "close": "Cerrar cuenta",
     "delete": "Eliminar"
+  },
+  "delete": {
+    "title": "¿Eliminar esta cuenta fondeada?",
+    "description": "También se eliminarán todos los retiros registrados. La evaluación original permanecerá."
   }
 }

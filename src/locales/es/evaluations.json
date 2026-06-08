@@ -40,6 +40,8 @@
   "actions": {
     "markFunded": "Marcar como fondeada",
     "logReset": "Registrar reset",
+    "markFailed": "Marcar como fallada",
+    "moreActions": "Más acciones",
     "edit": "Editar",
     "delete": "Eliminar evaluación"
   },
@@ -50,6 +52,16 @@
     "errorSave": "No se pudo guardar la evaluación.",
     "errorUpdate": "No se pudo actualizar la evaluación.",
     "errorDelete": "No se pudo eliminar la evaluación."
+  },
+  "markFailed": {
+    "toasts": {
+      "undone": "Deshecho"
+    }
+  },
+  "delete": {
+    "title": "¿Eliminar esta evaluación?",
+    "descriptionWithRelations": "También se eliminará la cuenta fondeada vinculada, los retiros registrados y todos los eventos de reset.",
+    "descriptionStandalone": "Se eliminará permanentemente la evaluación y todos los eventos de reset vinculados."
   },
   "stats": {
     "total": "Total",

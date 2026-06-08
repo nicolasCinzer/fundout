@@ -30,7 +30,7 @@ type FundedAccountRowActionsProps = {
 export function FundedAccountRowActions({
   account,
 }: FundedAccountRowActionsProps) {
-  const { t } = useTranslation("funded")
+  const { t } = useTranslation(["funded", "common"])
   const [menuOpen, setMenuOpen] = useState(false)
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false)
   const markBreached = useMarkFundedAccountBreached()
@@ -48,12 +48,12 @@ export function FundedAccountRowActions({
         toast.success(t("toasts.closed"), {
           duration: 6000,
           action: {
-            label: "Undo",
+            label: t("common:actions.undo"),
             onClick: () => {
               undoMarkBreached.mutate(account.id, {
-                onSuccess: () => toast.success("Undone", { duration: 3000 }),
+                onSuccess: () => toast.success(t("toasts.undone"), { duration: 3000 }),
                 onError: (e) =>
-                  toast.error(e.message || "Undo failed"),
+                  toast.error(e.message || t("common:errors.undoFailed")),
               })
             },
           },
@@ -93,10 +93,10 @@ export function FundedAccountRowActions({
                   disabled={isPending}
                 >
                   <Wallet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="sr-only">Log payout</span>
+                  <span className="sr-only">{t("actions.logPayout")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Log payout</TooltipContent>
+              <TooltipContent>{t("actions.logPayout")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -108,10 +108,10 @@ export function FundedAccountRowActions({
                   disabled={isPending}
                 >
                   <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                  <span className="sr-only">Mark as breached</span>
+                  <span className="sr-only">{t("actions.markBreached")}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Mark as breached</TooltipContent>
+              <TooltipContent>{t("actions.markBreached")}</TooltipContent>
             </Tooltip>
           </>
         )}
@@ -119,7 +119,7 @@ export function FundedAccountRowActions({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More actions</span>
+              <span className="sr-only">{t("actions.moreActions")}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -130,11 +130,11 @@ export function FundedAccountRowActions({
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {t("actions.delete")}
                 </DropdownMenuItem>
               }
-              title="Delete this funded account?"
-              description="This will also delete any payouts logged against it. The original evaluation will remain."
+              title={t("delete.title")}
+              description={t("delete.description")}
               pending={deleteAccount.isPending}
               onConfirm={async () => {
                 await handleDelete()
