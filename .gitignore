@@ -23,6 +23,12 @@ src/routeTree.gen.ts
 # Supabase CLI local state (project link, downloaded cli version)
 supabase/.temp/
 
+# SDD planning artifacts live in engram, not the repo
+openspec/
+
+# Local brand authoring sandboxes (HTML mockups for social assets)
+brand/templates/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
