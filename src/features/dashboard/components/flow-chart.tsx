@@ -1,4 +1,5 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { useTranslation } from "react-i18next"
 import {
   Card,
   CardContent,
@@ -17,35 +18,34 @@ import {
 import { formatCurrency } from "@/lib/format"
 import type { FlowPoint } from "@/features/dashboard/lib/compute-flow"
 
-const chartConfig = {
-  fees: {
-    label: "Fees paid",
-    color: "var(--destructive)",
-  },
-  payouts: {
-    label: "Payouts (net)",
-    color: "var(--chart-2)",
-  },
-  cumulative: {
-    label: "Cumulative P&L",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig
-
 type FlowChartProps = {
   data: FlowPoint[]
 }
 
 export function FlowChart({ data }: FlowChartProps) {
+  const { t } = useTranslation("dashboard")
+
+  const chartConfig = {
+    fees: {
+      label: t("flowChart.legend.feesPaid"),
+      color: "var(--destructive)",
+    },
+    payouts: {
+      label: t("flowChart.legend.payouts"),
+      color: "var(--chart-2)",
+    },
+    cumulative: {
+      label: t("flowChart.legend.cumulativePnl"),
+      color: "var(--chart-1)",
+    },
+  } satisfies ChartConfig
+
   return (
     <Card className="flex h-full flex-col pt-0">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
-          <CardTitle>Daily flow</CardTitle>
-          <CardDescription>
-            Fees and payouts by day, with cumulative net P&amp;L over the
-            selected period
-          </CardDescription>
+          <CardTitle>{t("flowChart.title")}</CardTitle>
+          <CardDescription>{t("flowChart.description")}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col px-2 pt-4 sm:px-6 sm:pt-6">

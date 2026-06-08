@@ -1,5 +1,7 @@
 {
   "title": "Dashboard",
+  "subtitle": "Your propfirm ROI at a glance",
+  "periodBanner": "Showing {{period}} ({{range}}). Switch the period to compare ranges.",
   "period": {
     "allTime": "All time",
     "thisMonth": "This month",
@@ -12,44 +14,116 @@
     "q3": "Q3 — Third quarter",
     "q4": "Q4 — Final quarter",
     "custom": "Custom range",
-    "selectPeriod": "Select period"
+    "selectPeriod": "Select period",
+    "groups": {
+      "all": "All",
+      "current": "Current",
+      "previous": "Previous",
+      "quarters": "Quarters (current year)",
+      "custom": "Custom"
+    },
+    "customRange": {
+      "from": "From",
+      "to": "To",
+      "pickDates": "Pick dates"
+    }
   },
   "kpi": {
-    "payouts": {
-      "title": "Payouts",
-      "description": "Total withdrawn in period"
+    "netPnl": {
+      "title": "Net P&L",
+      "hintBestMonthYear": "Best month this year: {{month}} ({{amount}})",
+      "hintBestMonthWindow": "Best month in window: {{month}} ({{amount}})",
+      "hintBestMonthSoFar": "This is your best month so far",
+      "hintOnlyMonth": "Your only tracked month so far",
+      "hintRanked": "This is your {{ordinal}} best month so far",
+      "hintNoActivityMonth": "No activity recorded for this month",
+      "hintNoActivityYear": "No activity recorded for this year",
+      "hintNoActivityWindow": "No activity in this window",
+      "badgeTooltip": "Net P&L change vs {{label}} ({{amount}}).",
+      "badgeLabelPrevMonth": "previous month",
+      "badgeLabelMonthBefore": "the month before",
+      "badgeLabelPrevYear": "previous year",
+      "badgeLabelYearBefore": "the year before",
+      "badgeLabelPrior12": "the prior 12 months",
+      "badgeLabelSameQuarter": "the same quarter last year"
     },
-    "netProfit": {
-      "title": "Net Profit",
-      "description": "Payouts minus fees in period"
+    "totalSpent": {
+      "title": "Total spent",
+      "hint_one": "{{count}} evaluation + {{resets}} resets purchased",
+      "hint_other": "{{count}} evaluations + {{resets}} resets purchased",
+      "hintNoResets_one": "{{count}} evaluation purchased",
+      "hintNoResets_other": "{{count}} evaluations purchased",
+      "badgeTooltip": "Average cost per attempt (evaluations + resets) in this period."
     },
-    "funded": {
-      "title": "Funded",
-      "description": "Accounts funded in period"
+    "totalPayouts": {
+      "title": "Total payouts (net)",
+      "hint_one": "{{count}} payout received",
+      "hint_other": "{{count}} payouts received",
+      "badgeTooltip": "Average net amount per payout in this period."
     },
-    "evaluations": {
-      "title": "Evaluations",
-      "description": "Challenges in period"
+    "fundingRatio": {
+      "title": "Funding ratio",
+      "hint": "{{funded}} of {{total}} attempts funded",
+      "badgeTooltipAbove": "Your lifetime funding ratio across all attempts. You're above your baseline this period.",
+      "badgeTooltipBelow": "Your lifetime funding ratio across all attempts. You're below your baseline this period."
     },
-    "winRate": {
-      "title": "Win Rate",
-      "description": "Funded / evaluated in period"
-    },
-    "avgPayout": {
-      "title": "Avg Payout",
-      "description": "Mean payout amount in period"
+    "payoutRatio": {
+      "title": "Payout ratio",
+      "hint": "{{paid}} of {{total}} attempts reached payout",
+      "badgeTooltipAbove": "Your lifetime payout ratio across all attempts. You're above your baseline this period.",
+      "badgeTooltipBelow": "Your lifetime payout ratio across all attempts. You're below your baseline this period."
     }
   },
   "flowChart": {
-    "title": "Cash flow",
-    "noData": "No payouts in this period"
+    "title": "Daily flow",
+    "description": "Fees and payouts by day, with cumulative net P&L over the selected period",
+    "legend": {
+      "cumulativePnl": "Cumulative P&L",
+      "feesPaid": "Fees paid",
+      "payouts": "Payouts (net)"
+    },
+    "empty": "No data in this period"
+  },
+  "activeAccounts": {
+    "title": "Active accounts",
+    "empty": "No active accounts",
+    "accountSize": "{{size}} account",
+    "noPayouts": "No payouts",
+    "viewMore_one": "View {{count}} more",
+    "viewMore_other": "View {{count}} more"
+  },
+  "activeEvaluations": {
+    "title": "Active evaluations",
+    "empty": "No evaluations in progress.",
+    "viewMore_one": "View {{count}} more",
+    "viewMore_other": "View {{count}} more"
   },
   "leaderboard": {
-    "title": "Top propfirms",
-    "noData": "No data for this period"
+    "title": "Propfirms by ROI",
+    "description": "Net P&L per propfirm in the selected period. Sorted best to worst.",
+    "empty": {
+      "title": "No activity in this period",
+      "description": "Once you have evaluations, funded accounts, or payouts in the selected period, propfirms will rank here."
+    },
+    "columns": {
+      "rank": "#",
+      "propfirm": "Propfirm",
+      "attempts": "Attempts",
+      "fees": "Fees",
+      "funded": "Funded",
+      "paidOut": "Paid out",
+      "payouts": "Payouts (net)",
+      "netPnl": "Net P&L"
+    }
   },
   "emptyState": {
-    "title": "No activity yet",
-    "description": "Add your first evaluation to start tracking your propfirm journey."
+    "noData": {
+      "title": "No data yet",
+      "description": "Track your first propfirm evaluation to see funding ratio, net P&L, and monthly flow come to life."
+    },
+    "noPeriodActivity": {
+      "title": "No activity in this period",
+      "description": "Pick a wider range to see your data, or log some activity to start filling it in."
+    }
   }
 }

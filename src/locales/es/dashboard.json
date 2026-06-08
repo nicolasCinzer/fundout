@@ -1,5 +1,7 @@
 {
   "title": "Panel",
+  "subtitle": "Tu ROI en propfirms de un vistazo",
+  "periodBanner": "Mostrando {{period}} ({{range}}). Cambiá el período para comparar rangos.",
   "period": {
     "allTime": "Todo el tiempo",
     "thisMonth": "Este mes",
@@ -12,44 +14,116 @@
     "q3": "Q3 — Tercer trimestre",
     "q4": "Q4 — Cuarto trimestre",
     "custom": "Rango personalizado",
-    "selectPeriod": "Seleccionar período"
+    "selectPeriod": "Seleccionar período",
+    "groups": {
+      "all": "Todo",
+      "current": "Actual",
+      "previous": "Anterior",
+      "quarters": "Trimestres (año actual)",
+      "custom": "Personalizado"
+    },
+    "customRange": {
+      "from": "Desde",
+      "to": "Hasta",
+      "pickDates": "Elegir fechas"
+    }
   },
   "kpi": {
-    "payouts": {
-      "title": "Retiros",
-      "description": "Total retirado en el período"
+    "netPnl": {
+      "title": "Net P&L",
+      "hintBestMonthYear": "Mejor mes del año: {{month}} ({{amount}})",
+      "hintBestMonthWindow": "Mejor mes del período: {{month}} ({{amount}})",
+      "hintBestMonthSoFar": "Este es tu mejor mes hasta ahora",
+      "hintOnlyMonth": "Tu único mes registrado hasta ahora",
+      "hintRanked": "Este es tu {{ordinal}} mejor mes hasta ahora",
+      "hintNoActivityMonth": "Sin actividad registrada en este mes",
+      "hintNoActivityYear": "Sin actividad registrada en este año",
+      "hintNoActivityWindow": "Sin actividad en este período",
+      "badgeTooltip": "Cambio en Net P&L vs {{label}} ({{amount}}).",
+      "badgeLabelPrevMonth": "el mes anterior",
+      "badgeLabelMonthBefore": "el mes previo",
+      "badgeLabelPrevYear": "el año anterior",
+      "badgeLabelYearBefore": "el año previo",
+      "badgeLabelPrior12": "los 12 meses anteriores",
+      "badgeLabelSameQuarter": "el mismo trimestre del año pasado"
     },
-    "netProfit": {
-      "title": "Ganancia neta",
-      "description": "Retiros menos comisiones en el período"
+    "totalSpent": {
+      "title": "Total invertido",
+      "hint_one": "{{count}} evaluación + {{resets}} resets comprados",
+      "hint_other": "{{count}} evaluaciones + {{resets}} resets comprados",
+      "hintNoResets_one": "{{count}} evaluación comprada",
+      "hintNoResets_other": "{{count}} evaluaciones compradas",
+      "badgeTooltip": "Costo promedio por intento (evaluaciones + resets) en este período."
     },
-    "funded": {
-      "title": "Fondeadas",
-      "description": "Cuentas fondeadas en el período"
+    "totalPayouts": {
+      "title": "Total retirado (neto)",
+      "hint_one": "{{count}} pago recibido",
+      "hint_other": "{{count}} pagos recibidos",
+      "badgeTooltip": "Monto neto promedio por retiro en este período."
     },
-    "evaluations": {
-      "title": "Evaluaciones",
-      "description": "Challenges en el período"
+    "fundingRatio": {
+      "title": "Tasa de fondeo",
+      "hint": "{{funded}} de {{total}} intentos fondeados",
+      "badgeTooltipAbove": "Tu tasa de fondeo histórica en todos los intentos. Estás por encima de tu línea base en este período.",
+      "badgeTooltipBelow": "Tu tasa de fondeo histórica en todos los intentos. Estás por debajo de tu línea base en este período."
     },
-    "winRate": {
-      "title": "Tasa de éxito",
-      "description": "Fondeadas / evaluadas en el período"
-    },
-    "avgPayout": {
-      "title": "Retiro promedio",
-      "description": "Monto promedio de retiro en el período"
+    "payoutRatio": {
+      "title": "Tasa de retiro",
+      "hint": "{{paid}} de {{total}} intentos llegaron a retiro",
+      "badgeTooltipAbove": "Tu tasa de retiro histórica en todos los intentos. Estás por encima de tu línea base en este período.",
+      "badgeTooltipBelow": "Tu tasa de retiro histórica en todos los intentos. Estás por debajo de tu línea base en este período."
     }
   },
   "flowChart": {
-    "title": "Flujo de caja",
-    "noData": "Sin retiros en este período"
+    "title": "Flujo diario",
+    "description": "Comisiones y retiros por día, con Net P&L acumulado en el período seleccionado",
+    "legend": {
+      "cumulativePnl": "Net P&L acumulado",
+      "feesPaid": "Comisiones pagadas",
+      "payouts": "Retiros (neto)"
+    },
+    "empty": "Sin datos en este período"
+  },
+  "activeAccounts": {
+    "title": "Cuentas activas",
+    "empty": "No hay cuentas activas",
+    "accountSize": "Cuenta de {{size}}",
+    "noPayouts": "Sin retiros",
+    "viewMore_one": "Ver {{count}} más",
+    "viewMore_other": "Ver {{count}} más"
+  },
+  "activeEvaluations": {
+    "title": "Evaluaciones activas",
+    "empty": "No hay evaluaciones en curso.",
+    "viewMore_one": "Ver {{count}} más",
+    "viewMore_other": "Ver {{count}} más"
   },
   "leaderboard": {
-    "title": "Mejores propfirms",
-    "noData": "Sin datos para este período"
+    "title": "Propfirms por ROI",
+    "description": "Net P&L por propfirm en el período seleccionado. Ordenado de mejor a peor.",
+    "empty": {
+      "title": "Sin actividad en este período",
+      "description": "Cuando tengas evaluaciones, cuentas fondeadas o retiros en el período seleccionado, las propfirms aparecerán acá."
+    },
+    "columns": {
+      "rank": "#",
+      "propfirm": "Propfirm",
+      "attempts": "Intentos",
+      "fees": "Comisiones",
+      "funded": "Fondeadas",
+      "paidOut": "Con pagos",
+      "payouts": "Retiros (neto)",
+      "netPnl": "Net P&L"
+    }
   },
   "emptyState": {
-    "title": "Todavía no hay actividad",
-    "description": "Agregá tu primera evaluación para empezar a seguir tu recorrido en propfirms."
+    "noData": {
+      "title": "Todavía no hay datos",
+      "description": "Registrá tu primera evaluación en una propfirm para ver la tasa de fondeo, Net P&L y el flujo mensual."
+    },
+    "noPeriodActivity": {
+      "title": "Sin actividad en este período",
+      "description": "Elegí un rango más amplio para ver tus datos, o registrá actividad para empezar a llenarlo."
+    }
   }
 }

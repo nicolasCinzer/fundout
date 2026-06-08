@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { ArrowRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency } from "@/lib/format"
@@ -17,6 +18,8 @@ type Props = {
 const MAX_ITEMS = 3
 
 export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
+  const { t } = useTranslation(["dashboard", "common"])
+
   const netByAccount = new Map<string, number>()
   for (const p of payouts) {
     const id = p.funded_account?.id
@@ -38,9 +41,9 @@ export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
   return (
     <div className="grid gap-4 lg:grid-cols-1">
       <Card className="gap-3 p-4">
-        <SectionHeader title="Active accounts" count={activeAccounts.length} />
+        <SectionHeader title={t("dashboard:activeAccounts.title")} count={activeAccounts.length} />
         {topAccounts.length === 0 ? (
-          <EmptyRow message="No active funded accounts." />
+          <EmptyRow message={t("dashboard:activeAccounts.empty")} />
         ) : (
           <ul className="space-y-2">
             {topAccounts.map((a) => {
@@ -56,7 +59,9 @@ export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
                     <p className="truncate text-sm font-medium">{name}</p>
                     {size !== null && (
                       <p className="text-[11px] text-muted-foreground">
-                        {formatCurrency(size)} account
+                        {t("dashboard:activeAccounts.accountSize", {
+                          size: formatCurrency(size),
+                        })}
                       </p>
                     )}
                   </div>
@@ -69,10 +74,12 @@ export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
                           : "text-muted-foreground",
                       )}
                     >
-                      {net > 0 ? `+${formatCurrency(net)}` : "No payouts"}
+                      {net > 0
+                        ? `+${formatCurrency(net)}`
+                        : t("dashboard:activeAccounts.noPayouts")}
                     </p>
                     <p className="text-[10px] font-heading uppercase tracking-wide text-muted-foreground">
-                      Active
+                      {t("common:status.active")}
                     </p>
                   </div>
                 </li>
@@ -90,11 +97,11 @@ export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
 
       <Card className="gap-3 p-4">
         <SectionHeader
-          title="Active evaluations"
+          title={t("dashboard:activeEvaluations.title")}
           count={activeEvaluations.length}
         />
         {recentEvaluations.length === 0 ? (
-          <EmptyRow message="No evaluations in progress." />
+          <EmptyRow message={t("dashboard:activeEvaluations.empty")} />
         ) : (
           <ul className="space-y-2">
             {recentEvaluations.map((e) => {
@@ -108,14 +115,16 @@ export function ActivePanel({ fundedAccounts, evaluations, payouts }: Props) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{name}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      {formatCurrency(size)} account
+                      {t("dashboard:activeAccounts.accountSize", {
+                        size: formatCurrency(size),
+                      })}
                     </p>
                   </div>
                   <Badge
                     variant="outline"
                     className="text-[10px] font-heading uppercase tracking-wide"
                   >
-                    Active
+                    {t("common:status.active")}
                   </Badge>
                 </li>
               )
@@ -161,14 +170,13 @@ function ViewMoreLink({
   to: "/funded-accounts" | "/evaluations"
   count: number
 }) {
+  const { t } = useTranslation("common")
   return (
     <Link
       to={to}
       className="group flex items-center justify-between rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
     >
-      <span>
-        View {count} more {count === 1 ? "item" : "items"}
-      </span>
+      <span>{t("actions.viewMore", { count })}</span>
       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
     </Link>
   )

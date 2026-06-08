@@ -31,12 +31,12 @@ type TimePeriodSelectProps = {
   onChange: (value: Period, custom?: CustomRange) => void
 }
 
-const PERIOD_GROUPS: { labelKey: string; periods: Period[] }[] = [
-  { labelKey: "All", periods: ["all_time"] },
-  { labelKey: "Current", periods: ["this_month", "this_year"] },
-  { labelKey: "Previous", periods: ["last_month", "last_year", "last_12_months"] },
-  { labelKey: "Quarters (current year)", periods: ["q1", "q2", "q3", "q4"] },
-  { labelKey: "Custom", periods: ["custom"] },
+const PERIOD_GROUPS: { groupKey: string; periods: Period[] }[] = [
+  { groupKey: "period.groups.all", periods: ["all_time"] },
+  { groupKey: "period.groups.current", periods: ["this_month", "this_year"] },
+  { groupKey: "period.groups.previous", periods: ["last_month", "last_year", "last_12_months"] },
+  { groupKey: "period.groups.quarters", periods: ["q1", "q2", "q3", "q4"] },
+  { groupKey: "period.groups.custom", periods: ["custom"] },
 ]
 
 export function TimePeriodSelect({
@@ -57,10 +57,10 @@ export function TimePeriodSelect({
         </SelectTrigger>
         <SelectContent>
           {PERIOD_GROUPS.map((group, gi) => (
-            <SelectGroup key={group.labelKey}>
+            <SelectGroup key={group.groupKey}>
               {gi > 0 && <SelectSeparator />}
               <SelectLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {group.labelKey}
+                {t(group.groupKey as Parameters<typeof t>[0])}
               </SelectLabel>
               {group.periods.map((p) => (
                 <SelectItem key={p} value={p}>
@@ -98,7 +98,7 @@ function CustomRangeEditor({
   const label =
     custom.from && custom.to && range.start && range.end
       ? `${format(range.start, "MMM d, yyyy")} – ${format(range.end, "MMM d, yyyy")}`
-      : "Pick dates"
+      : t("period.customRange.pickDates")
 
   const disabled = !from || !to || from > to
 
@@ -125,7 +125,7 @@ function CustomRangeEditor({
         </p>
         <div className="space-y-2">
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">From</span>
+            <span className="text-xs text-muted-foreground">{t("period.customRange.from")}</span>
             <input
               type="date"
               value={from}
@@ -134,7 +134,7 @@ function CustomRangeEditor({
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">To</span>
+            <span className="text-xs text-muted-foreground">{t("period.customRange.to")}</span>
             <input
               type="date"
               value={to}

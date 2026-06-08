@@ -9,12 +9,15 @@
     "confirm": "Confirm",
     "back": "Back",
     "continue": "Continue",
-    "undo": "Undo"
+    "undo": "Undo",
+    "viewMore_one": "View {{count}} more",
+    "viewMore_other": "View {{count}} more"
   },
   "status": {
     "loading": "Loading…",
     "error": "Something went wrong",
-    "noData": "No data"
+    "noData": "No data",
+    "active": "Active"
   },
   "theme": {
     "toggle": "Toggle theme",
