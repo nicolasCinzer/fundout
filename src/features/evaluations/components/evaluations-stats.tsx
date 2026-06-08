@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { formatPercent } from "@/lib/format"
@@ -20,6 +21,7 @@ function topEntry(map: Map<string, number>): [string, number] | null {
 }
 
 export function EvaluationsStats({ evaluations }: Props) {
+  const { t } = useTranslation("evaluations")
   const stats = useMemo(() => {
     const total = evaluations.length
     let passed = 0
@@ -72,37 +74,37 @@ export function EvaluationsStats({ evaluations }: Props) {
     <div className="grid items-stretch gap-3 grid-cols-2 lg:grid-cols-6">
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Total"
+          label={t("stats.total")}
           value={String(stats.total)}
           hint={
             stats.inProgress > 0
-              ? hint(stats.topActive, "active")
-              : "Nothing active"
+              ? hint(stats.topActive, t("stats.active"))
+              : t("stats.nothingActive")
           }
-          badge={`${stats.inProgress} active`}
+          badge={`${stats.inProgress} ${t("stats.active")}`}
         />
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Funded"
+          label={t("stats.funded")}
           value={String(stats.passed)}
-          hint={hint(stats.topPassed, "funded")}
+          hint={hint(stats.topPassed, t("stats.funded").toLowerCase())}
           badge={stats.total ? formatPercent(passedPct) : undefined}
           tone="positive"
         />
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Failed"
+          label={t("stats.failed")}
           value={String(stats.failed)}
-          hint={hint(stats.topFailed, "failed")}
+          hint={hint(stats.topFailed, t("stats.failed").toLowerCase())}
           badge={stats.total ? formatPercent(failedPct) : undefined}
           tone="negative"
           badgeTone="negative"
         />
       </div>
       <div className="col-span-2 lg:col-span-3 [&>*]:h-full">
-        <TopPropfirmsCard topFirms={stats.topFirms} />
+        <TopPropfirmsCard topFirms={stats.topFirms} t={t} />
       </div>
     </div>
   )
@@ -170,14 +172,20 @@ const COLUMNS: StepConfig[] = [
   },
 ]
 
-function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
+function TopPropfirmsCard({
+  topFirms,
+  t,
+}: {
+  topFirms: [string, number][]
+  t: ReturnType<typeof useTranslation<"evaluations">>["t"]
+}) {
   return (
     <Card className="gap-2 px-4 py-3.5">
       <p className="text-xs font-medium text-muted-foreground">
-        Top propfirms
+        {t("stats.topPropfirms")}
       </p>
       {topFirms.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No data yet</p>
+        <p className="text-xs text-muted-foreground">{t("stats.noData")}</p>
       ) : (
         <div className="grid grid-cols-12 items-stretch gap-2">
           {COLUMNS.map((col) => {
@@ -234,7 +242,7 @@ function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
                       col.countSize,
                     )}
                   >
-                    {count} {count === 1 ? "attempt" : "attempts"}
+                    {count} {count === 1 ? t("stats.attempt") : t("stats.attempts")}
                   </p>
                 </div>
               </div>
