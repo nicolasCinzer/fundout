@@ -56,7 +56,7 @@ export function LoginForm() {
         className="relative overflow-hidden flex flex-col items-center justify-center p-6 lg:p-10"
       >
         <FundoutSymbol
-          className="pointer-events-none absolute -bottom-24 -right-24 size-[720px] -rotate-12 text-primary opacity-[0.30]"
+          className="pointer-events-none absolute -bottom-24 -right-24 size-180 -rotate-12 text-primary opacity-[0.30]"
         />
         <div className="md:hidden mb-6 flex justify-center">
           <BrandMark size="sm" />
