@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { formatCurrency, formatPercent } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { BacktestStats } from "@/features/backtest/types"
@@ -157,30 +158,58 @@ export function BacktestStatsPanel({ stats }: Props) {
           Financial summary
         </p>
         <div className="space-y-1.5">
-          <Row label="Initial bankroll" value={formatCurrency(s.bankrollInitial, true)} />
+          <Row
+            label="Initial bankroll"
+            value={formatCurrency(s.bankrollInitial, true)}
+            hint="Starting capital for this backtest. ROI is computed against this number."
+          />
           <Row
             label="Spent on evaluations"
             value={formatCurrency(s.evalsSpend, true)}
             tone="negative"
+            hint="Total cost of evaluation attempts: count(E) × eval_cost."
           />
-          <Row label="Total withdrawn" value={formatCurrency(s.payoutsTotal, true)} />
-          <Row label="Median payout" value={formatCurrency(s.payoutsMedian, true)} />
+          <Row
+            label="Total withdrawn"
+            value={formatCurrency(s.payoutsTotal, true)}
+            hint="Sum of every payout event amount across all funded accounts."
+          />
+          <Row
+            label="Median payout"
+            value={formatCurrency(s.payoutsMedian, true)}
+            hint="Middle value of all payout amounts — resists outliers better than the mean."
+          />
           <Row
             label="Avg payouts / funded"
             value={s.payoutsPerFunded.toFixed(2)}
+            hint="Mean number of payout events per funded account: count(P) / count(F)."
           />
           <div className="my-1 border-t" />
           <Row
             label="Net profit"
             value={formatCurrency(s.netProfit, true)}
             tone={profitTone}
+            hint="Total withdrawn minus spent on evaluations."
           />
-          <Row label="ROI" value={formatPercent(s.roi)} tone={profitTone} />
+          <Row
+            label="ROI"
+            value={formatPercent(s.roi)}
+            tone={profitTone}
+            hint="Net profit / initial bankroll. Measured against the starting capital, not total invested — can exceed 100% when payouts dwarf the initial."
+          />
           <div className="my-1 border-t" />
           <div className="flex items-baseline justify-between gap-2 pt-1">
-            <span className="text-xs font-medium text-muted-foreground">
-              Current bankroll
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-xs font-medium text-muted-foreground decoration-dotted underline-offset-4 hover:underline cursor-help">
+                  Current bankroll
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                Initial bankroll + net profit. Live capital at this point in the
+                simulation.
+              </TooltipContent>
+            </Tooltip>
             <span
               className={cn(
                 "font-heading text-xl font-semibold tabular-nums",
@@ -202,14 +231,29 @@ function Row({
   label,
   value,
   tone = "default",
+  hint,
 }: {
   label: string
   value: string
   tone?: RowTone
+  hint?: string
 }) {
+  const labelNode = hint ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="text-xs text-muted-foreground decoration-dotted underline-offset-4 hover:underline cursor-help">
+          {label}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs">{hint}</TooltipContent>
+    </Tooltip>
+  ) : (
+    <span className="text-xs text-muted-foreground">{label}</span>
+  )
+
   return (
     <div className="flex items-baseline justify-between gap-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      {labelNode}
       <span
         className={cn(
           "text-xs font-medium tabular-nums",
