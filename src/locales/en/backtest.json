@@ -15,7 +15,8 @@
     },
     "edit": {
       "title": "Edit backtest",
-      "description": "Update simulation parameters."
+      "description": "Update simulation parameters.",
+      "immutableNote": "Update the name and optional metadata. Bankroll and eval cost are immutable."
     },
     "fields": {
       "name": "Name",
@@ -23,13 +24,25 @@
       "initialBankroll": "Initial bankroll (USD)",
       "evalCost": "Evaluation cost (USD)",
       "accountSize": "Account size (USD)",
-      "notes": "Notes (optional)"
+      "notes": "Notes (optional)",
+      "asset": "Asset (optional)",
+      "period": "Period (optional)",
+      "strategy": "Strategy (optional)",
+      "strategyPlaceholder": "Brief description of the tested strategy…",
+      "payoutAmount": "Payout amount (USD)",
+      "notesPlaceholder": "Notes about this event…"
     },
     "submit": {
       "create": "Create backtest",
+      "creating": "Creating…",
       "save": "Save changes",
-      "saving": "Saving…"
-    }
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "recordEvent": "Record event",
+      "recording": "Recording…"
+    },
+    "newDescription": "Set the initial parameters. The evaluation cost cannot be changed after creation.",
+    "eventType": "Event type"
   },
   "event": {
     "type": {

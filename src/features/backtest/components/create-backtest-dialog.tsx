@@ -26,6 +26,7 @@ import type { z } from "zod"
 
 type BacktestCreateFormValues = z.input<typeof backtestCreateSchema>
 type BacktestCreateOutput = z.output<typeof backtestCreateSchema>
+import { useTranslation } from "react-i18next"
 import { useCreateBacktest } from "@/features/backtest/api/backtests-queries"
 
 type Props = {
@@ -34,6 +35,7 @@ type Props = {
 }
 
 export function CreateBacktestDialog({ open, onOpenChange }: Props) {
+  const { t } = useTranslation("backtest")
   const navigate = useNavigate()
   const createMutation = useCreateBacktest()
 
@@ -56,7 +58,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
       onOpenChange(false)
       navigate({ to: "/backtest/$id", params: { id: created.id } })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not create backtest.")
+      toast.error(err instanceof Error ? err.message : t("toasts.errorSave"))
     }
   }
 
@@ -64,9 +66,9 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>New backtest</DialogTitle>
+          <DialogTitle>{t("form.new.title")}</DialogTitle>
           <DialogDescription>
-            Set the initial parameters. The evaluation cost cannot be changed after creation.
+            {t("form.newDescription")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -76,7 +78,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("form.fields.name")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ej: FTMO 100K — Julio"
@@ -96,7 +98,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Initial bankroll (USD)</FormLabel>
+                      <FormLabel>{t("form.fields.initialBankroll")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -120,7 +122,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Evaluation cost (USD)</FormLabel>
+                      <FormLabel>{t("form.fields.evalCost")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -146,7 +148,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                 name="asset"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Asset (optional)</FormLabel>
+                    <FormLabel>{t("form.fields.asset")}</FormLabel>
                     <FormControl>
                       <Input placeholder="NQ, ES, EUR/USD…" {...field} value={field.value ?? ""} />
                     </FormControl>
@@ -159,7 +161,7 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                 name="period"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Period (optional)</FormLabel>
+                    <FormLabel>{t("form.fields.period")}</FormLabel>
                     <FormControl>
                       <Input placeholder="Q1 2024, Jan–Mar…" {...field} value={field.value ?? ""} />
                     </FormControl>
@@ -173,10 +175,10 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
               name="strategy"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Strategy (optional)</FormLabel>
+                  <FormLabel>{t("form.fields.strategy")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Brief description of the tested strategy…"
+                      placeholder={t("form.fields.strategyPlaceholder")}
                       rows={2}
                       {...field}
                       value={field.value ?? ""}
@@ -194,10 +196,10 @@ export function CreateBacktestDialog({ open, onOpenChange }: Props) {
                 onClick={() => onOpenChange(false)}
                 disabled={createMutation.isPending}
               >
-                Cancel
+                {t("form.submit.cancel")}
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating…" : "Create backtest"}
+                {createMutation.isPending ? t("form.submit.creating") : t("form.submit.create")}
               </Button>
             </div>
           </form>

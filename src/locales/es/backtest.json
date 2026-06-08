@@ -15,7 +15,8 @@
     },
     "edit": {
       "title": "Editar backtest",
-      "description": "Actualizá los parámetros de la simulación."
+      "description": "Actualizá los parámetros de la simulación.",
+      "immutableNote": "Actualizá el nombre y los metadatos opcionales. El bankroll y el costo de evaluación no se pueden modificar."
     },
     "fields": {
       "name": "Nombre",
@@ -23,13 +24,25 @@
       "initialBankroll": "Bankroll inicial (USD)",
       "evalCost": "Costo de evaluación (USD)",
       "accountSize": "Tamaño de cuenta (USD)",
-      "notes": "Notas (opcional)"
+      "notes": "Notas (opcional)",
+      "asset": "Activo (opcional)",
+      "period": "Período (opcional)",
+      "strategy": "Estrategia (opcional)",
+      "strategyPlaceholder": "Descripción breve de la estrategia evaluada…",
+      "payoutAmount": "Monto del retiro (USD)",
+      "notesPlaceholder": "Notas sobre este evento…"
     },
     "submit": {
       "create": "Crear backtest",
+      "creating": "Creando…",
       "save": "Guardar cambios",
-      "saving": "Guardando…"
-    }
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "recordEvent": "Registrar evento",
+      "recording": "Registrando…"
+    },
+    "newDescription": "Configurá los parámetros iniciales. El costo de evaluación no puede modificarse después de la creación.",
+    "eventType": "Tipo de evento"
   },
   "event": {
     "type": {
