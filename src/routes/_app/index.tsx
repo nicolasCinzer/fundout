@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
+import { useTranslation } from "react-i18next"
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -26,6 +27,7 @@ import { computeRatioContext } from "@/features/dashboard/lib/compute-ratio-cont
 import {
   DEFAULT_PERIOD,
   PERIODS,
+  periodLabel,
   periodRange,
   periodSubtitle,
   type CustomRange,
@@ -51,6 +53,7 @@ export const Route = createFileRoute("/_app/")({
 })
 
 function DashboardPage() {
+  const { t } = useTranslation("dashboard")
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const period: Period = search.period ?? DEFAULT_PERIOD
@@ -89,7 +92,7 @@ function DashboardPage() {
           <p className="text-sm text-muted-foreground">
             Showing{" "}
             <span className="font-medium text-foreground">
-              {periodSubtitle(period, periodRange(period, new Date(), custom))}
+              {periodSubtitle(period, periodRange(period, new Date(), custom), { label: periodLabel(t, period) })}
             </span>
             . Switch the period to compare ranges.
           </p>
