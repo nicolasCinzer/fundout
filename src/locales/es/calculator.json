@@ -56,6 +56,30 @@
     "attemptsHint_other": "~{{count}} intentos por retiro",
     "grossPayout": "Retiro bruto: {{amount}}",
     "breakEvenCost": "Costo de equilibrio: {{amount}}",
-    "noResults": "Completá el formulario para ver los resultados"
+    "noResults": "Completá el formulario para ver los resultados",
+    "phasePassBreakdown": "Desglose de aprobación por fase",
+    "noBreakdown": "Completá el formulario para ver el desglose",
+    "strategyLabels": {
+      "consistency": "Consistencia",
+      "minDays": "Días mínimos",
+      "singleShot": "Tiro único",
+      "cushion": "Colchón"
+    },
+    "mcCushion": "MC Colchón · Simulación fondeado",
+    "mcRuns": "10k simulaciones",
+    "mcMedianP50": "Mediana (P50)",
+    "mcRangeP5P95": "Rango P5–P95",
+    "mcWhenPassing": "al aprobar",
+    "mcStdDev": "Desviación estándar",
+    "mcPayoutVolatility": "volatilidad del retiro",
+    "mcRepeat": "Repetición ×",
+    "mcRepeatHint": "probabilidad del ciclo 2 varía",
+    "mcLifetimePayout": "Retiro esperado de por vida",
+    "mcLifetimePayoutHint": "{{amount}} por ciclo × {{multiplier}} ciclos esperados",
+    "day1Label": "Día 1",
+    "day1Detail": "riesgo ${{risk}} → objetivo ${{target}}",
+    "laterDaysLabel": "Días 2–{{days}}",
+    "laterDaysDetail": "±${{betSize}} cara o cruz",
+    "planLabel": "Plan · {{days}}d"
   }
 }

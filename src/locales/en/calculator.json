@@ -56,6 +56,30 @@
     "attemptsHint_other": "~{{count}} attempts per payout",
     "grossPayout": "Gross payout: {{amount}}",
     "breakEvenCost": "Break-even cost: {{amount}}",
-    "noResults": "Fill in the form to see results"
+    "noResults": "Fill in the form to see results",
+    "phasePassBreakdown": "Phase pass breakdown",
+    "noBreakdown": "Fill in the form to see the breakdown",
+    "strategyLabels": {
+      "consistency": "Consistency",
+      "minDays": "Min days",
+      "singleShot": "Single shot",
+      "cushion": "Cushion"
+    },
+    "mcCushion": "MC Cushion · Funded simulation",
+    "mcRuns": "10k runs",
+    "mcMedianP50": "Median (P50)",
+    "mcRangeP5P95": "Range P5–P95",
+    "mcWhenPassing": "when passing",
+    "mcStdDev": "Std deviation",
+    "mcPayoutVolatility": "payout volatility",
+    "mcRepeat": "Repeat ×",
+    "mcRepeatHint": "cycle-2 odds vary",
+    "mcLifetimePayout": "Lifetime expected payout",
+    "mcLifetimePayoutHint": "{{amount}} per cycle × {{multiplier}} expected cycles",
+    "day1Label": "Day 1",
+    "day1Detail": "risk ${{risk}} → target ${{target}}",
+    "laterDaysLabel": "Days 2–{{days}}",
+    "laterDaysDetail": "±${{betSize}} coin-flip",
+    "planLabel": "Plan · {{days}}d"
   }
 }
