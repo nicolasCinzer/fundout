@@ -15,7 +15,7 @@
   },
   "status": {
     "active": "Activa",
-    "breached": "Quemada"
+    "breached": "Perdida"
   },
   "columns": {
     "propfirm": "Propfirm",
@@ -34,13 +34,13 @@
   "stats": {
     "total": "Total",
     "active": "Activas",
-    "breached": "Violadas",
+    "breached": "Perdidas",
     "closed": "Cerradas",
     "totalWithdrawn": "Total retirado",
     "fundedLifetime": "Cuentas fondeadas históricas",
     "nothingActive": "Ninguna activa",
     "activeHint": "activa",
-    "breachedHint": "violada",
+    "breachedHint": "perdida",
     "fundedCount": "fondeada",
     "topPropfirms": "Mejores propfirms por cuentas fondeadas",
     "noData": "Sin datos aún"
@@ -55,7 +55,7 @@
   "actions": {
     "addPayout": "Agregar retiro",
     "logPayout": "Registrar retiro",
-    "markBreached": "Marcar como violada",
+    "markBreached": "Marcar como perdida",
     "moreActions": "Más acciones",
     "close": "Cerrar cuenta",
     "delete": "Eliminar"
