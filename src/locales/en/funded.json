@@ -1,17 +1,35 @@
 {
   "title": "Funded accounts",
-  "description": "Track your active and closed funded accounts.",
+  "description": "Active and historic funded accounts",
+  "list": {
+    "title": "All funded accounts",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} total",
+    "countFiltered": "{{shown}} of {{total}}",
+    "searchPlaceholder": "Search by propfirm…",
+    "noMatches": {
+      "title": "No matches",
+      "description": "Try a different search term or clear the filters."
+    },
+    "clearFilters": "Clear filters"
+  },
+  "status": {
+    "active": "Active",
+    "breached": "Breached"
+  },
   "columns": {
     "propfirm": "Propfirm",
     "accountSize": "Account size",
-    "startDate": "Start date",
+    "startDate": "Started",
+    "closedAt": "Closed",
     "status": "Status",
+    "netPayouts": "Net payouts",
     "payouts": "Payouts",
     "actions": "Actions"
   },
   "emptyState": {
     "title": "No funded accounts yet",
-    "description": "When an evaluation is marked as funded it will appear here."
+    "description": "Funded accounts appear here when you mark an evaluation as funded."
   },
   "stats": {
     "total": "Total",

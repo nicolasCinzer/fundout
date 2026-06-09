@@ -1,17 +1,35 @@
 {
   "title": "Cuentas fondeadas",
-  "description": "Seguí tus cuentas fondeadas activas y cerradas.",
+  "description": "Cuentas fondeadas activas e históricas",
+  "list": {
+    "title": "Todas las cuentas fondeadas",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totales",
+    "countFiltered": "{{shown}} de {{total}}",
+    "searchPlaceholder": "Buscar por propfirm…",
+    "noMatches": {
+      "title": "Sin resultados",
+      "description": "Probá con otro término o limpiá los filtros."
+    },
+    "clearFilters": "Limpiar filtros"
+  },
+  "status": {
+    "active": "Activa",
+    "breached": "Quemada"
+  },
   "columns": {
     "propfirm": "Propfirm",
     "accountSize": "Tamaño de cuenta",
-    "startDate": "Fecha de inicio",
+    "startDate": "Fondeada el",
+    "closedAt": "Cerrada",
     "status": "Estado",
+    "netPayouts": "Retiros netos",
     "payouts": "Retiros",
     "actions": "Acciones"
   },
   "emptyState": {
     "title": "Todavía no hay cuentas fondeadas",
-    "description": "Cuando una evaluación se marca como fondeada aparecerá acá."
+    "description": "Las cuentas fondeadas aparecen acá cuando marcás una evaluación como fondeada."
   },
   "stats": {
     "total": "Total",
