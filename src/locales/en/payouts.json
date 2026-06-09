@@ -25,6 +25,18 @@
       "saving": "Saving…"
     }
   },
+  "list": {
+    "title": "All payouts",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totals",
+    "countFiltered": "{{shown}} of {{total}}",
+    "searchPlaceholder": "Search by propfirm…",
+    "noMatches": {
+      "title": "No matches",
+      "description": "Try a different search term or clear the filters."
+    },
+    "clearFilters": "Clear filters"
+  },
   "columns": {
     "propfirm": "Propfirm",
     "amount": "Amount",

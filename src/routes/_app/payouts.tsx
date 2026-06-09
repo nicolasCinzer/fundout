@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
+import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight, Search, Wallet, X } from "lucide-react"
 import { AppHeader } from "@/components/common/app-header"
 import { EmptyState } from "@/components/common/empty-state"
@@ -86,6 +87,8 @@ function sortPayouts(
 }
 
 function PayoutsPage() {
+  const { t } = useTranslation("payouts")
+  const { t: tc } = useTranslation("common")
   const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
@@ -145,18 +148,18 @@ function PayoutsPage() {
 
   return (
     <>
-      <AppHeader title="Payouts" description="Every withdrawal you've taken" />
+      <AppHeader title={t("title")} description={t("description")} />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {!isLoading && all.length > 0 && <PayoutsStats payouts={all} />}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle>All payouts</CardTitle>
+            <CardTitle>{t("list.title")}</CardTitle>
             <CardDescription>
               {isLoading
-                ? "Loading…"
+                ? tc("status.loading")
                 : hasFilters
-                  ? `${rows.length} of ${total}`
-                  : `${total} total`}
+                  ? t("list.countFiltered", { shown: rows.length, total })
+                  : t("list.count", { count: total })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -164,7 +167,7 @@ function PayoutsPage() {
               <div className="relative flex-1 min-w-[200px] max-w-sm">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search by propfirm…"
+                  placeholder={t("list.searchPlaceholder")}
                   className="pl-9"
                   value={search.q ?? ""}
                   onChange={(e) => updateQuery(e.target.value)}
@@ -184,19 +187,19 @@ function PayoutsPage() {
               hasFilters ? (
                 <EmptyState
                   icon={<Search className="h-5 w-5" />}
-                  title="No matches"
-                  description="Try a different search term or clear the filters."
+                  title={t("list.noMatches.title")}
+                  description={t("list.noMatches.description")}
                   action={
                     <Button variant="outline" size="sm" onClick={clearFilters}>
-                      Clear filters
+                      {t("list.clearFilters")}
                     </Button>
                   }
                 />
               ) : (
                 <EmptyState
                   icon={<Wallet className="h-5 w-5" />}
-                  title="No payouts recorded"
-                  description="Payouts appear here when you log a withdrawal from a funded account."
+                  title={t("emptyState.title")}
+                  description={t("emptyState.description")}
                 />
               )
             ) : (
@@ -212,7 +215,7 @@ function PayoutsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Propfirm
+                        {t("columns.propfirm")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="paid_at"
@@ -221,7 +224,7 @@ function PayoutsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Paid at
+                        {t("columns.paidOn")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="amount"
@@ -231,7 +234,7 @@ function PayoutsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Amount
+                        {t("columns.amount")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="fee_taken"
@@ -241,7 +244,7 @@ function PayoutsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Fee
+                        {t("columns.fee")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="net"
@@ -251,7 +254,7 @@ function PayoutsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Net
+                        {t("columns.net")}
                       </SortableTableHead>
                       <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
@@ -288,7 +291,11 @@ function PayoutsPage() {
               {sorted.length > PAGE_SIZE && (
                 <div className="flex items-center justify-between gap-3 pt-1">
                   <p className="text-xs text-muted-foreground">
-                    Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, sorted.length)} of {sorted.length}
+                    {tc("pagination.showing", {
+                      from: pageStart + 1,
+                      to: Math.min(pageStart + PAGE_SIZE, sorted.length),
+                      total: sorted.length,
+                    })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -298,10 +305,10 @@ function PayoutsPage() {
                       onClick={() => goToPage(currentPage - 1)}
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
-                      Prev
+                      {tc("pagination.prev")}
                     </Button>
                     <span className="text-xs tabular-nums text-muted-foreground">
-                      Page {currentPage} of {totalPages}
+                      {tc("pagination.pageOf", { current: currentPage, total: totalPages })}
                     </span>
                     <Button
                       variant="outline"
@@ -309,7 +316,7 @@ function PayoutsPage() {
                       disabled={currentPage === totalPages}
                       onClick={() => goToPage(currentPage + 1)}
                     >
-                      Next
+                      {tc("pagination.next")}
                       <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                   </div>

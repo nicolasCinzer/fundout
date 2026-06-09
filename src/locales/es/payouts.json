@@ -25,6 +25,18 @@
       "saving": "Guardando…"
     }
   },
+  "list": {
+    "title": "Todos los retiros",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totales",
+    "countFiltered": "{{shown}} de {{total}}",
+    "searchPlaceholder": "Buscar por propfirm…",
+    "noMatches": {
+      "title": "Sin resultados",
+      "description": "Probá con otro término o limpiá los filtros."
+    },
+    "clearFilters": "Limpiar filtros"
+  },
   "columns": {
     "propfirm": "Propfirm",
     "amount": "Monto",
