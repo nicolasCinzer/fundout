@@ -2,16 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { i18n } from "@/lib/i18n"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/features/auth/api/auth-provider"
+import type { Database } from "@/types/database"
 
 export type Locale = "en" | "es"
 
-export type Profile = {
-  id: string
-  user_id: string
-  locale: Locale
-  created_at: string
-  updated_at: string
-}
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"]
 
 // ─── Query keys ────────────────────────────────────────────────────────────────
 
@@ -36,14 +31,13 @@ export function useProfile() {
     enabled: !!userId,
     queryFn: async (): Promise<Profile | null> => {
       const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("profiles" as any)
+        .from("profiles")
         .select("*")
         .eq("user_id", userId as string)
         .maybeSingle()
 
       if (error) throw error
-      return data as Profile | null
+      return data
     },
   })
 }
@@ -73,8 +67,7 @@ export function useSetLocale() {
       }
 
       const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from("profiles" as any)
+        .from("profiles")
         .upsert(
           { user_id: userId, locale },
           { onConflict: "user_id" },
