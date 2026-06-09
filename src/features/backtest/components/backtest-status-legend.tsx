@@ -34,7 +34,7 @@ export function BacktestStatusLegend() {
             <span
               className={`inline-flex h-5 w-[68px] shrink-0 items-center justify-center rounded-4xl border px-2 text-[11px] font-medium ${BADGE_CLASS[status]}`}
             >
-              {t(`lifecycle.legendLabel.${status}`)}
+              {t(`lifecycle.label.${status}`)}
             </span>
             <p className="text-[11px] text-muted-foreground leading-snug truncate">
               {t(`lifecycle.legendDescription.${status}`)}
