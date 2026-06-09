@@ -176,7 +176,7 @@ function PayoutsPage() {
               {hasFilters ? (
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="mr-1 h-3 w-3" />
-                  Clear
+                  {tc("filters.clear")}
                 </Button>
               ) : null}
             </div>

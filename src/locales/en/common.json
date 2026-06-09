@@ -70,6 +70,7 @@
     "pageOf": "Page {{current}} of {{total}}"
   },
   "filters": {
-    "allStatuses": "All statuses"
+    "allStatuses": "All statuses",
+    "clear": "Clear"
   }
 }

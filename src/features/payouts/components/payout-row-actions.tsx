@@ -79,7 +79,7 @@ export function PayoutRowActions({ payout }: PayoutRowActionsProps) {
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {t("common:actions.delete")}
                 </DropdownMenuItem>
               }
               title={t("rowActions.confirmTitle")}

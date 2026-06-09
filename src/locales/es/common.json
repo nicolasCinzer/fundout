@@ -70,6 +70,7 @@
     "pageOf": "Página {{current}} de {{total}}"
   },
   "filters": {
-    "allStatuses": "Todos los estados"
+    "allStatuses": "Todos los estados",
+    "clear": "Limpiar"
   }
 }
