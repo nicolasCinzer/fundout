@@ -1,6 +1,6 @@
 {
   "title": "Evaluations",
-  "description": "Track your propfirm challenges.",
+  "description": "Every challenge you've purchased",
   "status": {
     "inProgress": "In progress",
     "passed": "Passed",
@@ -113,6 +113,18 @@
       "dateBeforePurchase": "Funded date cannot be before purchase date",
       "dateInFuture": "Funded date cannot be in the future"
     }
+  },
+  "list": {
+    "title": "All evaluations",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} total",
+    "countFiltered": "{{shown}} of {{total}}",
+    "searchPlaceholder": "Search by propfirm…",
+    "noMatches": {
+      "title": "No matches",
+      "description": "Try a different search term or clear the filters."
+    },
+    "clearFilters": "Clear filters"
   },
   "emptyState": {
     "title": "No evaluations yet",

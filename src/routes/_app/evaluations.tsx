@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
+import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight, FileText, Search, X } from "lucide-react"
 import { AppHeader } from "@/components/common/app-header"
 import { EmptyState } from "@/components/common/empty-state"
@@ -80,16 +81,24 @@ export const Route = createFileRoute("/_app/evaluations")({
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline"
 
-const STATUS_META: {
-  [K in EvaluationStatus]?: { variant: BadgeVariant; label: string }
-} = {
-  in_progress: { variant: "default", label: "In progress" },
-  passed: { variant: "secondary", label: "Passed" },
-  failed: { variant: "destructive", label: "Failed" },
+const STATUS_VARIANT: { [K in EvaluationStatus]?: BadgeVariant } = {
+  in_progress: "default",
+  passed: "secondary",
+  failed: "destructive",
 }
 
-function getStatusMeta(s: EvaluationStatus) {
-  return STATUS_META[s] ?? { variant: "outline" as BadgeVariant, label: s }
+function getStatusVariant(s: EvaluationStatus): BadgeVariant {
+  return STATUS_VARIANT[s] ?? "outline"
+}
+
+const STATUS_I18N_KEY: { [K in EvaluationStatus]?: string } = {
+  in_progress: "status.inProgress",
+  passed: "status.passed",
+  failed: "status.failed",
+}
+
+function getStatusKey(s: EvaluationStatus): string {
+  return STATUS_I18N_KEY[s] ?? s
 }
 
 function sortEvaluations(
@@ -126,6 +135,8 @@ function sortEvaluations(
 }
 
 function EvaluationsPage() {
+  const { t } = useTranslation("evaluations")
+  const { t: tc } = useTranslation("common")
   const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
@@ -192,8 +203,8 @@ function EvaluationsPage() {
   return (
     <>
       <AppHeader
-        title="Evaluations"
-        description="Every challenge you've purchased"
+        title={t("title")}
+        description={t("description")}
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {!isLoading && data && data.length > 0 && (
@@ -201,13 +212,13 @@ function EvaluationsPage() {
         )}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle>All evaluations</CardTitle>
+            <CardTitle>{t("list.title")}</CardTitle>
             <CardDescription>
               {isLoading
-                ? "Loading…"
+                ? tc("status.loading")
                 : hasFilters
-                  ? `${rows.length} of ${total}`
-                  : `${total} total`}
+                  ? t("list.countFiltered", { shown: rows.length, total })
+                  : t("list.count", { count: total })}
             </CardDescription>
             <CardAction>
               <EvaluationFormDialog />
@@ -218,7 +229,7 @@ function EvaluationsPage() {
               <div className="relative flex-1 min-w-[200px] max-w-sm">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search by propfirm…"
+                  placeholder={t("list.searchPlaceholder")}
                   className="pl-9"
                   value={search.q ?? ""}
                   onChange={(e) => updateSearch({ q: e.target.value })}
@@ -236,10 +247,10 @@ function EvaluationsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  <SelectItem value="in_progress">In progress</SelectItem>
-                  <SelectItem value="passed">Passed</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
+                  <SelectItem value="all">{tc("filters.allStatuses")}</SelectItem>
+                  <SelectItem value="in_progress">{t("status.inProgress")}</SelectItem>
+                  <SelectItem value="passed">{t("status.passed")}</SelectItem>
+                  <SelectItem value="failed">{t("status.failed")}</SelectItem>
                 </SelectContent>
               </Select>
               {hasFilters ? (
@@ -256,19 +267,19 @@ function EvaluationsPage() {
               hasFilters ? (
                 <EmptyState
                   icon={<Search className="h-5 w-5" />}
-                  title="No matches"
-                  description="Try a different search term or clear the filters."
+                  title={t("list.noMatches.title")}
+                  description={t("list.noMatches.description")}
                   action={
                     <Button variant="outline" size="sm" onClick={clearFilters}>
-                      Clear filters
+                      {t("list.clearFilters")}
                     </Button>
                   }
                 />
               ) : (
                 <EmptyState
                   icon={<FileText className="h-5 w-5" />}
-                  title="No evaluations yet"
-                  description="Track your first propfirm challenge to start measuring funding ratio and ROI."
+                  title={t("emptyState.title")}
+                  description={t("emptyState.description")}
                   action={<EvaluationFormDialog />}
                 />
               )
@@ -285,7 +296,7 @@ function EvaluationsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Propfirm
+                        {t("columns.propfirm")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="account_size"
@@ -295,7 +306,7 @@ function EvaluationsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Account size
+                        {t("columns.accountSize")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="fee_paid"
@@ -305,7 +316,7 @@ function EvaluationsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Fee
+                        {t("columns.fee")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="purchase_date"
@@ -314,7 +325,7 @@ function EvaluationsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Purchased
+                        {t("columns.purchaseDate")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="closed_at"
@@ -323,7 +334,7 @@ function EvaluationsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Closed
+                        {t("columns.closedAt")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="status"
@@ -332,14 +343,13 @@ function EvaluationsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Status
+                        {t("columns.status")}
                       </SortableTableHead>
                       <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {rows.map((e) => {
-                      const meta = getStatusMeta(e.status)
                       const resetSum = resetsTotal(e)
                       const resetCount = e.resets?.length ?? 0
                       return (
@@ -369,7 +379,7 @@ function EvaluationsPage() {
                             {e.closed_at ? formatDate(e.closed_at) : "—"}
                           </TableCell>
                           <TableCell>
-                            <Badge variant={meta.variant}>{meta.label}</Badge>
+                            <Badge variant={getStatusVariant(e.status)}>{t(getStatusKey(e.status))}</Badge>
                           </TableCell>
                           <TableCell>
                             <EvaluationRowActions evaluation={e} />
@@ -383,7 +393,11 @@ function EvaluationsPage() {
               {sorted.length > PAGE_SIZE && (
                 <div className="flex items-center justify-between gap-3 pt-1">
                   <p className="text-xs text-muted-foreground">
-                    Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, sorted.length)} of {sorted.length}
+                    {tc("pagination.showing", {
+                      from: pageStart + 1,
+                      to: Math.min(pageStart + PAGE_SIZE, sorted.length),
+                      total: sorted.length,
+                    })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -393,10 +407,10 @@ function EvaluationsPage() {
                       onClick={() => goToPage(currentPage - 1)}
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
-                      Prev
+                      {tc("pagination.prev")}
                     </Button>
                     <span className="text-xs tabular-nums text-muted-foreground">
-                      Page {currentPage} of {totalPages}
+                      {tc("pagination.pageOf", { current: currentPage, total: totalPages })}
                     </span>
                     <Button
                       variant="outline"
@@ -404,7 +418,7 @@ function EvaluationsPage() {
                       disabled={currentPage === totalPages}
                       onClick={() => goToPage(currentPage + 1)}
                     >
-                      Next
+                      {tc("pagination.next")}
                       <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                   </div>

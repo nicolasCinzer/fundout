@@ -64,6 +64,12 @@
   },
   "pagination": {
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "prev": "Prev",
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "pageOf": "Page {{current}} of {{total}}"
+  },
+  "filters": {
+    "allStatuses": "All statuses"
   }
 }

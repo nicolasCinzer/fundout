@@ -64,6 +64,12 @@
   },
   "pagination": {
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "prev": "Ant.",
+    "showing": "Mostrando {{from}}-{{to}} de {{total}}",
+    "pageOf": "Página {{current}} de {{total}}"
+  },
+  "filters": {
+    "allStatuses": "Todos los estados"
   }
 }
