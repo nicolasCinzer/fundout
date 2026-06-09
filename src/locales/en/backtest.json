@@ -105,21 +105,7 @@
     "currentBankroll": "Initial bankroll + net profit. Live capital at this point in the simulation."
   },
   "lifecycle": {
-    "status": {
-      "open": "Open",
-      "fundedActive": "Funded (active)",
-      "lost": "Lost",
-      "breachedNoPayout": "Breached (no payout)",
-      "fundedPaid": "Funded (paid)"
-    },
-    "badge": {
-      "open": "Open",
-      "funded_active": "Funded",
-      "lost": "Lost",
-      "breached_no_payout": "Breached",
-      "funded_paid": "Paid"
-    },
-    "legendLabel": {
+    "label": {
       "open": "Open",
       "funded_active": "Funded",
       "lost": "Lost",

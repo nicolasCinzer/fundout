@@ -105,21 +105,7 @@
     "currentBankroll": "Bankroll inicial + ganancia neta. Capital disponible en este punto de la simulación."
   },
   "lifecycle": {
-    "status": {
-      "open": "Abierto",
-      "fundedActive": "Fondeado (activo)",
-      "lost": "Perdido",
-      "breachedNoPayout": "Incumplido (sin retiro)",
-      "fundedPaid": "Fondeado (con retiro)"
-    },
-    "badge": {
-      "open": "Abierta",
-      "funded_active": "Fondeada",
-      "lost": "Fallida",
-      "breached_no_payout": "Perdida",
-      "funded_paid": "Pagada"
-    },
-    "legendLabel": {
+    "label": {
       "open": "Abierta",
       "funded_active": "Fondeada",
       "lost": "Fallida",

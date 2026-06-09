@@ -28,7 +28,7 @@ function StatusBadge({ status }: { status: LifecycleStatus }) {
     <span
       className={`inline-flex h-5 items-center rounded-4xl border px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASS[status]}`}
     >
-      {t(`lifecycle.badge.${status}`)}
+      {t(`lifecycle.label.${status}`)}
     </span>
   )
 }
