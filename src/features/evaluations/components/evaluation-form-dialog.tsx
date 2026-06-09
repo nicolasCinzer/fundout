@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -32,6 +33,7 @@ export function EvaluationFormDialog({
     ? (controlledOnOpenChange ?? (() => {}))
     : setUncontrolledOpen
 
+  const { t } = useTranslation("evaluations")
   const isEdit = !!evaluation
 
   return (
@@ -41,7 +43,7 @@ export function EvaluationFormDialog({
           {trigger ?? (
             <Button size="sm">
               <Plus className="mr-1 h-4 w-4" />
-              New evaluation
+              {t("form.submit.add")}
             </Button>
           )}
         </DialogTrigger>
@@ -49,12 +51,10 @@ export function EvaluationFormDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit evaluation" : "New evaluation"}
+            {isEdit ? t("form.edit.title") : t("form.new.title")}
           </DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Update the details of this evaluation."
-              : "Record a propfirm challenge you've purchased. You can edit details later as the evaluation progresses."}
+            {isEdit ? t("form.edit.description") : t("form.new.description")}
           </DialogDescription>
         </DialogHeader>
         <EvaluationForm

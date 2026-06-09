@@ -1,5 +1,6 @@
 import { toast } from "sonner"
 import { Undo2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { ConfirmDelete } from "@/components/common/confirm-delete"
 import { useUndoLastBacktestEvent } from "@/features/backtest/api/backtests-queries"
@@ -13,15 +14,17 @@ type Props = {
 }
 
 export function BacktestUndoButton({ backtestId, events }: Props) {
+  const { t } = useTranslation("backtest")
+  const { t: tc } = useTranslation("common")
   const undoMutation = useUndoLastBacktestEvent(backtestId)
   const last = events.length > 0 ? events[events.length - 1] : null
 
   const handleUndo = async () => {
     try {
       await undoMutation.mutateAsync()
-      toast.success("Event undone")
+      toast.success(t("event.undoneSuccess"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not undo the event.")
+      toast.error(err instanceof Error ? err.message : tc("errors.undoFailed"))
     }
   }
 
@@ -34,16 +37,16 @@ export function BacktestUndoButton({ backtestId, events }: Props) {
           disabled={!last || undoMutation.isPending}
         >
           <Undo2 className="mr-2 h-4 w-4" />
-          Undo last event
+          {t("event.undo")}
         </Button>
       }
-      title="Undo last event?"
+      title={t("event.undoConfirmTitle")}
       description={
         last
-          ? `This will remove the ${last.type} event at position ${last.position}. This action cannot be reversed.`
-          : "There are no events to undo."
+          ? t("event.undoConfirmDescription", { type: last.type, position: last.position })
+          : t("event.undoNoEvents")
       }
-      confirmLabel="Undo"
+      confirmLabel={tc("actions.undo")}
       pending={undoMutation.isPending}
       onConfirm={handleUndo}
     />

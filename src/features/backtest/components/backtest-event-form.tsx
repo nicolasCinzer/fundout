@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import {
   Form,
   FormControl,
@@ -17,10 +18,16 @@ import { useAppendBacktestEvent } from "@/features/backtest/api/backtests-querie
 import { nextAllowedEvent } from "@/features/backtest/lib/next-allowed-event"
 import type { BacktestEvent, BacktestEventType } from "@/features/backtest/types"
 
-const TYPE_LABEL: Record<BacktestEventType, string> = {
-  E: "Buy Evaluation",
-  F: "Mark Funded",
-  P: "Record Payout",
+/**
+ * Hook: returns translated type labels (FR-14 replacement for static TYPE_LABEL dict).
+ */
+function useTypeLabel(): Record<BacktestEventType, string> {
+  const { t } = useTranslation("backtest")
+  return {
+    E: t("event.type.E"),
+    F: t("event.type.F"),
+    P: t("event.type.P"),
+  }
 }
 
 // Flat form values — discriminated union handled manually at submit
@@ -37,6 +44,8 @@ type Props = {
 }
 
 export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) {
+  const { t } = useTranslation("backtest")
+  const typeLabel = useTypeLabel()
   const appendMutation = useAppendBacktestEvent(backtestId)
   const allowedTypes = nextAllowedEvent(lastEvent)
   const [selectedType, setSelectedType] = useState<BacktestEventType | null>(null)
@@ -73,7 +82,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
       setSelectedType(null)
       form.reset({ type: "E", amount: "", notes: "" })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not record the event.")
+      toast.error(err instanceof Error ? err.message : t("toasts.errorSave"))
     }
   }
 
@@ -82,22 +91,22 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Type selector buttons */}
         <div className="space-y-2">
-          <p className="text-sm font-medium leading-none">Event type</p>
+          <p className="text-sm font-medium leading-none">{t("form.eventType")}</p>
           <div className="grid grid-cols-3 gap-2">
-            {(["E", "F", "P"] as BacktestEventType[]).map((t) => {
-              const allowed = allowedTypes.includes(t)
-              const isSelected = selectedType === t
+            {(["E", "F", "P"] as BacktestEventType[]).map((evtType) => {
+              const allowed = allowedTypes.includes(evtType)
+              const isSelected = selectedType === evtType
               return (
                 <Button
-                  key={t}
+                  key={evtType}
                   type="button"
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
                   disabled={!allowed || isGameOver || appendMutation.isPending}
-                  onClick={() => handleTypeSelect(t)}
+                  onClick={() => handleTypeSelect(evtType)}
                   className="w-full text-xs"
                 >
-                  {TYPE_LABEL[t]}
+                  {typeLabel[evtType]}
                 </Button>
               )
             })}
@@ -111,7 +120,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
             name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Payout amount (USD)</FormLabel>
+                <FormLabel>{t("form.fields.payoutAmount")}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -135,10 +144,10 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes (optional)</FormLabel>
+              <FormLabel>{t("form.fields.notes")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Notes about this event…"
+                  placeholder={t("form.fields.notesPlaceholder")}
                   rows={2}
                   disabled={isGameOver || appendMutation.isPending}
                   {...field}
@@ -154,7 +163,7 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
           className="w-full"
           disabled={!selectedType || isGameOver || appendMutation.isPending}
         >
-          {appendMutation.isPending ? "Recording…" : "Record event"}
+          {appendMutation.isPending ? t("form.submit.recording") : t("form.submit.recordEvent")}
         </Button>
       </form>
     </Form>

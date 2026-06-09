@@ -1,6 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LanguageToggle } from "@/components/common/language-toggle"
 
 type AppHeaderProps = {
   title: string
@@ -19,6 +20,7 @@ export function AppHeader({ title, description }: AppHeaderProps) {
         ) : null}
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <LanguageToggle />
         <ThemeToggle />
       </div>
     </header>

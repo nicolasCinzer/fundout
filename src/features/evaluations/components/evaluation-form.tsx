@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -44,11 +45,18 @@ type EvaluationFormProps = {
   onCancel?: () => void
 }
 
-const STATUS_OPTIONS = [
-  { value: "in_progress", label: "In progress" },
-  { value: "passed", label: "Passed" },
-  { value: "failed", label: "Failed" },
-] as const
+/**
+ * Hook returning translated status options.
+ * Replaces the static STATUS_OPTIONS constant (FR-14).
+ */
+function useStatusOptions() {
+  const { t } = useTranslation("evaluations")
+  return [
+    { value: "in_progress", label: t("status.inProgress") },
+    { value: "passed", label: t("status.passed") },
+    { value: "failed", label: t("status.failed") },
+  ] as const
+}
 
 const ACCOUNT_SIZE_PRESETS = [
   10_000, 25_000, 50_000, 100_000, 150_000, 200_000,
@@ -77,6 +85,8 @@ function CreateEvaluationForm({
   onSuccess?: () => void
   onCancel?: () => void
 }) {
+  const { t } = useTranslation("evaluations")
+  const statusOptions = useStatusOptions()
   const createMutation = useCreateEvaluation()
   const { data: propfirms, isLoading: propfirmsLoading } = usePropfirms()
 
@@ -115,12 +125,12 @@ function CreateEvaluationForm({
       },
       {
         onSuccess: () => {
-          toast.success("Evaluation added")
+          toast.success(t("toasts.added"))
           form.reset()
           onSuccess?.()
         },
         onError: (error) => {
-          toast.error(error.message || "Could not save the evaluation.")
+          toast.error(error.message || t("toasts.errorSave"))
         },
       },
     )
@@ -238,7 +248,7 @@ function CreateEvaluationForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {STATUS_OPTIONS.map((s) => (
+                    {statusOptions.map((s) => (
                       <SelectItem key={s.value} value={s.value}>
                         {s.label}
                       </SelectItem>
@@ -318,6 +328,7 @@ function EditEvaluationForm({
   onSuccess?: () => void
   onCancel?: () => void
 }) {
+  const { t } = useTranslation("evaluations")
   const updateMutation = useUpdateEvaluation()
   const { data: propfirms, isLoading: propfirmsLoading } = usePropfirms()
 
@@ -348,11 +359,11 @@ function EditEvaluationForm({
       },
       {
         onSuccess: () => {
-          toast.success("Evaluation updated")
+          toast.success(t("toasts.updated"))
           onSuccess?.()
         },
         onError: (error) => {
-          toast.error(error.message || "Could not update the evaluation.")
+          toast.error(error.message || t("toasts.errorUpdate"))
         },
       },
     )

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { FlaskConical } from "lucide-react"
 import { EmptyState } from "@/components/common/empty-state"
 import {
@@ -11,14 +12,6 @@ import {
 import { formatCurrency } from "@/lib/format"
 import type { Lifecycle, LifecycleStatus } from "@/features/backtest/types"
 
-const STATUS_LABEL: Record<LifecycleStatus, string> = {
-  lost: "Lost",
-  breached_no_payout: "Breached",
-  funded_paid: "Paid",
-  funded_active: "Funded",
-  open: "Open",
-}
-
 const STATUS_BADGE_CLASS: Record<LifecycleStatus, string> = {
   lost: "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400",
   breached_no_payout:
@@ -30,11 +23,12 @@ const STATUS_BADGE_CLASS: Record<LifecycleStatus, string> = {
 }
 
 function StatusBadge({ status }: { status: LifecycleStatus }) {
+  const { t } = useTranslation("backtest")
   return (
     <span
       className={`inline-flex h-5 items-center rounded-4xl border px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASS[status]}`}
     >
-      {STATUS_LABEL[status]}
+      {t(`lifecycle.badge.${status}`)}
     </span>
   )
 }
@@ -45,12 +39,14 @@ type Props = {
 }
 
 export function BacktestLifecycleTable({ lifecycles }: Props) {
+  const { t } = useTranslation("backtest")
+
   if (lifecycles.length === 0) {
     return (
       <EmptyState
         icon={<FlaskConical className="h-5 w-5" />}
-        title="No events yet"
-        description="Start by recording a Buy Evaluation event."
+        title={t("lifecycle.empty.title")}
+        description={t("lifecycle.empty.description")}
       />
     )
   }
@@ -65,16 +61,16 @@ export function BacktestLifecycleTable({ lifecycles }: Props) {
                 #
               </TableHead>
               <TableHead className="sticky top-0 z-10 bg-card font-heading text-xs uppercase tracking-wide">
-                State
+                {t("lifecycle.table.state")}
               </TableHead>
               <TableHead className="sticky top-0 z-10 bg-card text-right font-heading text-xs uppercase tracking-wide">
-                Payouts
+                {t("lifecycle.table.payouts")}
               </TableHead>
               <TableHead className="sticky top-0 z-10 bg-card text-right font-heading text-xs uppercase tracking-wide">
-                Total Withdrawn
+                {t("lifecycle.table.totalWithdrawn")}
               </TableHead>
               <TableHead className="sticky top-0 z-10 bg-card font-heading text-xs uppercase tracking-wide">
-                Notes
+                {t("lifecycle.table.notes")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -92,7 +88,7 @@ export function BacktestLifecycleTable({ lifecycles }: Props) {
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {lc.payoutsTotal > 0
-                    ? formatCurrency(lc.payoutsTotal, true)
+                    ? formatCurrency(lc.payoutsTotal)
                     : "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground max-w-[120px] truncate">

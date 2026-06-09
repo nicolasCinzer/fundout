@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/card'
 import { formatCurrency, formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -40,8 +41,9 @@ function KpiCard({ label, value, hint, tone = 'default' }: KpiCardProps) {
 }
 
 export function CalculatorKpis({ result }: Props) {
+  const { t } = useTranslation('calculator')
   const payoutProb = result ? formatPercent(result.pTotal) : '—'
-  const ev = result ? formatCurrency(result.ev, true) : '—'
+  const ev = result ? formatCurrency(result.ev) : '—'
   const roi = result
     ? result.roi !== null
       ? formatPercent(result.roi)
@@ -72,27 +74,29 @@ export function CalculatorKpis({ result }: Props) {
   const maxCost = result ? Math.max(0, result.pTotal * result.w) : null
 
   const payoutHint = expectedAttempts
-    ? `~${expectedAttempts} ${expectedAttempts === 1 ? 'attempt' : 'attempts'} per payout`
+    ? t('results.attemptsHint', { count: expectedAttempts })
     : undefined
 
   const evHint =
-    result && result.w > 0 ? `Gross payout: ${formatCurrency(result.w, true)}` : undefined
+    result && result.w > 0
+      ? t('results.grossPayout', { amount: formatCurrency(result.w) })
+      : undefined
 
   const roiHint =
     maxCost !== null && maxCost > 0
-      ? `Break-even cost: ${formatCurrency(maxCost, true)}`
+      ? t('results.breakEvenCost', { amount: formatCurrency(maxCost) })
       : undefined
 
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
       <KpiCard
-        label="Payout probability"
+        label={t('results.payoutProbability')}
         value={payoutProb}
         tone="positive"
         hint={payoutHint}
       />
-      <KpiCard label="Expected value" value={ev} tone={evTone} hint={evHint} />
-      <KpiCard label="ROI" value={roi} tone={roiTone} hint={roiHint} />
+      <KpiCard label={t('results.expectedValue')} value={ev} tone={evTone} hint={evHint} />
+      <KpiCard label={t('results.roi')} value={roi} tone={roiTone} hint={roiHint} />
     </div>
   )
 }

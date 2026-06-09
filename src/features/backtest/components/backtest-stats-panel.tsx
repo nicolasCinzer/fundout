@@ -9,6 +9,7 @@ import {
   Target,
   TrendingUp,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { formatCurrency, formatPercent } from "@/lib/format"
@@ -33,6 +34,7 @@ function safeNum(n: number): number {
 }
 
 export function BacktestStatsPanel({ stats }: Props) {
+  const { t } = useTranslation("backtest")
   const s = {
     countE: stats.counts.E,
     countF: stats.counts.F,
@@ -70,27 +72,27 @@ export function BacktestStatsPanel({ stats }: Props) {
       {/* Volumes */}
       <Card className="gap-2 px-4 py-3.5">
         <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-          Volumes
+          {t("stats.volumes.title")}
         </p>
         <div className="space-y-2.5">
           <MetricRow
             icon={<FlaskConical className="h-3.5 w-3.5" />}
-            label="Evaluations"
+            label={t("stats.volumes.evaluations")}
             value={String(s.countE)}
           />
           <MetricRow
             icon={<ShieldCheck className="h-3.5 w-3.5" />}
-            label="Funded"
+            label={t("stats.volumes.funded")}
             value={String(s.countF)}
           />
           <MetricRow
             icon={<HandCoins className="h-3.5 w-3.5" />}
-            label="Funded w/ payout"
+            label={t("stats.volumes.fundedWithPayout")}
             value={String(s.paidFunded)}
           />
           <MetricRow
             icon={<Banknote className="h-3.5 w-3.5" />}
-            label="Payouts"
+            label={t("stats.volumes.payouts")}
             value={String(s.countP)}
           />
         </div>
@@ -99,36 +101,36 @@ export function BacktestStatsPanel({ stats }: Props) {
       {/* Rates */}
       <Card className="gap-2 px-4 py-3.5">
         <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-          Rates
+          {t("stats.rates.title")}
         </p>
         <div className="space-y-2.5">
           <MetricRow
             icon={<TrendingUp className="h-3.5 w-3.5" />}
-            label="% Funded"
+            label={t("stats.rates.percentFunded")}
             value={formatPercent(s.funded)}
             bar={Math.min(1, s.funded)}
-            hint="Share of evaluations that reached funded status."
+            hint={t("tooltips.percentFunded")}
           />
           <MetricRow
             icon={<Percent className="h-3.5 w-3.5" />}
-            label="% Payout"
+            label={t("stats.rates.percentPayout")}
             value={formatPercent(s.payout)}
             bar={Math.min(1, s.payout)}
-            hint="Share of funded accounts that produced at least one payout."
+            hint={t("tooltips.percentPayout")}
           />
           <MetricRow
             icon={<Target className="h-3.5 w-3.5" />}
-            label="% Success"
+            label={t("stats.rates.percentSuccess")}
             value={formatPercent(s.success)}
             bar={Math.min(1, s.success)}
-            hint="Share of evaluations that ended in a paid funded account — the end-to-end conversion."
+            hint={t("tooltips.percentSuccess")}
           />
           <MetricRow
             icon={<Dice5 className="h-3.5 w-3.5" />}
-            label="Payout Probability"
+            label={t("stats.rates.payoutProbability")}
             value={formatPercent(s.payoutProbability)}
             bar={Math.min(1, s.payoutProbability)}
-            hint="Expected payout events per evaluation. Can exceed 100% when funded accounts produce multiple payouts."
+            hint={t("tooltips.payoutProbability")}
           />
         </div>
       </Card>
@@ -136,14 +138,14 @@ export function BacktestStatsPanel({ stats }: Props) {
       {/* Risk */}
       <Card className="gap-2 px-4 py-3.5">
         <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-          Risk
+          {t("stats.risk.title")}
         </p>
         <MetricRow
           icon={<Flame className="h-3.5 w-3.5" />}
-          label="Worst Streak"
+          label={t("stats.risk.worstStreak")}
           value={String(s.worstStreak)}
           tone={streakTone}
-          hint="Longest consecutive run of evaluations without producing a payout."
+          hint={t("tooltips.worstStreak")}
         />
       </Card>
 
@@ -155,59 +157,58 @@ export function BacktestStatsPanel({ stats }: Props) {
         )}
       >
         <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-          Financial summary
+          {t("stats.financial.title")}
         </p>
         <div className="space-y-1.5">
           <Row
-            label="Initial bankroll"
-            value={formatCurrency(s.bankrollInitial, true)}
-            hint="Starting capital for this backtest. ROI is computed against this number."
+            label={t("stats.financial.initialBankroll")}
+            value={formatCurrency(s.bankrollInitial)}
+            hint={t("tooltips.initialBankroll")}
           />
           <Row
-            label="Spent on evaluations"
-            value={formatCurrency(s.evalsSpend, true)}
+            label={t("stats.financial.spentOnEvaluations")}
+            value={formatCurrency(s.evalsSpend)}
             tone="negative"
-            hint="Total cost of evaluation attempts: count(E) × eval_cost."
+            hint={t("tooltips.spentOnEvaluations")}
           />
           <Row
-            label="Total withdrawn"
-            value={formatCurrency(s.payoutsTotal, true)}
-            hint="Sum of every payout event amount across all funded accounts."
+            label={t("stats.financial.totalWithdrawn")}
+            value={formatCurrency(s.payoutsTotal)}
+            hint={t("tooltips.totalWithdrawn")}
           />
           <Row
-            label="Median payout"
-            value={formatCurrency(s.payoutsMedian, true)}
-            hint="Middle value of all payout amounts — resists outliers better than the mean."
+            label={t("stats.financial.medianPayout")}
+            value={formatCurrency(s.payoutsMedian)}
+            hint={t("tooltips.medianPayout")}
           />
           <Row
-            label="Avg payouts / funded"
+            label={t("stats.financial.avgPayoutsPerFunded")}
             value={s.payoutsPerFunded.toFixed(2)}
-            hint="Mean number of payout events per funded account: count(P) / count(F)."
+            hint={t("tooltips.avgPayoutsPerFunded")}
           />
           <div className="my-1 border-t" />
           <Row
-            label="Net profit"
-            value={formatCurrency(s.netProfit, true)}
+            label={t("stats.financial.netProfit")}
+            value={formatCurrency(s.netProfit)}
             tone={profitTone}
-            hint="Total withdrawn minus spent on evaluations."
+            hint={t("tooltips.netProfit")}
           />
           <Row
-            label="ROI"
+            label={t("stats.financial.roi")}
             value={formatPercent(s.roi)}
             tone={profitTone}
-            hint="Net profit / initial bankroll. Measured against the starting capital, not total invested — can exceed 100% when payouts dwarf the initial."
+            hint={t("tooltips.roi")}
           />
           <div className="my-1 border-t" />
           <div className="flex items-baseline justify-between gap-2 pt-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="text-xs font-medium text-muted-foreground decoration-dotted underline-offset-4 hover:underline cursor-help">
-                  Current bankroll
+                  {t("stats.financial.currentBankroll")}
                 </span>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                Initial bankroll + net profit. Live capital at this point in the
-                simulation.
+                {t("tooltips.currentBankroll")}
               </TooltipContent>
             </Tooltip>
             <span
@@ -216,7 +217,7 @@ export function BacktestStatsPanel({ stats }: Props) {
                 toneClasses[bankrollTone],
               )}
             >
-              {formatCurrency(s.bankrollCurrent, true)}
+              {formatCurrency(s.bankrollCurrent)}
             </span>
           </div>
         </div>

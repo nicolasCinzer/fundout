@@ -1,0 +1,142 @@
+{
+  "title": "Evaluaciones",
+  "description": "Todos los challenges que compraste",
+  "status": {
+    "inProgress": "En progreso",
+    "passed": "Aprobada",
+    "failed": "Fallida"
+  },
+  "form": {
+    "new": {
+      "title": "Nueva evaluación",
+      "description": "Registrá un challenge de propfirm que compraste. Podés editar los detalles más adelante a medida que progrese la evaluación."
+    },
+    "edit": {
+      "title": "Editar evaluación",
+      "description": "Actualizá los detalles de esta evaluación."
+    },
+    "fields": {
+      "propfirm": "Propfirm",
+      "propfirmPlaceholder": "Elegí una propfirm…",
+      "propfirmLoading": "Cargando…",
+      "propfirmHint": "¿No ves tu propfirm? Escribí el nombre y presioná \"Crear\".",
+      "accountSize": "Tamaño de cuenta",
+      "feePaid": "Comisión pagada (USD)",
+      "feePlaceholder": "540.00",
+      "purchasedOn": "Comprada el",
+      "status": "Estado",
+      "closedOn": "Cerrada el",
+      "closedOnHint": "Requerido cuando el estado no es en progreso.",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "Algo que valga la pena recordar sobre este challenge…"
+    },
+    "editStatusHint": "Para cambiar el estado (marcar como fondeada, fallada o registrar un reset), usá el menú de acciones de la fila.",
+    "submit": {
+      "add": "Agregar evaluación",
+      "save": "Guardar cambios",
+      "saving": "Guardando…"
+    }
+  },
+  "actions": {
+    "markFunded": "Marcar como fondeada",
+    "logReset": "Registrar reset",
+    "markFailed": "Marcar como fallada",
+    "moreActions": "Más acciones",
+    "edit": "Editar",
+    "delete": "Eliminar evaluación"
+  },
+  "toasts": {
+    "added": "Evaluación agregada",
+    "updated": "Evaluación actualizada",
+    "deleted": "Evaluación eliminada",
+    "errorSave": "No se pudo guardar la evaluación.",
+    "errorUpdate": "No se pudo actualizar la evaluación.",
+    "errorDelete": "No se pudo eliminar la evaluación."
+  },
+  "markFailed": {
+    "toasts": {
+      "undone": "Deshecho"
+    }
+  },
+  "delete": {
+    "title": "¿Eliminar esta evaluación?",
+    "descriptionWithRelations": "También se eliminará la cuenta fondeada vinculada, los retiros registrados y todos los eventos de reset.",
+    "descriptionStandalone": "Se eliminará permanentemente la evaluación y todos los eventos de reset vinculados."
+  },
+  "stats": {
+    "total": "Total",
+    "funded": "Fondeadas",
+    "failed": "Falladas",
+    "active": "activa",
+    "attempt": "intento",
+    "attempts": "intentos",
+    "topPropfirms": "Mejores propfirms",
+    "noData": "Sin datos aún",
+    "nothingActive": "Ninguna activa"
+  },
+  "logReset": {
+    "title": "Registrar reset",
+    "descriptionWithName": "Registrá un reset en tu evaluación de {{name}}. La comisión se suma al total de la evaluación.",
+    "description": "Registrá un reset en esta evaluación. La comisión se suma al total de la evaluación.",
+    "fields": {
+      "resetFee": "Comisión de reset (USD)",
+      "resetDate": "Fecha del reset",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "¿Por qué hiciste el reset?"
+    },
+    "submit": {
+      "save": "Registrar reset",
+      "saving": "Guardando…"
+    },
+    "toasts": {
+      "logged": "Reset registrado",
+      "errorLog": "No se pudo registrar el reset."
+    }
+  },
+  "markFunded": {
+    "title": "Marcar como fondeada",
+    "description": "¿Cuándo se fondeó esta evaluación? Esto define el inicio de la ventana de retiros.",
+    "fields": {
+      "fundedOn": "Fondeada el"
+    },
+    "submit": {
+      "save": "Marcar como fondeada",
+      "saving": "Guardando…"
+    },
+    "toasts": {
+      "marked": "Marcada como fondeada",
+      "undone": "Deshecho",
+      "errorMark": "No se pudo marcar como fondeada",
+      "errorUndo": "La reversión falló parcialmente — actualizá la página y verificá."
+    },
+    "errors": {
+      "dateBeforePurchase": "La fecha de fondeo no puede ser anterior a la fecha de compra",
+      "dateInFuture": "La fecha de fondeo no puede ser en el futuro"
+    }
+  },
+  "list": {
+    "title": "Todas las evaluaciones",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totales",
+    "countFiltered": "{{shown}} de {{total}}",
+    "searchPlaceholder": "Buscar por propfirm…",
+    "noMatches": {
+      "title": "Sin resultados",
+      "description": "Probá con otro término o limpiá los filtros."
+    },
+    "clearFilters": "Limpiar filtros"
+  },
+  "emptyState": {
+    "title": "Todavía no hay evaluaciones",
+    "description": "Agregá tu primer challenge para empezar a seguir tu recorrido."
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Tamaño de cuenta",
+    "fee": "Comisión",
+    "purchaseDate": "Comprada",
+    "status": "Estado",
+    "closedAt": "Cerrada",
+    "actions": "Acciones"
+  }
+}

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { z } from "zod"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -48,6 +49,7 @@ export function MarkFundedDialog({
   onOpenChange,
   evaluation,
 }: MarkFundedDialogProps) {
+  const { t } = useTranslation(["evaluations", "common"])
   const markFunded = useMarkEvaluationFunded()
   const undoMarkFunded = useUndoMarkEvaluationFunded()
   const today = format(new Date(), "yyyy-MM-dd")
@@ -64,12 +66,12 @@ export function MarkFundedDialog({
   const onSubmit = (values: FormValues) => {
     if (values.funded_at < evaluation.purchase_date) {
       form.setError("funded_at", {
-        message: "Funded date cannot be before purchase date",
+        message: t("evaluations:markFunded.errors.dateBeforePurchase"),
       })
       return
     }
     if (values.funded_at > today) {
-      form.setError("funded_at", { message: "Funded date cannot be in the future" })
+      form.setError("funded_at", { message: t("evaluations:markFunded.errors.dateInFuture") })
       return
     }
     markFunded.mutate(
@@ -77,10 +79,10 @@ export function MarkFundedDialog({
       {
         onSuccess: (fundedAccount) => {
           onOpenChange(false)
-          toast.success("Marked as funded", {
+          toast.success(t("evaluations:markFunded.toasts.marked"), {
             duration: 6000,
             action: {
-              label: "Undo",
+              label: t("common:actions.undo"),
               onClick: () => {
                 undoMarkFunded.mutate(
                   {
@@ -88,11 +90,11 @@ export function MarkFundedDialog({
                     fundedAccountId: fundedAccount.id,
                   },
                   {
-                    onSuccess: () => toast.success("Undone", { duration: 3000 }),
+                    onSuccess: () => toast.success(t("evaluations:markFunded.toasts.undone"), { duration: 3000 }),
                     onError: (e) =>
                       toast.error(
                         e.message ||
-                          "Undo partially failed — please refresh and check.",
+                          t("evaluations:markFunded.toasts.errorUndo"),
                       ),
                   },
                 )
@@ -100,7 +102,7 @@ export function MarkFundedDialog({
             },
           })
         },
-        onError: (e) => toast.error(e.message || "Could not mark as funded"),
+        onError: (e) => toast.error(e.message || t("evaluations:markFunded.toasts.errorMark")),
       },
     )
   }
@@ -109,10 +111,9 @@ export function MarkFundedDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Mark as funded</DialogTitle>
+          <DialogTitle>{t("evaluations:markFunded.title")}</DialogTitle>
           <DialogDescription>
-            When did this evaluation get funded? This sets the start of the
-            payout window.
+            {t("evaluations:markFunded.description")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -122,7 +123,7 @@ export function MarkFundedDialog({
               name="funded_at"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Funded on</FormLabel>
+                  <FormLabel>{t("evaluations:markFunded.fields.fundedOn")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
@@ -143,10 +144,10 @@ export function MarkFundedDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={markFunded.isPending}
               >
-                Cancel
+                {t("common:actions.cancel")}
               </Button>
               <Button type="submit" disabled={markFunded.isPending}>
-                {markFunded.isPending ? "Saving…" : "Mark as funded"}
+                {markFunded.isPending ? t("evaluations:markFunded.submit.saving") : t("evaluations:markFunded.submit.save")}
               </Button>
             </DialogFooter>
           </form>

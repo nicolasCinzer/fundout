@@ -9,6 +9,7 @@ import {
 import type { Session, User } from "@supabase/supabase-js"
 import { useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
+import { i18n } from "@/lib/i18n"
 
 type AuthState = {
   user: User | null
@@ -65,7 +66,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
       },
       signOut: async () => {
         await supabase.auth.signOut()
+        // Invalidate profile query so the next login re-fetches fresh data
+        queryClient.removeQueries({ queryKey: ["profile"] })
         queryClient.clear()
+        // FR-12: keep localStorage locale intact — unauthenticated visits
+        // will resolve from fundout.locale via the language detector.
+        // i18n keeps the current language (matches localStorage).
+        const storedLocale = localStorage.getItem("fundout.locale")
+        if (storedLocale && storedLocale !== i18n.language) {
+          i18n.changeLanguage(storedLocale as "en" | "es")
+        }
       },
     }),
     [session, isLoading, queryClient],

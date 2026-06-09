@@ -1,0 +1,67 @@
+{
+  "title": "Funded accounts",
+  "description": "Active and historic funded accounts",
+  "list": {
+    "title": "All funded accounts",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} total",
+    "countFiltered": "{{shown}} of {{total}}",
+    "searchPlaceholder": "Search by propfirm…",
+    "noMatches": {
+      "title": "No matches",
+      "description": "Try a different search term or clear the filters."
+    },
+    "clearFilters": "Clear filters"
+  },
+  "status": {
+    "active": "Active",
+    "breached": "Breached"
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Account size",
+    "startDate": "Started",
+    "closedAt": "Closed",
+    "status": "Status",
+    "netPayouts": "Net payouts",
+    "payouts": "Payouts",
+    "actions": "Actions"
+  },
+  "emptyState": {
+    "title": "No funded accounts yet",
+    "description": "Funded accounts appear here when you mark an evaluation as funded."
+  },
+  "stats": {
+    "total": "Total",
+    "active": "Active",
+    "breached": "Breached",
+    "closed": "Closed",
+    "totalWithdrawn": "Total withdrawn",
+    "fundedLifetime": "Funded accounts lifetime",
+    "nothingActive": "Nothing active",
+    "activeHint": "active",
+    "breachedHint": "breached",
+    "fundedCount": "funded",
+    "topPropfirms": "Top propfirms by funded accounts",
+    "noData": "No data yet"
+  },
+  "toasts": {
+    "deleted": "Funded account deleted",
+    "errorDelete": "Could not delete the funded account.",
+    "closed": "Account closed",
+    "errorClose": "Could not close the account.",
+    "undone": "Undone"
+  },
+  "actions": {
+    "addPayout": "Add payout",
+    "logPayout": "Log payout",
+    "markBreached": "Mark as breached",
+    "moreActions": "More actions",
+    "close": "Close account",
+    "delete": "Delete"
+  },
+  "delete": {
+    "title": "Delete this funded account?",
+    "description": "This will also delete any payouts logged against it. The original evaluation will remain."
+  }
+}

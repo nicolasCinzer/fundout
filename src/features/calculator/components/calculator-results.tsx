@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/card'
 import { formatCurrency, formatPercent } from '@/lib/format'
 import { Badge } from '@/components/ui/badge'
@@ -8,10 +9,11 @@ type Props = {
   result: CalcResult | null
 }
 
-const STRATEGY_LABELS: Record<string, string> = {
-  'consistency': 'Consistency',
-  'min-days': 'Min days',
-  'single-shot': 'Single shot',
+// Strategy labels use toggle keys from calculator namespace
+const STRATEGY_KEY_MAP: Record<string, string> = {
+  'consistency': 'form.toggles.consistency',
+  'min-days': 'form.toggles.minTradingDays',
+  'single-shot': 'form.toggles.fundedPhase',
 }
 
 type Tone = 'default' | 'positive' | 'negative'
@@ -54,8 +56,9 @@ function CompactKpi({ label, value, hint, tone = 'default', emphasized = false }
 }
 
 export function CalculatorResults({ result }: Props) {
+  const { t } = useTranslation('calculator')
   const payoutProb = result ? formatPercent(result.pTotal) : '—'
-  const ev = result ? formatCurrency(result.ev, true) : '—'
+  const ev = result ? formatCurrency(result.ev) : '—'
   const roi = result
     ? result.roi !== null
       ? formatPercent(result.roi)
@@ -86,35 +89,37 @@ export function CalculatorResults({ result }: Props) {
   const maxCost = result ? Math.max(0, result.pTotal * result.w) : null
 
   const payoutHint = expectedAttempts
-    ? `~${expectedAttempts} ${expectedAttempts === 1 ? 'attempt' : 'attempts'} per payout`
+    ? t('results.attemptsHint', { count: expectedAttempts })
     : undefined
 
   const evHint =
-    result && result.w > 0 ? `Gross payout: ${formatCurrency(result.w, true)}` : undefined
+    result && result.w > 0
+      ? t('results.grossPayout', { amount: formatCurrency(result.w) })
+      : undefined
 
   const roiHint =
     maxCost !== null && maxCost > 0
-      ? `Break-even cost: ${formatCurrency(maxCost, true)}`
+      ? t('results.breakEvenCost', { amount: formatCurrency(maxCost) })
       : undefined
 
   return (
     <div className="lg:sticky lg:top-4 space-y-3">
       <CompactKpi
-        label="Payout probability"
+        label={t('results.payoutProbability')}
         value={payoutProb}
         emphasized
         tone="positive"
         hint={payoutHint}
       />
       <div className="grid grid-cols-2 gap-3">
-        <CompactKpi label="Expected value" value={ev} tone={evTone} hint={evHint} />
-        <CompactKpi label="ROI" value={roi} tone={roiTone} hint={roiHint} />
+        <CompactKpi label={t('results.expectedValue')} value={ev} tone={evTone} hint={evHint} />
+        <CompactKpi label={t('results.roi')} value={roi} tone={roiTone} hint={roiHint} />
       </div>
 
       {result && result.phases.length > 0 && (
         <div className="space-y-2">
           <p className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
-            Phase breakdown
+            {t('results.phaseBreakdown')}
           </p>
           {result.phases.map((phase, i) => (
             <div
@@ -123,9 +128,9 @@ export function CalculatorResults({ result }: Props) {
             >
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Phase {i + 1}</span>
+                  <span className="text-muted-foreground">{t('form.phase', { number: i + 1 })}</span>
                   <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                    {STRATEGY_LABELS[phase.strategy] ?? phase.strategy}
+                    {STRATEGY_KEY_MAP[phase.strategy] ? t(STRATEGY_KEY_MAP[phase.strategy] as Parameters<typeof t>[0]) : phase.strategy}
                   </Badge>
                 </div>
                 <span className="tabular-nums font-medium">
@@ -140,7 +145,7 @@ export function CalculatorResults({ result }: Props) {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-mono tabular-nums text-muted-foreground">
                 <span className="uppercase tracking-wide not-mono font-sans font-semibold text-[9px]">
-                  Plan
+                  {t('results.plan')}
                 </span>
                 {phase.ddEffective.map((ddEff, d) => (
                   <span key={d}>
@@ -157,7 +162,7 @@ export function CalculatorResults({ result }: Props) {
 
       {!result && (
         <p className="text-xs text-muted-foreground text-center py-4">
-          Fill in the form to see results
+          {t('results.noResults')}
         </p>
       )}
     </div>

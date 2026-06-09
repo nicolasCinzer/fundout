@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { TrendingDown, TrendingUp, Activity } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -40,12 +41,14 @@ function TopBadge({ children, tone = 'default' }: { children: React.ReactNode; t
 }
 
 export function BankrollMcResults({ result, input }: Props) {
+  const { t } = useTranslation('bankroll-mc')
+
   if (!result) {
     return (
       <div className="space-y-3">
         <Card className="flex h-[200px] items-center justify-center p-4">
           <p className="text-xs text-muted-foreground text-center">
-            Fill out the form to see the results
+            {t('results.noResults')}
           </p>
         </Card>
       </div>
@@ -74,15 +77,15 @@ export function BankrollMcResults({ result, input }: Props) {
     <div className="space-y-3">
       {result.evPerAttempt < 0 && (
         <div className="rounded-md border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
-          Negative EV: ruin only grows over time with this strategy.
+          {t('results.negativeEv')}
         </div>
       )}
 
       {/* Ruin — headline KPI */}
       <Card className="gap-2 border-primary/40 px-4 py-3.5 shadow-sm">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-medium text-muted-foreground">Ruin rate</p>
-          <TopBadge tone={evTone}>EV {formatCurrency(result.evPerAttempt, true)}/attempt</TopBadge>
+          <p className="text-sm font-medium text-muted-foreground">{t('results.ruinRate')}</p>
+          <TopBadge tone={evTone}>{t('results.evPerAttempt', { amount: formatCurrency(result.evPerAttempt) })}</TopBadge>
         </div>
         <p
           className={cn(
@@ -93,12 +96,14 @@ export function BankrollMcResults({ result, input }: Props) {
           {formatPercent(result.ruinRate)}
         </p>
         <p className="text-xs text-muted-foreground">
-          {Math.round(result.ruinRate * result.simCount).toLocaleString()} accounts lost ·{' '}
-          {Math.round(result.survivalRate * result.simCount).toLocaleString()} survived
+          {t('results.accountsLost', {
+            lost: Math.round(result.ruinRate * result.simCount).toLocaleString(),
+            survived: Math.round(result.survivalRate * result.simCount).toLocaleString(),
+          })}
         </p>
         <div className="mt-2 flex flex-wrap gap-1.5 border-t pt-2">
           <Badge variant="secondary" className="font-normal">
-            <span className="text-muted-foreground">Worst-case attempts before ruin:&nbsp;</span>
+            <span className="text-muted-foreground">{t('results.worstCaseAttempts')}&nbsp;</span>
             <span className="font-mono tabular-nums">{result.maxAttemptsHeuristic}</span>
           </Badge>
         </div>
@@ -107,24 +112,24 @@ export function BankrollMcResults({ result, input }: Props) {
       {/* Outcome distribution — final bankroll explained as percentiles */}
       <Card className="gap-3 px-4 py-3.5">
         <div className="space-y-0.5 border-b pb-2">
-          <p className="text-sm font-medium text-muted-foreground">Where you end up</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('results.whereYouEndUp')}</p>
           <p className="text-[11px] text-muted-foreground/80 leading-snug">
-            Final bankroll after 100 attempts. Each row is a slice of the 10,000 simulated runs.
+            {t('results.whereYouEndUpHint', { count: result.simCount.toLocaleString() })}
           </p>
         </div>
 
         <div className="space-y-2">
           <PercentileRow
-            label="Pessimistic"
-            sublabel="10% of runs ended below"
+            label={t('results.pessimistic')}
+            sublabel={t('results.pessimisticSub')}
             value={result.p10FinalBankroll}
             startBankroll={startBankroll}
             maxScale={distMax}
             tone="negative"
           />
           <PercentileRow
-            label="Typical"
-            sublabel="median — half ended near"
+            label={t('results.typical')}
+            sublabel={t('results.typicalSub')}
             value={result.p50FinalBankroll}
             startBankroll={startBankroll}
             maxScale={distMax}
@@ -132,8 +137,8 @@ export function BankrollMcResults({ result, input }: Props) {
             emphasized
           />
           <PercentileRow
-            label="Optimistic"
-            sublabel="10% reached above"
+            label={t('results.optimistic')}
+            sublabel={t('results.optimisticSub')}
             value={result.p90FinalBankroll}
             startBankroll={startBankroll}
             maxScale={distMax}
@@ -143,7 +148,7 @@ export function BankrollMcResults({ result, input }: Props) {
 
         <div className="rounded-md border bg-muted/20 p-2.5 space-y-0.5">
           <p className="text-[10px] font-heading uppercase tracking-wide text-muted-foreground">
-            Average across all runs
+            {t('results.avgAcrossRuns')}
           </p>
           <div className="flex items-baseline justify-between gap-2">
             <p className="font-heading text-lg font-semibold tabular-nums leading-none">
@@ -159,7 +164,7 @@ export function BankrollMcResults({ result, input }: Props) {
                 )}
               >
                 {finalRatio > 1 ? '+' : ''}
-                {formatPercent(finalRatio - 1)} vs start
+                {formatPercent(finalRatio - 1)} {t('results.vsStart')}
               </p>
             )}
           </div>
@@ -169,35 +174,36 @@ export function BankrollMcResults({ result, input }: Props) {
       {/* Per-run averages — expanded with explanations */}
       <Card className="gap-3 px-4 py-3.5">
         <div className="space-y-0.5 border-b pb-2">
-          <p className="text-sm font-medium text-muted-foreground">Run metrics</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('results.runMetrics')}</p>
           <p className="text-[11px] text-muted-foreground/80 leading-snug">
-            Averages across the 10,000 simulated runs.
+            {t('results.runMetricsHint', { count: result.simCount.toLocaleString() })}
           </p>
         </div>
 
         <MetricRow
           icon={<TrendingDown className="h-3.5 w-3.5" />}
-          label="Attempts to ruin"
+          label={t('results.attemptsToRuin')}
           value={avgAttemptsToRuinDisplay}
           hint={
             result.avgAttemptsToRuin === 0
-              ? 'No runs went broke in this simulation.'
-              : 'Average # of attempts before going broke (failed runs only).'
+              ? t('results.attemptsToRuinHintNone')
+              : t('results.attemptsToRuinHint')
           }
         />
         <MetricRow
           icon={<TrendingUp className="h-3.5 w-3.5" />}
-          label="Payouts collected"
+          label={t('results.payoutsCollected')}
           value={result.avgPayoutsCollected.toFixed(1)}
-          hint={`Out of up to 100 attempts. Expected: ${(
-            (input?.payoutProb ?? 0) * 100
-          ).toFixed(1)} at ${formatPercent(input?.payoutProb ?? 0)} payout rate.`}
+          hint={t('results.payoutsCollectedHint', {
+            expected: ((input?.payoutProb ?? 0) * 100).toFixed(1),
+            rate: formatPercent(input?.payoutProb ?? 0),
+          })}
         />
         <MetricRow
           icon={<Activity className="h-3.5 w-3.5" />}
-          label="Max drawdown"
+          label={t('results.maxDrawdown')}
           value={formatPercent(result.avgMaxDrawdownPct)}
-          hint="Average peak-to-trough loss within a run. Above 50% means severe equity swings."
+          hint={t('results.maxDrawdownHint')}
           tone={ddTone}
           bar={Math.min(1, result.avgMaxDrawdownPct)}
           barTone={ddTone}
@@ -208,7 +214,7 @@ export function BankrollMcResults({ result, input }: Props) {
       {input?.targetBankroll !== undefined && (
         <Card className="gap-2 px-4 py-3.5">
           <p className="text-sm font-medium text-muted-foreground">
-            Probability of reaching {formatCurrency(input.targetBankroll)}
+            {t('results.pReachTarget', { target: formatCurrency(input.targetBankroll) })}
           </p>
           <p
             className={cn(
@@ -219,17 +225,13 @@ export function BankrollMcResults({ result, input }: Props) {
             {formatPercent(result.pReachTarget)}
           </p>
           <p className="text-[11px] text-muted-foreground leading-snug">
-            Fraction of runs that hit the target bankroll at any point during the 100 attempts.
+            {t('results.pReachTargetHint')}
           </p>
         </Card>
       )}
 
       <p className="px-1 text-[11px] text-muted-foreground">
-        Based on{' '}
-        <span className="font-mono tabular-nums text-foreground">
-          {result.simCount.toLocaleString()}
-        </span>{' '}
-        simulated runs.
+        {t('results.basedOnRuns', { count: result.simCount.toLocaleString() })}
       </p>
     </div>
   )

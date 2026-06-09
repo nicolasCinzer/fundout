@@ -11,6 +11,7 @@ import {
   subMonths,
   subYears,
 } from "date-fns"
+import type { TFunction } from "i18next"
 import type { Evaluation } from "@/features/evaluations/api/evaluations-queries"
 import type { Payout } from "@/features/payouts/api/payouts-queries"
 import { formatCurrency } from "@/lib/format"
@@ -133,6 +134,7 @@ export function computePnlContext(
   evaluations: Evaluation[],
   payouts: Payout[],
   period: Period,
+  t: TFunction<"dashboard">,
   now: Date = new Date(),
 ): PnlContext {
   const buckets = Array.from(monthlyBuckets(evaluations, payouts).entries())
@@ -152,19 +154,22 @@ export function computePnlContext(
     )
     badge = formatDeltaPct(currentPnl, prevPnl)
     if (badge) {
-      const label =
+      const labelKey =
         period === "this_month"
-          ? "previous month"
+          ? "kpi.netPnl.badgeLabelPrevMonth"
           : period === "last_month"
-            ? "the month before"
+            ? "kpi.netPnl.badgeLabelMonthBefore"
             : period === "this_year"
-              ? "previous year"
+              ? "kpi.netPnl.badgeLabelPrevYear"
               : period === "last_year"
-                ? "the year before"
+                ? "kpi.netPnl.badgeLabelYearBefore"
                 : period === "last_12_months"
-                  ? "the prior 12 months"
-                  : "the same quarter last year"
-      badgeTooltip = `Net P&L change vs ${label} (${formatCurrency(prevPnl)}).`
+                  ? "kpi.netPnl.badgeLabelPrior12"
+                  : "kpi.netPnl.badgeLabelSameQuarter"
+      badgeTooltip = t("kpi.netPnl.badgeTooltip", {
+        label: t(labelKey),
+        amount: formatCurrency(prevPnl),
+      })
     }
   }
 
@@ -174,21 +179,24 @@ export function computePnlContext(
     const sorted = [...buckets].sort((a, b) => b[1] - a[1])
     const idx = sorted.findIndex(([k]) => k === currentMonthKey)
     if (idx < 0) {
-      subtitle = "No activity recorded for this month"
+      subtitle = t("kpi.netPnl.hintNoActivityMonth")
     } else if (sorted.length === 1) {
-      subtitle = "Your only tracked month so far"
+      subtitle = t("kpi.netPnl.hintOnlyMonth")
     } else if (idx === 0) {
-      subtitle = "This is your best month so far"
+      subtitle = t("kpi.netPnl.hintBestMonthSoFar")
     } else {
-      subtitle = `This is your ${ordinal(idx + 1)} best month so far`
+      subtitle = t("kpi.netPnl.hintRanked", { ordinal: ordinal(idx + 1) })
     }
   } else if (period === "this_year") {
     const yearMonths = buckets.filter(([k]) => k.startsWith(currentYearKey))
     if (yearMonths.length === 0) {
-      subtitle = "No activity recorded for this year"
+      subtitle = t("kpi.netPnl.hintNoActivityYear")
     } else {
       const best = yearMonths.reduce((a, b) => (b[1] > a[1] ? b : a))
-      subtitle = `Best month this year: ${formatMonthKey(best[0], false)} (${formatCurrency(best[1])})`
+      subtitle = t("kpi.netPnl.hintBestMonthYear", {
+        month: formatMonthKey(best[0], false),
+        amount: formatCurrency(best[1]),
+      })
     }
   } else {
     const range = periodRange(period, now)
@@ -199,10 +207,13 @@ export function computePnlContext(
       return true
     })
     if (windowMonths.length === 0) {
-      subtitle = "No activity in this window"
+      subtitle = t("kpi.netPnl.hintNoActivityWindow")
     } else {
       const best = windowMonths.reduce((a, b) => (b[1] > a[1] ? b : a))
-      subtitle = `Best month in window: ${formatMonthKey(best[0], true)} (${formatCurrency(best[1])})`
+      subtitle = t("kpi.netPnl.hintBestMonthWindow", {
+        month: formatMonthKey(best[0], true),
+        amount: formatCurrency(best[1]),
+      })
     }
   }
 

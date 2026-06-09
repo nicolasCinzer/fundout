@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { FlaskConical } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { AppHeader } from "@/components/common/app-header"
 import { Button } from "@/components/ui/button"
 import { TableSkeleton } from "@/components/common/table-skeleton"
@@ -9,6 +10,7 @@ import { BacktestEmptyState } from "./backtest-empty-state"
 import { CreateBacktestDialog } from "./create-backtest-dialog"
 
 export function BacktestListPage() {
+  const { t } = useTranslation("backtest")
   const { data, isLoading } = useBacktestsWithStats()
   const [createOpen, setCreateOpen] = useState(false)
   const items = data ?? []
@@ -16,14 +18,14 @@ export function BacktestListPage() {
   return (
     <>
       <AppHeader
-        title="Backtest"
-        description="Simulate evaluation runs and measure outcomes."
+        title={t("title")}
+        description={t("description")}
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         <div className="flex items-center justify-end">
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <FlaskConical className="mr-2 h-4 w-4" />
-            New backtest
+            {t("list.createButton")}
           </Button>
         </div>
 

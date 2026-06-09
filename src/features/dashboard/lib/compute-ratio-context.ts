@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next"
 import type { Evaluation } from "@/features/evaluations/api/evaluations-queries"
 import type { FundedAccount } from "@/features/funded-accounts/api/funded-accounts-queries"
 import type { Payout } from "@/features/payouts/api/payouts-queries"
@@ -28,6 +29,7 @@ export function computeRatioContext(
   _period: Period,
   currentFundingRatio: number,
   currentPayoutRatio: number,
+  t: TFunction<"dashboard">,
 ): RatioContext {
   const lifetime = computeKpis(
     evaluations,
@@ -37,7 +39,8 @@ export function computeRatioContext(
   )
 
   const toBadge = (
-    label: string,
+    tooltipAboveKey: "kpi.fundingRatio.badgeTooltipAbove" | "kpi.payoutRatio.badgeTooltipAbove",
+    tooltipBelowKey: "kpi.fundingRatio.badgeTooltipBelow" | "kpi.payoutRatio.badgeTooltipBelow",
     current: number,
     lifetimeValue: number,
   ): RatioBadge | null => {
@@ -46,22 +49,20 @@ export function computeRatioContext(
     return {
       value: `~ ${formatPercent(lifetimeValue)}`,
       tone: above ? "default" : "negative",
-      tooltip: `Your lifetime ${label} across all attempts. ${
-        above
-          ? "You're above your baseline this period."
-          : "You're below your baseline this period."
-      }`,
+      tooltip: t(above ? tooltipAboveKey : tooltipBelowKey),
     }
   }
 
   return {
     fundingBadge: toBadge(
-      "funding ratio",
+      "kpi.fundingRatio.badgeTooltipAbove",
+      "kpi.fundingRatio.badgeTooltipBelow",
       currentFundingRatio,
       lifetime.fundingRatio,
     ),
     payoutBadge: toBadge(
-      "payout ratio",
+      "kpi.payoutRatio.badgeTooltipAbove",
+      "kpi.payoutRatio.badgeTooltipBelow",
       currentPayoutRatio,
       lifetime.payoutRatio,
     ),

@@ -1,0 +1,76 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "continue": "Continue",
+    "undo": "Undo",
+    "viewMore_one": "View {{count}} more",
+    "viewMore_other": "View {{count}} more"
+  },
+  "status": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "noData": "No data",
+    "active": "Active"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "toggle": "Switch language",
+    "es": "Español",
+    "en": "English"
+  },
+  "nav": {
+    "groups": {
+      "tracking": "Tracking",
+      "tools": "Tools"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "evaluations": "Evaluations",
+      "fundedAccounts": "Funded accounts",
+      "payouts": "Payouts",
+      "calculator": "Evaluation Calculator",
+      "bankrollMc": "Bankroll Calculator",
+      "backtest": "Backtest"
+    },
+    "newEvaluation": "New evaluation",
+    "signedIn": "Signed in",
+    "account": "Account",
+    "signOut": "Sign out"
+  },
+  "confirmDelete": {
+    "title": "Delete this?",
+    "confirmLabel": "Delete",
+    "cancel": "Cancel",
+    "deleting": "Deleting…"
+  },
+  "emptyState": {
+    "noResults": "No results",
+    "noDataYet": "No data yet"
+  },
+  "errors": {
+    "undoFailed": "Undo failed"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "prev": "Prev",
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "pageOf": "Page {{current}} of {{total}}"
+  },
+  "filters": {
+    "allStatuses": "All statuses",
+    "clear": "Clear"
+  }
+}

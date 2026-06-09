@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { Providers } from "@/app/providers"
 import { routeTree } from "./routeTree.gen"
+// i18n must be imported before ReactDOM.createRoot to ensure strings are
+// available synchronously on first render (NFR-02: no FOUC).
+import "@/lib/i18n"
 import "./index.css"
 
 const router = createRouter({

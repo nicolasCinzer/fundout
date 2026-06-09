@@ -1,4 +1,5 @@
 import { Trophy } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import {
   Card,
   CardContent,
@@ -24,34 +25,34 @@ type PropfirmLeaderboardProps = {
 }
 
 export function PropfirmLeaderboard({ rows }: PropfirmLeaderboardProps) {
+  const { t } = useTranslation("dashboard")
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Propfirms by ROI</CardTitle>
-        <CardDescription>
-          Net P&amp;L per propfirm in the selected period. Sorted best to worst.
-        </CardDescription>
+        <CardTitle>{t("leaderboard.title")}</CardTitle>
+        <CardDescription>{t("leaderboard.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {rows.length === 0 ? (
           <EmptyState
             icon={<Trophy className="h-5 w-5" />}
-            title="No activity in this period"
-            description="Once you have evaluations, funded accounts, or payouts in the selected period, propfirms will rank here."
+            title={t("leaderboard.empty.title")}
+            description={t("leaderboard.empty.description")}
           />
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-10">#</TableHead>
-                  <TableHead>Propfirm</TableHead>
-                  <TableHead className="text-right">Attempts</TableHead>
-                  <TableHead className="text-right">Fees</TableHead>
-                  <TableHead className="text-right">Funded</TableHead>
-                  <TableHead className="text-right">Paid out</TableHead>
-                  <TableHead className="text-right">Payouts (net)</TableHead>
-                  <TableHead className="text-right">Net P&amp;L</TableHead>
+                  <TableHead className="w-10">{t("leaderboard.columns.rank")}</TableHead>
+                  <TableHead>{t("leaderboard.columns.propfirm")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.attempts")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.fees")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.funded")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.paidOut")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.payouts")}</TableHead>
+                  <TableHead className="text-right">{t("leaderboard.columns.netPnl")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

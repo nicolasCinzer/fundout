@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -42,6 +43,7 @@ export function LogResetDialog({
   evaluationId,
   propfirmName,
 }: LogResetDialogProps) {
+  const { t } = useTranslation(["evaluations", "common"])
   const mutation = useLogEvaluationReset()
 
   const form = useForm<ResetFormInput, undefined, ResetFormValues>({
@@ -74,11 +76,11 @@ export function LogResetDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Reset logged")
+          toast.success(t("evaluations:logReset.toasts.logged"))
           onOpenChange(false)
         },
         onError: (error) => {
-          toast.error(error.message || "Could not log the reset.")
+          toast.error(error.message || t("evaluations:logReset.toasts.errorLog"))
         },
       },
     )
@@ -88,11 +90,11 @@ export function LogResetDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Log a reset</DialogTitle>
+          <DialogTitle>{t("evaluations:logReset.title")}</DialogTitle>
           <DialogDescription>
             {propfirmName
-              ? `Record a reset on your ${propfirmName} evaluation. The fee is added to the evaluation's total.`
-              : "Record a reset on this evaluation. The fee is added to the evaluation's total."}
+              ? t("evaluations:logReset.descriptionWithName", { name: propfirmName })
+              : t("evaluations:logReset.description")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -105,7 +107,7 @@ export function LogResetDialog({
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Reset fee (USD)</FormLabel>
+                      <FormLabel>{t("evaluations:logReset.fields.resetFee")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -128,7 +130,7 @@ export function LogResetDialog({
                 name="reset_at"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reset date</FormLabel>
+                    <FormLabel>{t("evaluations:logReset.fields.resetDate")}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -142,11 +144,11 @@ export function LogResetDialog({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (optional)</FormLabel>
+                  <FormLabel>{t("evaluations:logReset.fields.notes")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={2}
-                      placeholder="Why did you reset?"
+                      placeholder={t("evaluations:logReset.fields.notesPlaceholder")}
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -162,10 +164,10 @@ export function LogResetDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={mutation.isPending}
               >
-                Cancel
+                {t("common:actions.cancel")}
               </Button>
               <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? "Saving…" : "Log reset"}
+                {mutation.isPending ? t("evaluations:logReset.submit.saving") : t("evaluations:logReset.submit.save")}
               </Button>
             </DialogFooter>
           </form>

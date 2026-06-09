@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { CalendarRange } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -18,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  PERIOD_LABEL,
+  periodLabel,
   periodRange,
   type CustomRange,
   type Period,
@@ -30,12 +31,12 @@ type TimePeriodSelectProps = {
   onChange: (value: Period, custom?: CustomRange) => void
 }
 
-const GROUPS: { label: string; periods: Period[] }[] = [
-  { label: "All", periods: ["all_time"] },
-  { label: "Current", periods: ["this_month", "this_year"] },
-  { label: "Previous", periods: ["last_month", "last_year", "last_12_months"] },
-  { label: "Quarters (current year)", periods: ["q1", "q2", "q3", "q4"] },
-  { label: "Custom", periods: ["custom"] },
+const PERIOD_GROUPS: { groupKey: string; periods: Period[] }[] = [
+  { groupKey: "period.groups.all", periods: ["all_time"] },
+  { groupKey: "period.groups.current", periods: ["this_month", "this_year"] },
+  { groupKey: "period.groups.previous", periods: ["last_month", "last_year", "last_12_months"] },
+  { groupKey: "period.groups.quarters", periods: ["q1", "q2", "q3", "q4"] },
+  { groupKey: "period.groups.custom", periods: ["custom"] },
 ]
 
 export function TimePeriodSelect({
@@ -43,6 +44,8 @@ export function TimePeriodSelect({
   custom,
   onChange,
 }: TimePeriodSelectProps) {
+  const { t } = useTranslation("dashboard")
+
   return (
     <div className="flex items-center gap-2">
       <Select
@@ -53,15 +56,15 @@ export function TimePeriodSelect({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {GROUPS.map((group, gi) => (
-            <SelectGroup key={group.label}>
+          {PERIOD_GROUPS.map((group, gi) => (
+            <SelectGroup key={group.groupKey}>
               {gi > 0 && <SelectSeparator />}
               <SelectLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                {group.label}
+                {t(group.groupKey as Parameters<typeof t>[0])}
               </SelectLabel>
               {group.periods.map((p) => (
                 <SelectItem key={p} value={p}>
-                  {PERIOD_LABEL[p]}
+                  {periodLabel(t, p)}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -86,6 +89,7 @@ function CustomRangeEditor({
   custom: CustomRange
   onApply: (next: CustomRange) => void
 }) {
+  const { t } = useTranslation(["dashboard", "common"])
   const [open, setOpen] = useState(false)
   const [from, setFrom] = useState(custom.from ?? "")
   const [to, setTo] = useState(custom.to ?? "")
@@ -94,7 +98,7 @@ function CustomRangeEditor({
   const label =
     custom.from && custom.to && range.start && range.end
       ? `${format(range.start, "MMM d, yyyy")} – ${format(range.end, "MMM d, yyyy")}`
-      : "Pick dates"
+      : t("period.customRange.pickDates")
 
   const disabled = !from || !to || from > to
 
@@ -117,11 +121,11 @@ function CustomRangeEditor({
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72 space-y-3">
         <p className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
-          Custom range
+          {t("period.custom")}
         </p>
         <div className="space-y-2">
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">From</span>
+            <span className="text-xs text-muted-foreground">{t("period.customRange.from")}</span>
             <input
               type="date"
               value={from}
@@ -130,7 +134,7 @@ function CustomRangeEditor({
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">To</span>
+            <span className="text-xs text-muted-foreground">{t("period.customRange.to")}</span>
             <input
               type="date"
               value={to}
@@ -145,7 +149,7 @@ function CustomRangeEditor({
             size="sm"
             onClick={() => setOpen(false)}
           >
-            Cancel
+            {t("common:actions.cancel")}
           </Button>
           <Button
             size="sm"
@@ -155,7 +159,7 @@ function CustomRangeEditor({
               setOpen(false)
             }}
           >
-            Apply
+            {t("common:actions.continue")}
           </Button>
         </div>
       </PopoverContent>

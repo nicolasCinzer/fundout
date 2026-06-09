@@ -13,7 +13,9 @@ import {
   startOfYear,
   subMonths,
   subYears,
+  type Locale as DateFnsLocale,
 } from "date-fns"
+import type { TFunction } from "i18next"
 
 export const PERIODS = [
   "all_time",
@@ -33,19 +35,27 @@ export type Period = (typeof PERIODS)[number]
 
 export const DEFAULT_PERIOD: Period = "this_year"
 
-export const PERIOD_LABEL: Record<Period, string> = {
-  all_time: "All time",
-  this_month: "This month",
-  last_month: "Last month",
-  this_year: "This year",
-  last_year: "Last year",
-  last_12_months: "Last 12 months",
-  q1: "Q1 — First quarter",
-  q2: "Q2 — Second quarter",
-  q3: "Q3 — Third quarter",
-  q4: "Q4 — Final quarter",
-  custom: "Custom range",
+/**
+ * Returns the translated label for a period.
+ * Pass `t` from `useTranslation('dashboard')`.
+ */
+export function periodLabel(t: TFunction<"dashboard">, period: Period): string {
+  const keyMap: Record<Period, string> = {
+    all_time: t("period.allTime"),
+    this_month: t("period.thisMonth"),
+    last_month: t("period.lastMonth"),
+    this_year: t("period.thisYear"),
+    last_year: t("period.lastYear"),
+    last_12_months: t("period.last12Months"),
+    q1: t("period.q1"),
+    q2: t("period.q2"),
+    q3: t("period.q3"),
+    q4: t("period.q4"),
+    custom: t("period.custom"),
+  }
+  return keyMap[period]
 }
+
 
 export type DateRange = {
   start: Date | null
@@ -114,10 +124,17 @@ export function periodRange(
 export function periodSubtitle(
   period: Period,
   range: DateRange,
+  options?: {
+    /** Translated period label from periodLabel(t, period). Pass this for locale-aware labels. */
+    label?: string
+    /** date-fns Locale for locale-aware month names (FR-08). Defaults to enUS if not provided. */
+    dateLocale?: DateFnsLocale
+  },
 ): string {
-  const label = PERIOD_LABEL[period]
+  const label = options?.label ?? period
   if (!range.start || !range.end) return label
-  return `${label} (${format(range.start, "MMM d, yyyy")} – ${format(range.end, "MMM d, yyyy")})`
+  const fmtOpts = options?.dateLocale ? { locale: options.dateLocale } : {}
+  return `${label} (${format(range.start, "MMM d, yyyy", fmtOpts)} – ${format(range.end, "MMM d, yyyy", fmtOpts)})`
 }
 
 export function isDateInRange(dateStr: string, range: DateRange): boolean {

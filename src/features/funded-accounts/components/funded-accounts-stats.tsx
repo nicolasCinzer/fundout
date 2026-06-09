@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { formatPercent } from "@/lib/format"
@@ -20,6 +21,7 @@ function topEntry(map: Map<string, number>): [string, number] | null {
 }
 
 export function FundedAccountsStats({ fundedAccounts }: Props) {
+  const { t } = useTranslation("funded")
   const stats = useMemo(() => {
     const total = fundedAccounts.length
     let active = 0
@@ -63,22 +65,22 @@ export function FundedAccountsStats({ fundedAccounts }: Props) {
     <div className="grid items-stretch gap-3 grid-cols-2 lg:grid-cols-6">
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Total"
+          label={t("stats.total")}
           value={String(stats.total)}
-          hint="Funded accounts lifetime"
-          badge={`${stats.active} active`}
+          hint={t("stats.fundedLifetime")}
+          badge={`${stats.active} ${t("stats.activeHint")}`}
         />
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Active"
+          label={t("stats.active")}
           value={String(stats.active)}
           hint={
             stats.active > 0
               ? stats.topActive
-                ? `${stats.topActive[0]} · ${stats.topActive[1]} active`
+                ? `${stats.topActive[0]} · ${stats.topActive[1]} ${t("stats.activeHint")}`
                 : undefined
-              : "Nothing active"
+              : t("stats.nothingActive")
           }
           badge={stats.total ? formatPercent(activePct) : undefined}
           tone="positive"
@@ -86,11 +88,11 @@ export function FundedAccountsStats({ fundedAccounts }: Props) {
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label="Breached"
+          label={t("stats.breached")}
           value={String(stats.breached)}
           hint={
             stats.topBreached
-              ? `${stats.topBreached[0]} · ${stats.topBreached[1]} breached`
+              ? `${stats.topBreached[0]} · ${stats.topBreached[1]} ${t("stats.breachedHint")}`
               : undefined
           }
           badge={stats.total ? formatPercent(breachedPct) : undefined}
@@ -99,7 +101,7 @@ export function FundedAccountsStats({ fundedAccounts }: Props) {
         />
       </div>
       <div className="col-span-2 lg:col-span-3 [&>*]:h-full">
-        <TopPropfirmsCard topFirms={stats.topFirms} />
+        <TopPropfirmsCard topFirms={stats.topFirms} t={t} />
       </div>
     </div>
   )
@@ -127,14 +129,20 @@ const COLUMNS: StepConfig[] = [
   { rank: 3, span: "col-span-3", medalSize: "h-5 w-5", medalText: "text-[10px]", nameSize: "text-xs font-medium", countSize: "text-[10px]" },
 ]
 
-function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
+function TopPropfirmsCard({
+  topFirms,
+  t,
+}: {
+  topFirms: [string, number][]
+  t: ReturnType<typeof useTranslation<"funded">>["t"]
+}) {
   return (
     <Card className="gap-2 px-4 py-3.5">
       <p className="text-xs font-medium text-muted-foreground">
-        Top propfirms by funded accounts
+        {t("stats.topPropfirms")}
       </p>
       {topFirms.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No data yet</p>
+        <p className="text-xs text-muted-foreground">{t("stats.noData")}</p>
       ) : (
         <div className="grid grid-cols-12 items-stretch gap-2">
           {COLUMNS.map((col) => {
@@ -180,7 +188,7 @@ function TopPropfirmsCard({ topFirms }: { topFirms: [string, number][] }) {
                     {name}
                   </p>
                   <p className={cn("tabular-nums text-muted-foreground", col.countSize)}>
-                    {count} funded
+                    {count} {t("stats.fundedCount")}
                   </p>
                 </div>
               </div>

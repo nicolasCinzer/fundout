@@ -1,4 +1,5 @@
 import { useFormContext, Controller } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
@@ -28,6 +29,7 @@ type Props = {
 }
 
 export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
+  const { t } = useTranslation('calculator')
   const { control, watch, setValue } = useFormContext<CalculatorFormValues>()
 
   const hasConsistency = watch(`phases.${index}.hasConsistency`)
@@ -69,10 +71,10 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Phase {index + 1}
+          {t('form.phase', { number: index + 1 })}
           {isFunded && (
             <span className="ml-2 rounded-sm bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
-              FUNDED
+              {t('form.funded')}
             </span>
           )}
         </span>
@@ -85,7 +87,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
             className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
-            Remove phase
+            {t('form.removePhase')}
           </Button>
         )}
       </div>
@@ -96,7 +98,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
             name={`phases.${index}.dd`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">Drawdown ($)</FormLabel>
+                <FormLabel className="text-xs">{t('form.fields.drawdown')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -115,7 +117,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
             name={`phases.${index}.objective`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">Objective ($)</FormLabel>
+                <FormLabel className="text-xs">{t('form.fields.objective')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -134,7 +136,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
             name={`phases.${index}.ddType`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">DD type</FormLabel>
+                <FormLabel className="text-xs">{t('form.fields.ddType')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
@@ -142,10 +144,10 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="static">Static</SelectItem>
-                    <SelectItem value="eod">EOD</SelectItem>
+                    <SelectItem value="static">{t('form.fields.ddTypeStatic')}</SelectItem>
+                    <SelectItem value="eod">{t('form.fields.ddTypeEod')}</SelectItem>
                     <SelectItem value="trailing" disabled>
-                      Trailing — soon
+                      {t('form.fields.ddTypeTrailing')}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -173,7 +175,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
               htmlFor={`consistency-toggle-${index}`}
               className="text-xs cursor-pointer"
             >
-              Consistency
+              {t('form.toggles.consistency')}
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -193,7 +195,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
               htmlFor={`mindays-toggle-${index}`}
               className="text-xs cursor-pointer"
             >
-              Min trading days
+              {t('form.toggles.minTradingDays')}
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -215,7 +217,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
               htmlFor={`ddfixed-toggle-${index}`}
               className={`text-xs cursor-pointer ${ddType === 'static' ? 'text-muted-foreground/50' : ''}`}
             >
-              DD fixed
+              {t('form.toggles.ddFixed')}
             </Label>
           </div>
           <div className="flex items-center gap-2 ml-auto">
@@ -234,7 +236,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
               htmlFor={`funded-toggle-${index}`}
               className="text-xs cursor-pointer"
             >
-              Funded phase
+              {t('form.toggles.fundedPhase')}
             </Label>
           </div>
         </div>
@@ -248,7 +250,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                 render={({ field }) => (
                   <FormItem className="col-span-2">
                     <FormLabel className="text-xs">
-                      Max daily profit (% of objective)
+                      {t('form.fields.consistencyPct')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -273,7 +275,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                   name={`phases.${index}.minDays`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Min days</FormLabel>
+                      <FormLabel className="text-xs">{t('form.fields.minDays')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -293,7 +295,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                   name={`phases.${index}.minProfit`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Daily min profit ($)</FormLabel>
+                      <FormLabel className="text-xs">{t('form.fields.minProfit')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -316,7 +318,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                   name={`phases.${index}.payoutCapPct`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Payout cap (%)</FormLabel>
+                      <FormLabel className="text-xs">{t('form.fields.payoutCap')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -337,7 +339,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                   name={`phases.${index}.splitPct`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Profit split (%)</FormLabel>
+                      <FormLabel className="text-xs">{t('form.fields.profitSplit')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -358,7 +360,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                   name={`phases.${index}.minPayoutRequest`}
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel className="text-xs">Min payout request ($)</FormLabel>
+                      <FormLabel className="text-xs">{t('form.fields.minPayoutRequest')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -370,7 +372,7 @@ export function CalculatorPhaseCard({ index, onRemove, canRemove }: Props) {
                         />
                       </FormControl>
                       <p className="text-[10px] text-muted-foreground leading-snug">
-                        Minimum amount the propfirm allows to request
+                        {t('form.fields.minPayoutRequestHint')}
                       </p>
                       <FormMessage />
                     </FormItem>

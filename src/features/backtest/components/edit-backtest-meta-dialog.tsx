@@ -23,6 +23,7 @@ import {
   backtestUpdateSchema,
   type BacktestUpdateInput,
 } from "@/features/backtest/schemas/backtest-form-schema"
+import { useTranslation } from "react-i18next"
 import { useUpdateBacktestMeta } from "@/features/backtest/api/backtests-queries"
 import type { Backtest } from "@/features/backtest/types"
 
@@ -40,6 +41,7 @@ type FormValues = {
 }
 
 export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) {
+  const { t } = useTranslation("backtest")
   const updateMutation = useUpdateBacktestMeta()
 
   const form = useForm<FormValues>({
@@ -60,10 +62,10 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
     const patch: BacktestUpdateInput = parsed.data
     try {
       await updateMutation.mutateAsync({ id: backtest.id, ...patch })
-      toast.success("Backtest updated")
+      toast.success(t("toasts.updated"))
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not update backtest.")
+      toast.error(err instanceof Error ? err.message : t("toasts.errorSave"))
     }
   }
 
@@ -71,9 +73,9 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit backtest</DialogTitle>
+          <DialogTitle>{t("form.edit.title")}</DialogTitle>
           <DialogDescription>
-            Update the name and optional metadata. Bankroll and eval cost are immutable.
+            {t("form.edit.immutableNote")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -83,7 +85,7 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("form.fields.name")}</FormLabel>
                   <FormControl>
                     <Input autoFocus {...field} />
                   </FormControl>
@@ -98,7 +100,7 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
                 name="asset"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Asset</FormLabel>
+                    <FormLabel>{t("form.fields.asset")}</FormLabel>
                     <FormControl>
                       <Input placeholder="NQ, ES, EUR/USD…" {...field} />
                     </FormControl>
@@ -111,7 +113,7 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
                 name="period"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Period</FormLabel>
+                    <FormLabel>{t("form.fields.period")}</FormLabel>
                     <FormControl>
                       <Input placeholder="Q1 2024, Jan–Mar…" {...field} />
                     </FormControl>
@@ -126,10 +128,10 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
               name="strategy"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Strategy (optional)</FormLabel>
+                  <FormLabel>{t("form.fields.strategy")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Brief description of the tested strategy…"
+                      placeholder={t("form.fields.strategyPlaceholder")}
                       rows={3}
                       {...field}
                     />
@@ -146,14 +148,14 @@ export function EditBacktestMetaDialog({ backtest, open, onOpenChange }: Props) 
                 onClick={() => onOpenChange(false)}
                 disabled={updateMutation.isPending}
               >
-                Cancel
+                {t("form.submit.cancel")}
               </Button>
               <Button
                 type="button"
                 disabled={updateMutation.isPending}
                 onClick={() => void onSubmit(form.getValues())}
               >
-                {updateMutation.isPending ? "Saving…" : "Save"}
+                {updateMutation.isPending ? t("form.submit.saving") : t("form.submit.save")}
               </Button>
             </div>
           </form>

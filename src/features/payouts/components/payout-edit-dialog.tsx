@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -43,6 +44,7 @@ export function PayoutEditDialog({
   onOpenChange,
   payout,
 }: PayoutEditDialogProps) {
+  const { t } = useTranslation(["payouts", "common"])
   const updateMutation = useUpdatePayout()
 
   const form = useForm<PayoutEditInput, undefined, PayoutEditValues>({
@@ -73,13 +75,13 @@ export function PayoutEditDialog({
   const onSubmit = (values: PayoutEditValues) => {
     if (startDate && values.paid_at < startDate) {
       form.setError("paid_at", {
-        message: "Payout date cannot be before the funding start date",
+        message: t("errors.dateBeforeStart"),
       })
       return
     }
     if (values.paid_at > today) {
       form.setError("paid_at", {
-        message: "Payout date cannot be in the future",
+        message: t("errors.dateInFuture"),
       })
       return
     }
@@ -93,11 +95,11 @@ export function PayoutEditDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Payout updated")
+          toast.success(t("toasts.updated"))
           onOpenChange(false)
         },
         onError: (error) => {
-          toast.error(error.message || "Could not update the payout.")
+          toast.error(error.message || t("toasts.errorUpdate"))
         },
       },
     )
@@ -110,11 +112,11 @@ export function PayoutEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Edit payout</DialogTitle>
+          <DialogTitle>{t("dialog.edit.title")}</DialogTitle>
           <DialogDescription>
             {propfirmName
-              ? `Update the ${propfirmName} payout. Linked funded account stays the same.`
-              : "Update this payout."}
+              ? t("dialog.edit.descriptionWithName", { name: propfirmName })
+              : t("dialog.edit.description")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -127,7 +129,7 @@ export function PayoutEditDialog({
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Amount (USD)</FormLabel>
+                      <FormLabel>{t("form.fields.amount")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -151,7 +153,7 @@ export function PayoutEditDialog({
                   const { value, ...rest } = field
                   return (
                     <FormItem>
-                      <FormLabel>Fee (USD)</FormLabel>
+                      <FormLabel>{t("form.fields.fee")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -173,7 +175,7 @@ export function PayoutEditDialog({
               name="paid_at"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Paid on</FormLabel>
+                  <FormLabel>{t("form.fields.paidOn")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
@@ -191,7 +193,7 @@ export function PayoutEditDialog({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (optional)</FormLabel>
+                  <FormLabel>{t("form.fields.notes")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={3}
@@ -210,10 +212,10 @@ export function PayoutEditDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={updateMutation.isPending}
               >
-                Cancel
+                {t("common:actions.cancel")}
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving…" : "Save changes"}
+                {updateMutation.isPending ? t("payouts:form.submit.saving") : t("payouts:form.submit.save")}
               </Button>
             </DialogFooter>
           </form>

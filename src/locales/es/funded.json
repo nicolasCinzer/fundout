@@ -1,0 +1,67 @@
+{
+  "title": "Cuentas fondeadas",
+  "description": "Cuentas fondeadas activas e históricas",
+  "list": {
+    "title": "Todas las cuentas fondeadas",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totales",
+    "countFiltered": "{{shown}} de {{total}}",
+    "searchPlaceholder": "Buscar por propfirm…",
+    "noMatches": {
+      "title": "Sin resultados",
+      "description": "Probá con otro término o limpiá los filtros."
+    },
+    "clearFilters": "Limpiar filtros"
+  },
+  "status": {
+    "active": "Activa",
+    "breached": "Perdida"
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "accountSize": "Tamaño de cuenta",
+    "startDate": "Fondeada el",
+    "closedAt": "Cerrada",
+    "status": "Estado",
+    "netPayouts": "Retiros netos",
+    "payouts": "Retiros",
+    "actions": "Acciones"
+  },
+  "emptyState": {
+    "title": "Todavía no hay cuentas fondeadas",
+    "description": "Las cuentas fondeadas aparecen acá cuando marcás una evaluación como fondeada."
+  },
+  "stats": {
+    "total": "Total",
+    "active": "Activas",
+    "breached": "Perdidas",
+    "closed": "Cerradas",
+    "totalWithdrawn": "Total retirado",
+    "fundedLifetime": "Cuentas fondeadas históricas",
+    "nothingActive": "Ninguna activa",
+    "activeHint": "activa",
+    "breachedHint": "perdida",
+    "fundedCount": "fondeada",
+    "topPropfirms": "Mejores propfirms por cuentas fondeadas",
+    "noData": "Sin datos aún"
+  },
+  "toasts": {
+    "deleted": "Cuenta fondeada eliminada",
+    "errorDelete": "No se pudo eliminar la cuenta fondeada.",
+    "closed": "Cuenta cerrada",
+    "errorClose": "No se pudo cerrar la cuenta.",
+    "undone": "Deshecho"
+  },
+  "actions": {
+    "addPayout": "Agregar retiro",
+    "logPayout": "Registrar retiro",
+    "markBreached": "Marcar como perdida",
+    "moreActions": "Más acciones",
+    "close": "Cerrar cuenta",
+    "delete": "Eliminar"
+  },
+  "delete": {
+    "title": "¿Eliminar esta cuenta fondeada?",
+    "description": "También se eliminarán todos los retiros registrados. La evaluación original permanecerá."
+  }
+}

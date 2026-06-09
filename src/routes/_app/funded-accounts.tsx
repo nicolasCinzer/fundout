@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
+import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight, Landmark, Search, X } from "lucide-react"
 import { AppHeader } from "@/components/common/app-header"
 import { EmptyState } from "@/components/common/empty-state"
@@ -45,7 +46,8 @@ import {
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { FundedAccountRowActions } from "@/features/funded-accounts/components/funded-account-row-actions"
 import { FundedAccountsStats } from "@/features/funded-accounts/components/funded-accounts-stats"
-import { formatCurrency, formatDate } from "@/lib/format"
+import { formatCurrency } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
 
 const SORT_KEYS = [
   "propfirm",
@@ -73,15 +75,22 @@ export const Route = createFileRoute("/_app/funded-accounts")({
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline"
 
-const STATUS_META: {
-  [K in FundedAccountStatus]?: { variant: BadgeVariant; label: string }
-} = {
-  active: { variant: "default", label: "Active" },
-  breached: { variant: "destructive", label: "Breached" },
+const STATUS_VARIANT: { [K in FundedAccountStatus]?: BadgeVariant } = {
+  active: "default",
+  breached: "destructive",
 }
 
-function getStatusMeta(s: FundedAccountStatus) {
-  return STATUS_META[s] ?? { variant: "outline" as BadgeVariant, label: s }
+const STATUS_I18N_KEY: { [K in FundedAccountStatus]?: string } = {
+  active: "status.active",
+  breached: "status.breached",
+}
+
+function getStatusVariant(s: FundedAccountStatus): BadgeVariant {
+  return STATUS_VARIANT[s] ?? "outline"
+}
+
+function getStatusKey(s: FundedAccountStatus): string {
+  return STATUS_I18N_KEY[s] ?? s
 }
 
 function sortFundedAccounts(
@@ -126,6 +135,9 @@ function sortFundedAccounts(
 }
 
 function FundedAccountsPage() {
+  const { t } = useTranslation("funded")
+  const { t: tc } = useTranslation("common")
+  const { date: formatDate } = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const fundedAccounts = useFundedAccounts()
@@ -213,8 +225,8 @@ function FundedAccountsPage() {
   return (
     <>
       <AppHeader
-        title="Funded accounts"
-        description="Active and historic funded accounts"
+        title={t("title")}
+        description={t("description")}
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {!isLoading && all.length > 0 && (
@@ -222,13 +234,13 @@ function FundedAccountsPage() {
         )}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle>All funded accounts</CardTitle>
+            <CardTitle>{t("list.title")}</CardTitle>
             <CardDescription>
               {isLoading
-                ? "Loading…"
+                ? tc("status.loading")
                 : hasFilters
-                  ? `${rows.length} of ${total}`
-                  : `${total} total`}
+                  ? t("list.countFiltered", { shown: rows.length, total })
+                  : t("list.count", { count: total })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -236,7 +248,7 @@ function FundedAccountsPage() {
               <div className="relative flex-1 min-w-[200px] max-w-sm">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search by propfirm…"
+                  placeholder={t("list.searchPlaceholder")}
                   className="pl-9"
                   value={search.q ?? ""}
                   onChange={(e) => updateSearch({ q: e.target.value })}
@@ -255,15 +267,15 @@ function FundedAccountsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="breached">Breached</SelectItem>
+                  <SelectItem value="all">{tc("filters.allStatuses")}</SelectItem>
+                  <SelectItem value="active">{t("status.active")}</SelectItem>
+                  <SelectItem value="breached">{t("status.breached")}</SelectItem>
                 </SelectContent>
               </Select>
               {hasFilters ? (
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="mr-1 h-3 w-3" />
-                  Clear
+                  {tc("filters.clear")}
                 </Button>
               ) : null}
             </div>
@@ -274,19 +286,19 @@ function FundedAccountsPage() {
               hasFilters ? (
                 <EmptyState
                   icon={<Search className="h-5 w-5" />}
-                  title="No matches"
-                  description="Try a different search term or clear the filters."
+                  title={t("list.noMatches.title")}
+                  description={t("list.noMatches.description")}
                   action={
                     <Button variant="outline" size="sm" onClick={clearFilters}>
-                      Clear filters
+                      {t("list.clearFilters")}
                     </Button>
                   }
                 />
               ) : (
                 <EmptyState
                   icon={<Landmark className="h-5 w-5" />}
-                  title="No funded accounts yet"
-                  description="Funded accounts appear here when you mark an evaluation as funded."
+                  title={t("emptyState.title")}
+                  description={t("emptyState.description")}
                 />
               )
             ) : (
@@ -302,7 +314,7 @@ function FundedAccountsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Propfirm
+                        {t("columns.propfirm")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="account_size"
@@ -312,7 +324,7 @@ function FundedAccountsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Account size
+                        {t("columns.accountSize")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="start_date"
@@ -321,7 +333,7 @@ function FundedAccountsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Started
+                        {t("columns.startDate")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="closed_at"
@@ -330,7 +342,7 @@ function FundedAccountsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Closed
+                        {t("columns.closedAt")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="status"
@@ -339,7 +351,7 @@ function FundedAccountsPage() {
                         onSort={handleSort}
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Status
+                        {t("columns.status")}
                       </SortableTableHead>
                       <SortableTableHead
                         sortKey="net_payouts"
@@ -349,14 +361,13 @@ function FundedAccountsPage() {
                         align="right"
                         className="font-heading uppercase text-xs tracking-wide"
                       >
-                        Net payouts
+                        {t("columns.netPayouts")}
                       </SortableTableHead>
                       <TableHead className="w-36 font-heading uppercase text-xs tracking-wide" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {rows.map((fa) => {
-                      const meta = getStatusMeta(fa.status)
                       return (
                         <TableRow key={fa.id}>
                           <TableCell className="font-medium">
@@ -372,7 +383,7 @@ function FundedAccountsPage() {
                             {fa.closed_at ? formatDate(fa.closed_at) : "—"}
                           </TableCell>
                           <TableCell>
-                            <Badge variant={meta.variant}>{meta.label}</Badge>
+                            <Badge variant={getStatusVariant(fa.status)}>{t(getStatusKey(fa.status))}</Badge>
                           </TableCell>
                           <TableCell className="text-right tabular-nums font-medium">
                             {formatCurrency(netByAccount[fa.id] ?? 0)}
@@ -389,7 +400,11 @@ function FundedAccountsPage() {
               {sorted.length > PAGE_SIZE && (
                 <div className="flex items-center justify-between gap-3 pt-1">
                   <p className="text-xs text-muted-foreground">
-                    Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, sorted.length)} of {sorted.length}
+                    {tc("pagination.showing", {
+                      from: pageStart + 1,
+                      to: Math.min(pageStart + PAGE_SIZE, sorted.length),
+                      total: sorted.length,
+                    })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -399,10 +414,10 @@ function FundedAccountsPage() {
                       onClick={() => goToPage(currentPage - 1)}
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
-                      Prev
+                      {tc("pagination.prev")}
                     </Button>
                     <span className="text-xs tabular-nums text-muted-foreground">
-                      Page {currentPage} of {totalPages}
+                      {tc("pagination.pageOf", { current: currentPage, total: totalPages })}
                     </span>
                     <Button
                       variant="outline"
@@ -410,7 +425,7 @@ function FundedAccountsPage() {
                       disabled={currentPage === totalPages}
                       onClick={() => goToPage(currentPage + 1)}
                     >
-                      Next
+                      {tc("pagination.next")}
                       <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                   </div>

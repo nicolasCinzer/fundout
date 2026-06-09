@@ -1,0 +1,100 @@
+{
+  "title": "Retiros",
+  "description": "Seguí todos tus retiros.",
+  "form": {
+    "new": {
+      "title": "Registrar retiro",
+      "description": "Registrá un retiro de una cuenta fondeada."
+    },
+    "edit": {
+      "title": "Editar retiro",
+      "description": "Actualizá los detalles de este retiro."
+    },
+    "fields": {
+      "amount": "Monto (USD)",
+      "amountPlaceholder": "1000.00",
+      "fee": "Comisión (USD)",
+      "feePlaceholder": "0.00",
+      "paidOn": "Pagado el",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "Método, tipo de cambio, algo que recordar…"
+    },
+    "submit": {
+      "record": "Registrar retiro",
+      "save": "Guardar cambios",
+      "saving": "Guardando…"
+    }
+  },
+  "list": {
+    "title": "Todos los retiros",
+    "count_one": "{{count}} total",
+    "count_other": "{{count}} totales",
+    "countFiltered": "{{shown}} de {{total}}",
+    "searchPlaceholder": "Buscar por propfirm…",
+    "noMatches": {
+      "title": "Sin resultados",
+      "description": "Probá con otro término o limpiá los filtros."
+    },
+    "clearFilters": "Limpiar filtros"
+  },
+  "columns": {
+    "propfirm": "Propfirm",
+    "amount": "Monto",
+    "fee": "Comisión",
+    "net": "Neto",
+    "paidOn": "Pagado el",
+    "actions": "Acciones"
+  },
+  "stats": {
+    "total": "Total retiros",
+    "totalAmount": "Total retirado",
+    "avgAmount": "Retiro promedio",
+    "lastPayout": "Último retiro",
+    "totalLabel": "Total",
+    "payout": "retiro",
+    "payouts": "retiros",
+    "avg": "prom.",
+    "netTotal": "Neto total",
+    "feesWithheld": "Comisiones retenidas",
+    "gross": "bruto",
+    "topPropfirms": "Mejores propfirms por neto pagado",
+    "noPayouts": "Todavía no hay retiros"
+  },
+  "emptyState": {
+    "title": "Todavía no hay retiros",
+    "description": "Registrá tu primer retiro para empezar a seguir tus ingresos."
+  },
+  "toasts": {
+    "recorded": "Retiro registrado",
+    "updated": "Retiro actualizado",
+    "deleted": "Retiro eliminado",
+    "errorSave": "No se pudo guardar el retiro.",
+    "errorUpdate": "No se pudo actualizar el retiro.",
+    "errorDelete": "No se pudo eliminar el retiro."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar retiro",
+    "moreActions": "Más acciones"
+  },
+  "rowActions": {
+    "confirmTitle": "¿Eliminar este retiro?",
+    "confirmDescription": "El retiro se eliminará permanentemente de tus registros."
+  },
+  "dialog": {
+    "new": {
+      "title": "Registrar retiro",
+      "descriptionWithName": "Registrá un retiro de tu cuenta {{name}}.",
+      "description": "Registrá un retiro de esta cuenta fondeada."
+    },
+    "edit": {
+      "title": "Editar retiro",
+      "descriptionWithName": "Actualizá el retiro de {{name}}. La cuenta fondeada vinculada no cambia.",
+      "description": "Actualizá este retiro."
+    }
+  },
+  "errors": {
+    "dateBeforeStart": "La fecha del retiro no puede ser anterior a la fecha de inicio del fondeado",
+    "dateInFuture": "La fecha del retiro no puede ser en el futuro"
+  }
+}

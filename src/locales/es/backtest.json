@@ -1,0 +1,195 @@
+{
+  "title": "Backtest",
+  "description": "Simulá tu estrategia de trading sobre secuencias históricas.",
+  "list": {
+    "empty": {
+      "title": "Todavía no hay backtests",
+      "description": "Creá tu primer backtest para empezar a simular tu estrategia."
+    },
+    "createButton": "Nuevo backtest",
+    "noEventsYet": "Sin eventos todavía — hacé clic para empezar."
+  },
+  "form": {
+    "new": {
+      "title": "Nuevo backtest",
+      "description": "Configurá los parámetros de tu simulación."
+    },
+    "edit": {
+      "title": "Editar backtest",
+      "description": "Actualizá los parámetros de la simulación.",
+      "immutableNote": "Actualizá el nombre y los metadatos opcionales. El bankroll y el costo de evaluación no se pueden modificar."
+    },
+    "fields": {
+      "name": "Nombre",
+      "namePlaceholder": "Mi estrategia v1",
+      "initialBankroll": "Bankroll inicial (USD)",
+      "evalCost": "Costo de evaluación (USD)",
+      "accountSize": "Tamaño de cuenta (USD)",
+      "notes": "Notas (opcional)",
+      "asset": "Activo (opcional)",
+      "period": "Período (opcional)",
+      "strategy": "Estrategia (opcional)",
+      "strategyPlaceholder": "Descripción breve de la estrategia evaluada…",
+      "payoutAmount": "Monto del retiro (USD)",
+      "notesPlaceholder": "Notas sobre este evento…"
+    },
+    "submit": {
+      "create": "Crear backtest",
+      "creating": "Creando…",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "recordEvent": "Registrar evento",
+      "recording": "Registrando…"
+    },
+    "newDescription": "Configurá los parámetros iniciales. El costo de evaluación no puede modificarse después de la creación.",
+    "eventType": "Tipo de evento"
+  },
+  "event": {
+    "type": {
+      "E": "Evaluación",
+      "F": "Fondeado",
+      "P": "Retiro"
+    },
+    "add": "Agregar evento",
+    "undo": "Deshacer último evento",
+    "undoConfirmTitle": "¿Deshacer último evento?",
+    "undoConfirmDescription": "Esto eliminará el evento {{type}} en la posición {{position}}. Esta acción no se puede revertir.",
+    "undoNoEvents": "No hay eventos para deshacer.",
+    "undoneSuccess": "Evento deshecho"
+  },
+  "stats": {
+    "volumes": {
+      "title": "Volúmenes",
+      "evaluations": "Evaluaciones",
+      "funded": "Fondeados",
+      "fundedWithPayout": "Fondeados con retiro",
+      "payouts": "Retiros"
+    },
+    "rates": {
+      "title": "Tasas",
+      "percentFunded": "% Fondeado",
+      "percentPayout": "% Retiro",
+      "percentSuccess": "% Éxito",
+      "payoutProbability": "Probabilidad de retiro"
+    },
+    "risk": {
+      "title": "Riesgo",
+      "worstStreak": "Peor racha"
+    },
+    "financial": {
+      "title": "Resumen financiero",
+      "initialBankroll": "Bankroll inicial",
+      "spentOnEvaluations": "Gastado en evaluaciones",
+      "totalWithdrawn": "Total retirado",
+      "medianPayout": "Retiro mediano",
+      "avgPayoutsPerFunded": "Retiros prom. / fondeado",
+      "netProfit": "Ganancia neta",
+      "roi": "ROI",
+      "currentBankroll": "Bankroll actual"
+    }
+  },
+  "tooltips": {
+    "percentFunded": "Proporción de evaluaciones que alcanzaron el estado fondeado.",
+    "percentPayout": "Proporción de cuentas fondeadas que produjeron al menos un retiro.",
+    "percentSuccess": "Proporción de evaluaciones que terminaron en una cuenta fondeada con retiro — la conversión de extremo a extremo.",
+    "payoutProbability": "Eventos de retiro esperados por evaluación. Puede superar el 100% cuando las cuentas fondeadas producen múltiples retiros.",
+    "worstStreak": "Racha consecutiva más larga de evaluaciones sin producir un retiro.",
+    "initialBankroll": "Capital inicial para este backtest. El ROI se calcula sobre este número.",
+    "spentOnEvaluations": "Costo total de los intentos de evaluación: count(E) × costo_eval.",
+    "totalWithdrawn": "Suma de todos los montos de retiro en todas las cuentas fondeadas.",
+    "medianPayout": "Valor central de todos los montos de retiro — más resistente a valores atípicos que el promedio.",
+    "avgPayoutsPerFunded": "Número medio de eventos de retiro por cuenta fondeada: count(P) / count(F).",
+    "netProfit": "Total retirado menos gastado en evaluaciones.",
+    "roi": "Ganancia neta / bankroll inicial. Medido contra el capital inicial, no el total invertido — puede superar el 100% cuando los retiros superan ampliamente el inicial.",
+    "currentBankroll": "Bankroll inicial + ganancia neta. Capital disponible en este punto de la simulación."
+  },
+  "lifecycle": {
+    "status": {
+      "open": "Abierto",
+      "fundedActive": "Fondeado (activo)",
+      "lost": "Perdido",
+      "breachedNoPayout": "Incumplido (sin retiro)",
+      "fundedPaid": "Fondeado (con retiro)"
+    },
+    "badge": {
+      "open": "Abierta",
+      "funded_active": "Fondeada",
+      "lost": "Fallida",
+      "breached_no_payout": "Perdida",
+      "funded_paid": "Pagada"
+    },
+    "legendLabel": {
+      "open": "Abierta",
+      "funded_active": "Fondeada",
+      "lost": "Fallida",
+      "breached_no_payout": "Perdida",
+      "funded_paid": "Pagada"
+    },
+    "legendDescription": {
+      "open": "Comprada, todavía no fondeada.",
+      "funded_active": "Fondeada activa, esperando retiro.",
+      "lost": "Falló antes de ser fondeada.",
+      "breached_no_payout": "Fondeada, perdida, sin retiro.",
+      "funded_paid": "Fondeada con al menos un retiro."
+    },
+    "count_one": "Ciclo ({{count}})",
+    "count_other": "Ciclos ({{count}})",
+    "table": {
+      "state": "Estado",
+      "payouts": "Retiros",
+      "totalWithdrawn": "Total retirado",
+      "notes": "Notas"
+    },
+    "legend": {
+      "title": "Leyenda de estados"
+    },
+    "empty": {
+      "title": "Sin eventos todavía",
+      "description": "Empezá registrando un evento de Compra de Evaluación."
+    }
+  },
+  "detail": {
+    "description": "Detalle del backtest",
+    "notFound": {
+      "title": "Backtest no encontrado",
+      "description": "Este backtest no existe o no tenés acceso."
+    },
+    "recordEvent": "Registrar evento",
+    "editButton": "Editar",
+    "gameOver": {
+      "title": "Tu simulación finalizó.",
+      "description": "Revisá tu estrategia — tiene un desempeño peor que el azar. Podés deshacer eventos para explorar escenarios alternativos."
+    }
+  },
+  "card": {
+    "start": "inicial",
+    "perEval": "/ eval",
+    "current": "Actual",
+    "evals": "Evals",
+    "funded": "Fondeadas",
+    "payouts": "Retiros",
+    "ended": "Finalizado",
+    "period": "Período"
+  },
+  "chart": {
+    "title": "Evolución del bankroll",
+    "emptyDescription": "Registrá eventos para ver la curva del bankroll.",
+    "eventLabel": "Evento #{{n}}",
+    "initialLabel": "Inicial"
+  },
+  "toasts": {
+    "created": "Backtest creado",
+    "updated": "Backtest actualizado",
+    "deleted": "Backtest eliminado",
+    "eventAdded": "Evento agregado",
+    "eventUndone": "Último evento eliminado",
+    "errorSave": "No se pudo guardar el backtest.",
+    "errorDelete": "No se pudo eliminar el backtest."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar backtest",
+    "viewDetail": "Ver detalle"
+  }
+}

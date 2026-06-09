@@ -1,4 +1,5 @@
 import { BarChart2, Calculator, Shuffle } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { BrandMark } from "@/components/common/brand-mark"
 
 type ValueBulletProps = {
@@ -18,6 +19,8 @@ function ValueBullet({ icon: Icon, children }: ValueBulletProps) {
 }
 
 export function LoginLeftPanel() {
+  const { t } = useTranslation("auth")
+
   return (
     <div className="hidden md:flex md:flex-col md:justify-between p-10 lg:p-12 bg-gradient-to-br from-primary/10 via-background to-background dark:from-primary/15 dark:via-background dark:to-background relative overflow-hidden">
       <div
@@ -29,22 +32,22 @@ export function LoginLeftPanel() {
 
       <div>
         <h1 className="font-heading text-3xl lg:text-4xl tracking-tight">
-          Track your propfirm journey.
+          {t("leftPanel.headline")}
         </h1>
         <p className="mt-3 text-muted-foreground text-base lg:text-lg">
-          Plan. Withdraw. Scale.
+          {t("leftPanel.tagline")}
         </p>
       </div>
 
       <ul className="space-y-4">
         <ValueBullet icon={BarChart2}>
-          Every evaluation, funded account, and payout in one place.
+          {t("leftPanel.bullets.tracking")}
         </ValueBullet>
         <ValueBullet icon={Calculator}>
-          Win probability and ROI before you buy a challenge.
+          {t("leftPanel.bullets.calculator")}
         </ValueBullet>
         <ValueBullet icon={Shuffle}>
-          Monte Carlo simulations to stress-test your bankroll.
+          {t("leftPanel.bullets.monteCarlo")}
         </ValueBullet>
       </ul>
     </div>

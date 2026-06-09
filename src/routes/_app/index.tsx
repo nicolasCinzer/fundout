@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
+import { useTranslation } from "react-i18next"
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -26,8 +27,8 @@ import { computeRatioContext } from "@/features/dashboard/lib/compute-ratio-cont
 import {
   DEFAULT_PERIOD,
   PERIODS,
+  periodLabel,
   periodRange,
-  periodSubtitle,
   type CustomRange,
   type Period,
 } from "@/features/dashboard/lib/period"
@@ -36,6 +37,8 @@ import { useFundedAccounts } from "@/features/funded-accounts/api/funded-account
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { formatCurrency, formatPercent } from "@/lib/format"
+import { useFormatters } from "@/lib/i18n/use-formatters"
+import { format } from "date-fns"
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -51,6 +54,8 @@ export const Route = createFileRoute("/_app/")({
 })
 
 function DashboardPage() {
+  const { t } = useTranslation("dashboard")
+  const formatters = useFormatters()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const period: Period = search.period ?? DEFAULT_PERIOD
@@ -65,6 +70,12 @@ function DashboardPage() {
     fundedAccounts.data &&
     payouts.data
   )
+
+  const range = periodRange(period, new Date(), custom)
+  const rangeStr =
+    range.start && range.end
+      ? `${format(range.start, "MMM d, yyyy", { locale: formatters.dateLocale })} – ${format(range.end, "MMM d, yyyy", { locale: formatters.dateLocale })}`
+      : ""
 
   const handlePeriodChange = (next: Period, nextCustom?: CustomRange) => {
     const usingCustom = next === "custom"
@@ -81,17 +92,18 @@ function DashboardPage() {
   return (
     <>
       <AppHeader
-        title="Dashboard"
-        description="Your propfirm ROI at a glance"
+        title={t("title")}
+        description={t("subtitle")}
       />
       <main className="flex-1 space-y-6 p-4 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            Showing{" "}
             <span className="font-medium text-foreground">
-              {periodSubtitle(period, periodRange(period, new Date(), custom))}
+              {t("periodBanner", {
+                period: periodLabel(t, period),
+                range: rangeStr,
+              })}
             </span>
-            . Switch the period to compare ranges.
           </p>
           <TimePeriodSelect
             value={period}
@@ -105,8 +117,8 @@ function DashboardPage() {
         ) : evaluations.data!.length === 0 ? (
           <EmptyState
             icon={<TrendingUp className="h-5 w-5" />}
-            title="No data yet"
-            description="Track your first propfirm evaluation to see funding ratio, net P&L, and monthly flow come to life."
+            title={t("emptyState.noData.title")}
+            description={t("emptyState.noData.description")}
             action={<EvaluationFormDialog />}
             className="mt-8"
           />
@@ -139,6 +151,7 @@ function DashboardContent({
   fundedAccounts,
   payouts,
 }: DashboardContentProps) {
+  const { t } = useTranslation("dashboard")
   const range = periodRange(period, new Date(), custom)
   const kpis = computeKpis(evaluations, fundedAccounts, payouts, range)
   const flow = computeFlow(evaluations, payouts, range)
@@ -148,7 +161,7 @@ function DashboardContent({
     payouts,
     range,
   )
-  const pnlContext = computePnlContext(evaluations, payouts, period)
+  const pnlContext = computePnlContext(evaluations, payouts, period, t)
   const ratioContext = computeRatioContext(
     evaluations,
     fundedAccounts,
@@ -156,6 +169,7 @@ function DashboardContent({
     period,
     kpis.fundingRatio,
     kpis.payoutRatio,
+    t,
   )
   const netPositive = kpis.netPnl >= 0
 
@@ -168,8 +182,8 @@ function DashboardContent({
     return (
       <EmptyState
         icon={<TrendingUp className="h-5 w-5" />}
-        title="No activity in this period"
-        description="Pick a wider range to see your data, or log some activity to start filling it in."
+        title={t("emptyState.noPeriodActivity.title")}
+        description={t("emptyState.noPeriodActivity.description")}
         className="mt-8"
       />
     )
@@ -179,7 +193,7 @@ function DashboardContent({
     <>
       <section className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         <KpiCard
-          label="Net P&L"
+          label={t("kpi.netPnl.title")}
           value={`${netPositive ? "+" : ""}${formatCurrency(kpis.netPnl)}`}
           hint={pnlContext.subtitle}
           icon={
@@ -194,42 +208,47 @@ function DashboardContent({
           tone={netPositive ? "positive" : "negative"}
         />
         <KpiCard
-          label="Total spent"
+          label={t("kpi.totalSpent.title")}
           value={formatCurrency(kpis.totalSpent)}
           hint={
             kpis.totalResets === 0
-              ? `${kpis.totalEvaluations} evaluations purchased`
-              : `${kpis.totalEvaluations} evaluations + ${kpis.totalResets} resets purchased`
+              ? t("kpi.totalSpent.hintNoResets", { count: kpis.totalEvaluations })
+              : t("kpi.totalSpent.hint", {
+                  count: kpis.totalEvaluations,
+                  resets: kpis.totalResets,
+                })
           }
           icon={<DollarSign className="h-4 w-4" />}
           badge={`~ ${formatCurrency(kpis.avgCostPerAttempt)}`}
-          badgeTooltip="Average cost per attempt (evaluations + resets) in this period."
+          badgeTooltip={t("kpi.totalSpent.badgeTooltip")}
         />
         <KpiCard
-          label="Total payouts (net)"
+          label={t("kpi.totalPayouts.title")}
           value={formatCurrency(kpis.totalPayoutsNet)}
-          hint={
-            kpis.countPayouts === 1
-              ? "1 payout received"
-              : `${kpis.countPayouts} payouts received`
-          }
+          hint={t("kpi.totalPayouts.hint", { count: kpis.countPayouts })}
           icon={<TrendingUp className="h-4 w-4" />}
           badge={`~ ${formatCurrency(kpis.avgPayoutNet)}`}
-          badgeTooltip="Average net amount per payout in this period."
+          badgeTooltip={t("kpi.totalPayouts.badgeTooltip")}
         />
         <KpiCard
-          label="Funding ratio"
+          label={t("kpi.fundingRatio.title")}
           value={formatPercent(kpis.fundingRatio)}
-          hint={`${kpis.countFunded} of ${kpis.totalAttempts} attempts funded`}
+          hint={t("kpi.fundingRatio.hint", {
+            funded: kpis.countFunded,
+            total: kpis.totalAttempts,
+          })}
           icon={<Target className="h-4 w-4" />}
           badge={ratioContext.fundingBadge?.value}
           badgeTone={ratioContext.fundingBadge?.tone}
           badgeTooltip={ratioContext.fundingBadge?.tooltip}
         />
         <KpiCard
-          label="Payout ratio"
+          label={t("kpi.payoutRatio.title")}
           value={formatPercent(kpis.payoutRatio)}
-          hint={`${kpis.countWithPayouts} of ${kpis.totalAttempts} attempts reached payout`}
+          hint={t("kpi.payoutRatio.hint", {
+            paid: kpis.countWithPayouts,
+            total: kpis.totalAttempts,
+          })}
           icon={<Percent className="h-4 w-4" />}
           badge={ratioContext.payoutBadge?.value}
           badgeTone={ratioContext.payoutBadge?.tone}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { AlertTriangle, Pencil } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AppHeader } from "@/components/common/app-header"
@@ -25,6 +26,7 @@ type Props = {
 }
 
 export function BacktestDetailPage({ id }: Props) {
+  const { t } = useTranslation("backtest")
   const { data: backtest, isLoading: btLoading } = useBacktest(id)
   const { data: events, isLoading: evLoading } = useBacktestEvents(id)
   const [renameOpen, setRenameOpen] = useState(false)
@@ -49,7 +51,7 @@ export function BacktestDetailPage({ id }: Props) {
   if (isLoading) {
     return (
       <>
-        <AppHeader title="Backtest" />
+        <AppHeader title={t("title")} />
         <main className="flex-1 p-4 md:p-6">
           <div className="h-48 animate-pulse rounded-xl bg-muted/30" />
         </main>
@@ -60,11 +62,11 @@ export function BacktestDetailPage({ id }: Props) {
   if (!backtest) {
     return (
       <>
-        <AppHeader title="Backtest" />
+        <AppHeader title={t("title")} />
         <main className="flex-1 p-4 md:p-6">
           <EmptyState
-            title="Backtest not found"
-            description="This backtest does not exist or you don't have access."
+            title={t("detail.notFound.title")}
+            description={t("detail.notFound.description")}
           />
         </main>
       </>
@@ -77,7 +79,7 @@ export function BacktestDetailPage({ id }: Props) {
     <>
       <AppHeader
         title={backtest.name}
-        description="Backtest detail"
+        description={t("detail.description")}
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {/* Edit + Meta header */}
@@ -89,7 +91,7 @@ export function BacktestDetailPage({ id }: Props) {
             onClick={() => setRenameOpen(true)}
           >
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
-            Edit
+            {t("detail.editButton")}
           </Button>
         </div>
 
@@ -99,10 +101,10 @@ export function BacktestDetailPage({ id }: Props) {
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
             <div>
               <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                Your simulation has ended.
+                {t("detail.gameOver.title")}
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-400">
-                Review your strategy — it performs worse than random. You can undo events to explore alternative scenarios.
+                {t("detail.gameOver.description")}
               </p>
             </div>
           </div>
@@ -114,7 +116,7 @@ export function BacktestDetailPage({ id }: Props) {
           <div className="space-y-3">
             <Card className="gap-3 px-4 py-3.5">
               <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-                Record event
+                {t("detail.recordEvent")}
               </p>
               <BacktestEventForm
                 backtestId={id}
@@ -133,8 +135,7 @@ export function BacktestDetailPage({ id }: Props) {
           <div className="space-y-3">
             <Card className="gap-3 px-4 py-3.5">
               <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-                Lifecycles{" "}
-                <span className="text-muted-foreground/70">({lifecycles.length})</span>
+                {t("lifecycle.count_other", { count: lifecycles.length })}
               </p>
               <BacktestLifecycleTable
                 lifecycles={lifecycles}
