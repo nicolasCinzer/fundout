@@ -1,4 +1,5 @@
 import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -31,17 +32,18 @@ type Props = {
 }
 
 export function BacktestBankrollChart({ data, initialBankroll }: Props) {
+  const { t } = useTranslation("backtest")
   const hasEvents = data.length > 1
 
   return (
     <Card className="gap-3 px-4 py-3.5">
       <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-        Bankroll evolution
+        {t("chart.title")}
       </p>
       {!hasEvents ? (
         <div className="flex h-[200px] items-center justify-center">
           <p className="text-xs text-muted-foreground text-center">
-            Record events to see the bankroll curve.
+            {t("chart.emptyDescription")}
           </p>
         </div>
       ) : (
@@ -85,7 +87,7 @@ export function BacktestBankrollChart({ data, initialBankroll }: Props) {
                 content={
                   <ChartTooltipContent
                     indicator="dot"
-                    labelFormatter={(label) => `Event #${label}`}
+                    labelFormatter={(label) => t("chart.eventLabel", { n: label })}
                     formatter={(value, _name, item) => (
                       <>
                         <div
@@ -94,7 +96,7 @@ export function BacktestBankrollChart({ data, initialBankroll }: Props) {
                         />
                         <div className="flex flex-1 items-center justify-between gap-2 leading-none">
                           <span className="text-muted-foreground">
-                            {item.payload.event ? `${item.payload.event} →` : "Initial"}
+                            {item.payload.event ? `${item.payload.event} →` : t("chart.initialLabel")}
                           </span>
                           <span className="font-mono font-medium text-foreground tabular-nums">
                             {formatCurrency(Number(value))}

@@ -6,7 +6,8 @@
       "title": "Todavía no hay backtests",
       "description": "Creá tu primer backtest para empezar a simular tu estrategia."
     },
-    "createButton": "Nuevo backtest"
+    "createButton": "Nuevo backtest",
+    "noEventsYet": "Sin eventos todavía — hacé clic para empezar."
   },
   "form": {
     "new": {
@@ -51,7 +52,11 @@
       "P": "Retiro"
     },
     "add": "Agregar evento",
-    "undo": "Deshacer último evento"
+    "undo": "Deshacer último evento",
+    "undoConfirmTitle": "¿Deshacer último evento?",
+    "undoConfirmDescription": "Esto eliminará el evento {{type}} en la posición {{position}}. Esta acción no se puede revertir.",
+    "undoNoEvents": "No hay eventos para deshacer.",
+    "undoneSuccess": "Evento deshecho"
   },
   "stats": {
     "volumes": {
@@ -106,7 +111,72 @@
       "lost": "Perdido",
       "breachedNoPayout": "Incumplido (sin retiro)",
       "fundedPaid": "Fondeado (con retiro)"
+    },
+    "badge": {
+      "open": "Abierta",
+      "funded_active": "Fondeada",
+      "lost": "Fallida",
+      "breached_no_payout": "Perdida",
+      "funded_paid": "Pagada"
+    },
+    "legendLabel": {
+      "open": "Abierta",
+      "funded_active": "Fondeada",
+      "lost": "Fallida",
+      "breached_no_payout": "Perdida",
+      "funded_paid": "Pagada"
+    },
+    "legendDescription": {
+      "open": "Comprada, todavía no fondeada.",
+      "funded_active": "Fondeada activa, esperando retiro.",
+      "lost": "Falló antes de ser fondeada.",
+      "breached_no_payout": "Fondeada, perdida, sin retiro.",
+      "funded_paid": "Fondeada con al menos un retiro."
+    },
+    "count_one": "Ciclo ({{count}})",
+    "count_other": "Ciclos ({{count}})",
+    "table": {
+      "state": "Estado",
+      "payouts": "Retiros",
+      "totalWithdrawn": "Total retirado",
+      "notes": "Notas"
+    },
+    "legend": {
+      "title": "Leyenda de estados"
+    },
+    "empty": {
+      "title": "Sin eventos todavía",
+      "description": "Empezá registrando un evento de Compra de Evaluación."
     }
+  },
+  "detail": {
+    "description": "Detalle del backtest",
+    "notFound": {
+      "title": "Backtest no encontrado",
+      "description": "Este backtest no existe o no tenés acceso."
+    },
+    "recordEvent": "Registrar evento",
+    "editButton": "Editar",
+    "gameOver": {
+      "title": "Tu simulación finalizó.",
+      "description": "Revisá tu estrategia — tiene un desempeño peor que el azar. Podés deshacer eventos para explorar escenarios alternativos."
+    }
+  },
+  "card": {
+    "start": "inicial",
+    "perEval": "/ eval",
+    "current": "Actual",
+    "evals": "Evals",
+    "funded": "Fondeadas",
+    "payouts": "Retiros",
+    "ended": "Finalizado",
+    "period": "Período"
+  },
+  "chart": {
+    "title": "Evolución del bankroll",
+    "emptyDescription": "Registrá eventos para ver la curva del bankroll.",
+    "eventLabel": "Evento #{{n}}",
+    "initialLabel": "Inicial"
   },
   "toasts": {
     "created": "Backtest creado",

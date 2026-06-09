@@ -1,16 +1,13 @@
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import type { LifecycleStatus } from "@/features/backtest/types"
 
-const ENTRIES: Array<{
-  status: LifecycleStatus
-  label: string
-  description: string
-}> = [
-  { status: "lost", label: "Lost", description: "Failed before funded." },
-  { status: "breached_no_payout", label: "Breached", description: "Funded, breached, no payout." },
-  { status: "funded_paid", label: "Paid", description: "Funded with at least one payout." },
-  { status: "funded_active", label: "Funded", description: "Active funded, awaiting payout." },
-  { status: "open", label: "Open", description: "Bought, not yet funded." },
+const LEGEND_STATUSES: LifecycleStatus[] = [
+  "lost",
+  "breached_no_payout",
+  "funded_paid",
+  "funded_active",
+  "open",
 ]
 
 const BADGE_CLASS: Record<LifecycleStatus, string> = {
@@ -24,21 +21,23 @@ const BADGE_CLASS: Record<LifecycleStatus, string> = {
 }
 
 export function BacktestStatusLegend() {
+  const { t } = useTranslation("backtest")
+
   return (
     <Card className="gap-2 px-4 py-3">
       <p className="text-[11px] font-heading uppercase tracking-wide text-muted-foreground">
-        State legend
+        {t("lifecycle.legend.title")}
       </p>
       <div className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2">
-        {ENTRIES.map((e) => (
-          <div key={e.status} className="flex items-center gap-2 min-w-0">
+        {LEGEND_STATUSES.map((status) => (
+          <div key={status} className="flex items-center gap-2 min-w-0">
             <span
-              className={`inline-flex h-5 w-[68px] shrink-0 items-center justify-center rounded-4xl border px-2 text-[11px] font-medium ${BADGE_CLASS[e.status]}`}
+              className={`inline-flex h-5 w-[68px] shrink-0 items-center justify-center rounded-4xl border px-2 text-[11px] font-medium ${BADGE_CLASS[status]}`}
             >
-              {e.label}
+              {t(`lifecycle.legendLabel.${status}`)}
             </span>
             <p className="text-[11px] text-muted-foreground leading-snug truncate">
-              {e.description}
+              {t(`lifecycle.legendDescription.${status}`)}
             </p>
           </div>
         ))}

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -18,6 +19,8 @@ type Props = {
 }
 
 export function BacktestCardActions({ backtest }: Props) {
+  const { t } = useTranslation("backtest")
+  const { t: tc } = useTranslation("common")
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const deleteBacktest = useDeleteBacktest()
@@ -26,11 +29,11 @@ export function BacktestCardActions({ backtest }: Props) {
     await new Promise<void>((resolve, reject) => {
       deleteBacktest.mutate(backtest.id, {
         onSuccess: () => {
-          toast.success("Backtest deleted")
+          toast.success(t("toasts.deleted"))
           resolve()
         },
         onError: (e) => {
-          toast.error(e.message || "Could not delete backtest")
+          toast.error(e.message || t("toasts.errorDelete"))
           reject(e)
         },
       })
@@ -60,7 +63,7 @@ export function BacktestCardActions({ backtest }: Props) {
             }}
           >
             <Pencil className="mr-2 h-4 w-4" />
-            Edit
+            {tc("actions.edit")}
           </DropdownMenuItem>
           <ConfirmDelete
             trigger={
@@ -69,7 +72,7 @@ export function BacktestCardActions({ backtest }: Props) {
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc("actions.delete")}
               </DropdownMenuItem>
             }
             title="Delete this backtest?"

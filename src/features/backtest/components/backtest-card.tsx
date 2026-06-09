@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router"
+import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency, formatPercent } from "@/lib/format"
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function BacktestCard({ backtest, stats }: Props) {
+  const { t } = useTranslation("backtest")
   const { date: formatDate } = useFormatters()
   const isGameOver = stats.isGameOver
   const hasEvents = stats.counts.E > 0
@@ -53,7 +55,7 @@ export function BacktestCard({ backtest, stats }: Props) {
               )}
               {isGameOver && (
                 <Badge variant="destructive" className="shrink-0">
-                  Ended
+                  {t("card.ended")}
                 </Badge>
               )}
             </div>
@@ -68,10 +70,10 @@ export function BacktestCard({ backtest, stats }: Props) {
           {/* Setup meta */}
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap">
             <span>
-              {formatCurrency(Number(backtest.bankroll_initial))} start
+              {formatCurrency(Number(backtest.bankroll_initial))} {t("card.start")}
             </span>
             <span aria-hidden>·</span>
-            <span>{formatCurrency(Number(backtest.eval_cost))} / eval</span>
+            <span>{formatCurrency(Number(backtest.eval_cost))} {t("card.perEval")}</span>
             <span aria-hidden>·</span>
             <span>{formatDate(backtest.created_at)}</span>
           </div>
@@ -82,7 +84,7 @@ export function BacktestCard({ backtest, stats }: Props) {
               <div className="flex items-end justify-between gap-2 border-t pt-3">
                 <div className="space-y-0.5">
                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Current
+                    {t("card.current")}
                   </p>
                   <p
                     className={cn(
@@ -110,15 +112,15 @@ export function BacktestCard({ backtest, stats }: Props) {
 
               {/* Mini stats row */}
               <div className="grid grid-cols-3 gap-2 text-center">
-                <MiniStat label="Evals" value={String(stats.counts.E)} />
-                <MiniStat label="Funded" value={String(stats.counts.F)} />
-                <MiniStat label="Payouts" value={String(stats.counts.P)} />
+                <MiniStat label={t("card.evals")} value={String(stats.counts.E)} />
+                <MiniStat label={t("card.funded")} value={String(stats.counts.F)} />
+                <MiniStat label={t("card.payouts")} value={String(stats.counts.P)} />
               </div>
             </>
           ) : (
             <div className="border-t pt-3">
               <p className="text-[11px] text-muted-foreground italic">
-                No events yet — click to start.
+                {t("list.noEventsYet")}
               </p>
             </div>
           )}

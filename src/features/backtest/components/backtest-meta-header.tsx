@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Badge } from "@/components/ui/badge"
 import type { Backtest } from "@/features/backtest/types"
 
@@ -6,6 +7,7 @@ type Props = {
 }
 
 export function BacktestMetaHeader({ backtest }: Props) {
+  const { t } = useTranslation("backtest")
   const { asset, period, strategy } = backtest
 
   if (!asset && !period && !strategy) return null
@@ -20,7 +22,7 @@ export function BacktestMetaHeader({ backtest }: Props) {
         )}
         {period && (
           <span className="text-xs text-muted-foreground">
-            <span className="text-muted-foreground/70">Period:</span>{" "}
+            <span className="text-muted-foreground/70">{t("card.period")}:</span>{" "}
             <span className="text-foreground">{period}</span>
           </span>
         )}
