@@ -41,7 +41,7 @@
       "fundedAccounts": "Cuentas fondeadas",
       "payouts": "Retiros",
       "calculator": "Calculadora de evaluación",
-      "bankrollMc": "Calculadora de bankroll",
+      "bankrollMc": "Calculadora de ruina del bankroll",
       "backtest": "Backtest"
     },
     "newEvaluation": "Nueva evaluación",
