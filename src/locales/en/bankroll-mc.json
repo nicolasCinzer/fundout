@@ -1,6 +1,6 @@
 {
-  "title": "Bankroll Calculator",
-  "description": "Monte Carlo simulations to stress-test your bankroll.",
+  "title": "Bankroll Ruin Calculator",
+  "description": "Estimate the probability of bankroll ruin via Monte Carlo simulation.",
   "form": {
     "simulationInputs": "Simulation inputs",
     "fields": {

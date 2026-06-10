@@ -41,7 +41,7 @@
       "fundedAccounts": "Funded accounts",
       "payouts": "Payouts",
       "calculator": "Evaluation Calculator",
-      "bankrollMc": "Bankroll Calculator",
+      "bankrollMc": "Bankroll Ruin Calculator",
       "backtest": "Backtest"
     },
     "newEvaluation": "New evaluation",

@@ -1,6 +1,6 @@
 {
-  "title": "Calculadora de bankroll",
-  "description": "Simulaciones Monte Carlo para estresear tu bankroll.",
+  "title": "Calculadora de ruina del bankroll",
+  "description": "Estimá la probabilidad de ruina de tu bankroll vía simulación Monte Carlo.",
   "form": {
     "simulationInputs": "Parámetros de simulación",
     "fields": {
