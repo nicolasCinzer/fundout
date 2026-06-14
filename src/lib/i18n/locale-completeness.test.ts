@@ -27,7 +27,9 @@ import esBacktest from "@/locales/es/backtest.json"
 import enCalculator from "@/locales/en/calculator.json"
 import esCalculator from "@/locales/es/calculator.json"
 import enBankrollMc from "@/locales/en/bankroll-mc.json"
+import enSettings from "@/locales/en/settings.json"
 import esBankrollMc from "@/locales/es/bankroll-mc.json"
+import esSettings from "@/locales/es/settings.json"
 
 type Obj = Record<string, unknown>
 
@@ -62,6 +64,7 @@ const namespaces = [
   { name: "backtest", en: enBacktest as Obj, es: esBacktest as Obj },
   { name: "calculator", en: enCalculator as Obj, es: esCalculator as Obj },
   { name: "bankroll-mc", en: enBankrollMc as Obj, es: esBankrollMc as Obj },
+  { name: "settings", en: enSettings as Obj, es: esSettings as Obj },
 ]
 
 describe("Locale completeness: es/ mirrors en/ for all namespaces", () => {

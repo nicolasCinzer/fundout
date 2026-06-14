@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Ajustes",
+    "description": "Gestioná tu cuenta y los datos del journal"
+  },
+  "dangerZone": {
+    "title": "Zona peligrosa",
+    "description": "Acciones irreversibles. Andá con cuidado.",
+    "reset": {
+      "title": "Resetear journal",
+      "description": "Borra todas tus evaluaciones, cuentas funded, payouts e historial de resets. Tus backtests, perfil y ajustes no se tocan.",
+      "button": "Resetear datos del journal"
+    }
+  },
+  "resetDialog": {
+    "title": "Resetear datos del journal",
+    "description": "Se van a borrar de forma permanente todas las evaluaciones, cuentas funded, payouts y resets asociados a tu cuenta. Los backtests no se tocan.",
+    "willDelete": "Se borra:",
+    "willKeep": "Se mantiene:",
+    "items": {
+      "evaluations": "Evaluaciones y sus resets",
+      "fundedAccounts": "Cuentas funded",
+      "payouts": "Payouts",
+      "backtests": "Backtests",
+      "profile": "Perfil, idioma y preferencias"
+    },
+    "confirmLabel": "Escribí {{phrase}} para confirmar",
+    "confirmPhrase": "Reset journal data",
+    "confirmPlaceholder": "Reset journal data",
+    "cancel": "Cancelar",
+    "submit": "Resetear journal",
+    "submitting": "Reseteando…",
+    "toasts": {
+      "success": "Datos del journal eliminados",
+      "error": "No se pudieron borrar los datos del journal"
+    }
+  }
+}

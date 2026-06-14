@@ -27,6 +27,7 @@ i18next
       "backtest",
       "calculator",
       "bankroll-mc",
+      "settings",
     ],
     interpolation: {
       // React already escapes values — no double-escaping needed

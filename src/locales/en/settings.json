@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Settings",
+    "description": "Manage your account and journal data"
+  },
+  "dangerZone": {
+    "title": "Danger zone",
+    "description": "Irreversible actions. Proceed with care.",
+    "reset": {
+      "title": "Reset journal",
+      "description": "Delete all your evaluations, funded accounts, payouts and reset history. Your backtests, profile and settings will not be affected.",
+      "button": "Reset journal data"
+    }
+  },
+  "resetDialog": {
+    "title": "Reset journal data",
+    "description": "This will permanently delete every evaluation, funded account, payout and reset record tied to your account. Backtests are kept untouched.",
+    "willDelete": "Will be deleted:",
+    "willKeep": "Will be kept:",
+    "items": {
+      "evaluations": "Evaluations and their resets",
+      "fundedAccounts": "Funded accounts",
+      "payouts": "Payouts",
+      "backtests": "Backtests",
+      "profile": "Profile, language and preferences"
+    },
+    "confirmLabel": "Type {{phrase}} to confirm",
+    "confirmPhrase": "Reset journal data",
+    "confirmPlaceholder": "Reset journal data",
+    "cancel": "Cancel",
+    "submit": "Reset journal",
+    "submitting": "Resetting…",
+    "toasts": {
+      "success": "Journal data deleted",
+      "error": "Could not reset journal data"
+    }
+  }
+}
