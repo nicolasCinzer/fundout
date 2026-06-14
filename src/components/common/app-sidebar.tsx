@@ -10,6 +10,7 @@ import {
   Calculator,
   Plus,
   FlaskConical,
+  Settings,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
@@ -168,6 +169,12 @@ export function AppSidebar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    {t("nav.settings")}
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   {t("nav.signOut")}

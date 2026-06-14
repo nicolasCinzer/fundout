@@ -13,6 +13,7 @@ import type payouts from "@/locales/en/payouts.json"
 import type backtest from "@/locales/en/backtest.json"
 import type calculator from "@/locales/en/calculator.json"
 import type bankrollMc from "@/locales/en/bankroll-mc.json"
+import type settings from "@/locales/en/settings.json"
 
 declare module "react-i18next" {
   interface CustomTypeOptions {
@@ -27,6 +28,7 @@ declare module "react-i18next" {
       backtest: typeof backtest
       calculator: typeof calculator
       "bankroll-mc": typeof bankrollMc
+      settings: typeof settings
     }
   }
 }
