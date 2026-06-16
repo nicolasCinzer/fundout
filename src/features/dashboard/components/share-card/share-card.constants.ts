@@ -5,14 +5,14 @@
  */
 
 export const SHARE_CARD_THEME = {
-  bg:       "#0A0E1A",
-  surface:  "#141A2B",
-  fg:       "#F5F7FA",
-  fgMuted:  "#8B95A7",
-  accent:   "#14B8A6",
-  positive: "#22C55E",
-  negative: "#EF4444",
-  divider:  "#1F2A40",
+  bg:       "#0a0a0a",  // brand near-black
+  surface:  "#171718",  // brand surface
+  fg:       "#fafafa",  // brand foreground
+  fgMuted:  "#71717a",  // brand muted
+  accent:   "#27cfce",  // BRAND teal — primary accent
+  positive: "#27cfce",  // brand teal — positive PnL flexes on-brand
+  negative: "#ff5b5b",  // warm red, brand-friendly
+  divider:  "#27272a",  // brand border
 } as const
 
 export const SHARE_CARD_DIMENSIONS = {
@@ -40,11 +40,15 @@ export const SIZING = {
     roiFont:             36,
     secondaryValueFont:  48,
     secondaryLabelFont:  22,
-    brandFont:           36,
-    brandSymbolSize:     48,
+    brandFont:           32,
+    brandSymbolSize:     56,
+    badgeFont:           18,
     footerFont:          24,
     gridGap:             16,
     sectionGap:          40,
+    watermarkSize:       500,
+    watermarkBottom:     -90,
+    watermarkRight:      -90,
   },
   ig: {
     padding:             80,
@@ -53,9 +57,13 @@ export const SIZING = {
     secondaryValueFont:  56,
     secondaryLabelFont:  26,
     brandFont:           40,
-    brandSymbolSize:     56,
+    brandSymbolSize:     72,
+    badgeFont:           20,
     footerFont:          28,
     gridGap:             20,
     sectionGap:          48,
+    watermarkSize:       640,
+    watermarkBottom:     -120,
+    watermarkRight:      -120,
   },
 } as const

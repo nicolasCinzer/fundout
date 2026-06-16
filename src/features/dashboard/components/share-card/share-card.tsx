@@ -92,146 +92,208 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
           overflow: "hidden",
         }}
       >
-        {/* Header: brand mark */}
+        {/* Dot pattern overlay */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            marginBottom: s.sectionGap,
-          }}
-        >
-          <div style={{ width: s.brandSymbolSize, height: s.brandSymbolSize, color: SHARE_CARD_THEME.accent, flexShrink: 0 }}>
-            <FundoutSymbol />
-          </div>
-          <span
-            style={{
-              fontFamily: SHARE_CARD_FONT_STACK.heading,
-              fontSize: s.brandFont,
-              fontWeight: 700,
-              color: SHARE_CARD_THEME.fg,
-              lineHeight: 1,
-            }}
-          >
-            Fundout
-          </span>
-        </div>
-
-        {/* Hero: Net PnL */}
-        <div style={{ marginBottom: s.sectionGap * 0.5 }}>
-          <div
-            style={{
-              fontSize: s.heroFont,
-              fontFamily: SHARE_CARD_FONT_STACK.heading,
-              fontWeight: 800,
-              color: pnlColor,
-              lineHeight: 1,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {formatSignedCurrency(kpis.netPnl)}
-          </div>
-
-          {/* ROI accent line */}
-          <div
-            style={{
-              fontSize: s.roiFont,
-              fontWeight: 600,
-              color: SHARE_CARD_THEME.accent,
-              marginTop: 12,
-              lineHeight: 1,
-            }}
-          >
-            {kpiLabels.roi} &middot; {roiDisplay}
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div
-          style={{
-            height: 1,
-            background: SHARE_CARD_THEME.divider,
-            marginBottom: s.sectionGap,
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `radial-gradient(${SHARE_CARD_THEME.fg} 1.5px, transparent 1.5px)`,
+            backgroundSize: "32px 32px",
+            opacity: 0.07,
+            pointerEvents: "none",
+            zIndex: 0,
           }}
         />
 
-        {/* Secondary metrics grid */}
+        {/* Watermark — FundoutSymbol large, rotated, bottom-right */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: s.gridGap,
-            marginBottom: "auto",
+            position: "absolute",
+            bottom: s.watermarkBottom,
+            right: s.watermarkRight,
+            width: s.watermarkSize,
+            height: s.watermarkSize,
+            opacity: 0.10,
+            transform: "rotate(-12deg)",
+            color: SHARE_CARD_THEME.accent,
+            zIndex: 1,
+            pointerEvents: "none",
           }}
         >
-          {secondaryMetrics.map((m) => (
-            <div key={m.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span
+          <FundoutSymbol />
+        </div>
+
+        {/* All foreground content sits above dot pattern + watermark */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 2,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
+          {/* Header row: logo + period badge */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: s.sectionGap,
+            }}
+          >
+            {/* Logo: symbol + wordmark */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div
                 style={{
-                  fontSize: s.secondaryLabelFont,
-                  color: SHARE_CARD_THEME.fgMuted,
-                  fontWeight: 500,
-                  lineHeight: 1.2,
+                  width: s.brandSymbolSize,
+                  height: s.brandSymbolSize,
+                  color: SHARE_CARD_THEME.accent,
+                  flexShrink: 0,
                 }}
               >
-                {m.label}
-              </span>
+                <FundoutSymbol />
+              </div>
               <span
                 style={{
-                  fontSize: s.secondaryValueFont,
                   fontFamily: SHARE_CARD_FONT_STACK.heading,
+                  fontSize: s.brandFont,
                   fontWeight: 700,
                   color: SHARE_CARD_THEME.fg,
                   lineHeight: 1,
+                  letterSpacing: "-0.01em",
                 }}
               >
-                {m.value}
+                fundout
               </span>
             </div>
-          ))}
-        </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginTop: s.sectionGap,
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {/* Period badge pill */}
+            <span
+              style={{
+                fontSize: s.badgeFont,
+                color: SHARE_CARD_THEME.fgMuted,
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                padding: "8px 20px",
+                border: `2px solid ${SHARE_CARD_THEME.divider}`,
+                borderRadius: 999,
+                fontWeight: 600,
+                lineHeight: 1,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {periodLabel.toUpperCase()}
+            </span>
+          </div>
+
+          {/* Hero block: Net PnL + ROI accent */}
+          <div style={{ marginBottom: s.sectionGap * 0.5 }}>
+            <div
+              style={{
+                fontSize: s.heroFont,
+                fontFamily: SHARE_CARD_FONT_STACK.heading,
+                fontWeight: 800,
+                color: pnlColor,
+                lineHeight: 1,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {formatSignedCurrency(kpis.netPnl)}
+            </div>
+
+            {/* ROI accent line */}
+            <div
+              style={{
+                fontSize: s.roiFont,
+                fontWeight: 600,
+                color: SHARE_CARD_THEME.accent,
+                marginTop: 12,
+                lineHeight: 1,
+              }}
+            >
+              {kpiLabels.roi} &middot; {roiDisplay}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              height: 1,
+              background: SHARE_CARD_THEME.divider,
+              marginBottom: s.sectionGap,
+            }}
+          />
+
+          {/* Secondary metrics grid */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: s.gridGap,
+              marginBottom: "auto",
+            }}
+          >
+            {secondaryMetrics.map((m) => (
+              <div key={m.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <span
+                  style={{
+                    fontSize: s.secondaryLabelFont,
+                    color: SHARE_CARD_THEME.fgMuted,
+                    fontWeight: 500,
+                    lineHeight: 1.2,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {m.label}
+                </span>
+                <span
+                  style={{
+                    fontSize: s.secondaryValueFont,
+                    fontFamily: SHARE_CARD_FONT_STACK.heading,
+                    fontWeight: 700,
+                    color: SHARE_CARD_THEME.fg,
+                    lineHeight: 1,
+                  }}
+                >
+                  {m.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer row: tagline + handle */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              marginTop: s.sectionGap,
+            }}
+          >
             <span
               style={{
                 fontSize: s.footerFont,
-                color: SHARE_CARD_THEME.fgMuted,
-                fontWeight: 500,
-              }}
-            >
-              {periodLabel}
-            </span>
-            <span
-              style={{
-                fontSize: s.footerFont * 0.75,
                 color: SHARE_CARD_THEME.fgMuted,
                 fontWeight: 400,
               }}
             >
               {kpiLabels.tagline}
             </span>
-          </div>
 
-          {handle.trim() !== "" && (
-            <span
-              style={{
-                fontSize: s.footerFont,
-                color: SHARE_CARD_THEME.accent,
-                fontWeight: 600,
-              }}
-            >
-              {handle.trim()}
-            </span>
-          )}
+            {handle.trim() !== "" && (
+              <span
+                style={{
+                  fontSize: s.footerFont,
+                  color: SHARE_CARD_THEME.accent,
+                  fontWeight: 600,
+                }}
+              >
+                @{handle.replace(/^@/, "").trim()}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     )
