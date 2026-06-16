@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, afterEach, vi } from "vitest"
 import { isIOS } from "@/features/dashboard/components/share-card/lib/is-ios"
 
 describe("isIOS", () => {

@@ -36,6 +36,7 @@ import { useEvaluations } from "@/features/evaluations/api/evaluations-queries"
 import { useFundedAccounts } from "@/features/funded-accounts/api/funded-accounts-queries"
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
+import { ShareCardButton } from "@/features/dashboard/components/share-card"
 import { formatCurrency, formatPercent } from "@/lib/format"
 import { useFormatters } from "@/lib/i18n/use-formatters"
 import { format } from "date-fns"
@@ -191,6 +192,11 @@ function DashboardContent({
 
   return (
     <>
+      {/* Period row: TimePeriodSelect lives in DashboardPage; Share lives here with kpis */}
+      <div className="flex justify-end">
+        <ShareCardButton kpis={kpis} period={period} />
+      </div>
+
       <section className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         <KpiCard
           label={t("kpi.netPnl.title")}

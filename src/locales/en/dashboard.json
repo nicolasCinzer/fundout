@@ -98,6 +98,34 @@
     "viewMore_one": "View {{count}} more",
     "viewMore_other": "View {{count}} more"
   },
+  "shareCard": {
+    "buttonLabel": "Share",
+    "dialogTitle": "Share your results",
+    "dialogDescription": "Download this card to share on X or Instagram.",
+    "dimensionsLabel": "Format",
+    "dimensions": {
+      "x": "X (1200 × 630)",
+      "ig": "Instagram (1080 × 1080)"
+    },
+    "handleLabel": "Your handle (optional)",
+    "handlePlaceholder": "@yourhandle",
+    "downloadButton": "Download PNG",
+    "downloadingButton": "Generating…",
+    "iosHint": "Long-press the image to save to your Photos.",
+    "error": "We couldn't generate the image. Please try again.",
+    "success": "Card downloaded.",
+    "periodLabel": "Period: {{period}}",
+    "tagline": "It's just math.",
+    "emptyValue": "—",
+    "kpi": {
+      "netPnl": "Net P&L",
+      "roi": "ROI",
+      "totalSpent": "Total spent",
+      "totalPayouts": "Total payouts",
+      "fundingRatio": "Funding ratio",
+      "payoutRatio": "Payout ratio"
+    }
+  },
   "leaderboard": {
     "title": "Propfirms by ROI",
     "description": "Net P&L per propfirm in the selected period. Sorted best to worst.",

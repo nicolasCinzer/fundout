@@ -98,6 +98,34 @@
     "viewMore_one": "Ver {{count}} más",
     "viewMore_other": "Ver {{count}} más"
   },
+  "shareCard": {
+    "buttonLabel": "Compartir",
+    "dialogTitle": "Compartí tus resultados",
+    "dialogDescription": "Descargá esta tarjeta para compartirla en X o Instagram.",
+    "dimensionsLabel": "Formato",
+    "dimensions": {
+      "x": "X (1200 × 630)",
+      "ig": "Instagram (1080 × 1080)"
+    },
+    "handleLabel": "Tu handle (opcional)",
+    "handlePlaceholder": "@tuhandle",
+    "downloadButton": "Descargar PNG",
+    "downloadingButton": "Generando…",
+    "iosHint": "Mantené presionada la imagen para guardarla en tus Fotos.",
+    "error": "No pudimos generar la imagen. Probá de nuevo.",
+    "success": "Tarjeta descargada.",
+    "periodLabel": "Período: {{period}}",
+    "tagline": "Es solo matemática.",
+    "emptyValue": "—",
+    "kpi": {
+      "netPnl": "P&L neto",
+      "roi": "ROI",
+      "totalSpent": "Gasto total",
+      "totalPayouts": "Pagos totales",
+      "fundingRatio": "Ratio de fondeo",
+      "payoutRatio": "Ratio de pago"
+    }
+  },
   "leaderboard": {
     "title": "Propfirms por ROI",
     "description": "Net P&L por propfirm en el período seleccionado. Ordenado de mejor a peor.",
