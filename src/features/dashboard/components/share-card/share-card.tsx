@@ -131,6 +131,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             display: "flex",
             flexDirection: "column",
             height: "100%",
+            justifyContent: dimensions === "ig" ? "center" : undefined,
           }}
         >
           {/* Header row: logo + period badge */}
@@ -187,32 +188,41 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             </span>
           </div>
 
-          {/* Hero block: Net PnL + ROI accent */}
+          {/* Hero block: Net PnL + ROI inline, baseline-aligned */}
           <div style={{ marginBottom: s.sectionGap * 0.5 }}>
             <div
               style={{
-                fontSize: s.heroFont,
-                fontFamily: SHARE_CARD_FONT_STACK.heading,
-                fontWeight: 800,
-                color: pnlColor,
-                lineHeight: 1,
-                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "baseline",
+                gap: Math.round(s.heroFont * 0.16),
               }}
             >
-              {formatSignedCurrency(kpis.netPnl)}
-            </div>
+              <span
+                style={{
+                  fontSize: s.heroFont,
+                  fontFamily: SHARE_CARD_FONT_STACK.heading,
+                  fontWeight: 800,
+                  color: pnlColor,
+                  lineHeight: 1,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {formatSignedCurrency(kpis.netPnl)}
+              </span>
 
-            {/* ROI accent line */}
-            <div
-              style={{
-                fontSize: s.roiFont,
-                fontWeight: 600,
-                color: SHARE_CARD_THEME.accent,
-                marginTop: 12,
-                lineHeight: 1,
-              }}
-            >
-              {kpiLabels.roi} &middot; {roiDisplay}
+              {/* ROI — satellite of PnL, same row, smaller */}
+              <span
+                style={{
+                  fontSize: Math.round(s.heroFont * 0.32),
+                  fontFamily: SHARE_CARD_FONT_STACK.heading,
+                  fontWeight: 700,
+                  color: SHARE_CARD_THEME.accent,
+                  lineHeight: 1,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {roiDisplay}
+              </span>
             </div>
           </div>
 
@@ -225,13 +235,14 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             }}
           />
 
-          {/* Secondary metrics grid */}
+          {/* Secondary metrics grid — 4-col for X (landscape), 2×2 for IG (square) */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: s.gridGap,
-              marginBottom: "auto",
+              gridTemplateColumns: dimensions === "ig" ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+              columnGap: s.gridGap,
+              rowGap: dimensions === "ig" ? s.sectionGap : s.gridGap,
+              marginBottom: dimensions === "ig" ? undefined : "auto",
             }}
           >
             {secondaryMetrics.map((m) => (
