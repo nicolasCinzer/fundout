@@ -51,19 +51,19 @@ export const SIZING = {
     watermarkRight:      -90,
   },
   ig: {
-    padding:             80,
-    heroFont:            160,
-    roiFont:             40,
-    secondaryValueFont:  56,
-    secondaryLabelFont:  26,
-    brandFont:           40,
-    brandSymbolSize:     72,
+    padding:             96,   // was 80 — more breathing room, pushes footer down
+    heroFont:            180,  // was 160 — more presence in square format
+    roiFont:             52,   // for reference; inline ROI uses Math.round(heroFont * 0.32)
+    secondaryValueFont:  64,   // was 56
+    secondaryLabelFont:  28,   // was 26
+    brandFont:           44,   // was 40
+    brandSymbolSize:     60,   // was 72 (intentionally reduced — less crowded header)
     badgeFont:           20,
-    footerFont:          28,
-    gridGap:             20,
-    sectionGap:          48,
-    watermarkSize:       640,
-    watermarkBottom:     -120,
-    watermarkRight:      -120,
+    footerFont:          30,   // was 28
+    gridGap:             48,   // wider gap for 2-col layout
+    sectionGap:          56,   // was 48
+    watermarkSize:       960,  // was 640 — fills more visual space
+    watermarkBottom:     -160,
+    watermarkRight:      -160,
   },
 } as const
