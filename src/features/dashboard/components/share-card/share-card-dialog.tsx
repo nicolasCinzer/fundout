@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
+import { Download } from "lucide-react"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -12,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ShareCardPreview } from "@/features/dashboard/components/share-card/share-card-preview"
 import { useShareHandle } from "@/features/dashboard/components/share-card/hooks/use-share-handle"
 import { exportNodeToPng } from "@/features/dashboard/components/share-card/lib/export-png"
@@ -97,66 +99,79 @@ export function ShareCardDialog({
         {trigger}
       </DialogTrigger>
 
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("shareCard.dialogTitle")}</DialogTitle>
           <DialogDescription>{t("shareCard.dialogDescription")}</DialogDescription>
         </DialogHeader>
 
-        {/* Card preview — scaled to fit dialog */}
-        <div className="flex justify-center py-2">
-          <ShareCardPreview
-            kpis={shareCardKpis}
-            periodLabel={periodLabel}
-            handle={handle}
-            dimensions={dimensions}
-            kpiLabels={kpiLabels}
-            maxWidth={480}
-            cardRef={cardRef}
-          />
-        </div>
+        <div className="grid gap-6">
+          {/* Card preview — scaled to fit dialog */}
+          <div className="flex justify-center py-2">
+            <ShareCardPreview
+              kpis={shareCardKpis}
+              periodLabel={periodLabel}
+              handle={handle}
+              dimensions={dimensions}
+              kpiLabels={kpiLabels}
+              maxWidth={560}
+              cardRef={cardRef}
+            />
+          </div>
 
-        {/* Dimensions toggle */}
-        <div className="space-y-2">
-          <Label>{t("shareCard.dimensionsLabel")}</Label>
-          <div className="flex gap-2">
-            {(["x", "ig"] as const).map((dim) => (
-              <Button
-                key={dim}
-                variant={dimensions === dim ? "default" : "outline"}
-                size="sm"
-                onClick={() => setDimensions(dim)}
+          <div className="space-y-4">
+            {/* Dimensions toggle — segmented control via Tabs */}
+            <div className="space-y-2">
+              <Label>{t("shareCard.dimensionsLabel")}</Label>
+              <Tabs
+                value={dimensions}
+                onValueChange={(v) => setDimensions(v as ShareCardDimensionKey)}
               >
-                {t(`shareCard.dimensions.${dim}`)}
-              </Button>
-            ))}
+                <TabsList className="w-full">
+                  {(["x", "ig"] as const).map((dim) => (
+                    <TabsTrigger key={dim} value={dim} className="flex-1">
+                      {t(`shareCard.dimensions.${dim}`)}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* Handle input with @ prefix */}
+            <div className="space-y-2">
+              <Label htmlFor="share-handle">{t("shareCard.handleLabel")}</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  @
+                </span>
+                <Input
+                  id="share-handle"
+                  value={handle.replace(/^@/, "")}
+                  onChange={(e) => setHandle(e.target.value)}
+                  placeholder={t("shareCard.handlePlaceholder").replace(/^@/, "")}
+                  className="pl-7"
+                />
+              </div>
+            </div>
+
+            {/* iOS hint — amber toast-style box */}
+            {iosHint && (
+              <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+                {t("shareCard.iosHint")}
+              </div>
+            )}
+
+            {/* Download CTA */}
+            <Button
+              onClick={handleDownload}
+              disabled={busy}
+              className="w-full"
+            >
+              <Download className="h-4 w-4" />
+              {busy ? t("shareCard.downloadingButton") : t("shareCard.downloadButton")}
+            </Button>
           </div>
         </div>
-
-        {/* Handle input */}
-        <div className="space-y-2">
-          <Label htmlFor="share-handle">{t("shareCard.handleLabel")}</Label>
-          <Input
-            id="share-handle"
-            value={handle}
-            onChange={(e) => setHandle(e.target.value)}
-            placeholder={t("shareCard.handlePlaceholder")}
-          />
-        </div>
-
-        {/* iOS hint */}
-        {iosHint && (
-          <p className="text-sm text-muted-foreground">{t("shareCard.iosHint")}</p>
-        )}
-
-        {/* Download CTA */}
-        <Button
-          onClick={handleDownload}
-          disabled={busy}
-          className="w-full"
-        >
-          {busy ? t("shareCard.downloadingButton") : t("shareCard.downloadButton")}
-        </Button>
       </DialogContent>
     </Dialog>
   )
