@@ -10,6 +10,8 @@ export type DashboardKpis = {
   avgPayoutNet: number
   countPayouts: number
   netPnl: number
+  /** null when totalSpent === 0; otherwise netPnl / totalSpent */
+  roi: number | null
   fundingRatio: number
   payoutRatio: number
   activeFunded: number
@@ -71,6 +73,7 @@ export function computeKpis(
       ? 0
       : totalPayoutsNet / payoutsInPeriod.length
   const netPnl = totalPayoutsNet - totalSpent
+  const roi: number | null = totalSpent > 0 ? netPnl / totalSpent : null
 
   const fundedInPeriod = fundedAccounts.filter((f) =>
     isDateInRange(f.start_date, range),
@@ -104,6 +107,7 @@ export function computeKpis(
     avgPayoutNet,
     countPayouts: payoutsInPeriod.length,
     netPnl,
+    roi,
     fundingRatio,
     payoutRatio,
     activeFunded,
