@@ -99,7 +99,7 @@ export function ShareCardDialog({
         {trigger}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl overflow-hidden">
         <DialogHeader>
           <DialogTitle>{t("shareCard.dialogTitle")}</DialogTitle>
           <DialogDescription>{t("shareCard.dialogDescription")}</DialogDescription>
@@ -114,7 +114,7 @@ export function ShareCardDialog({
               handle={handle}
               dimensions={dimensions}
               kpiLabels={kpiLabels}
-              maxWidth={560}
+              maxWidth={440}
               cardRef={cardRef}
             />
           </div>
@@ -127,7 +127,7 @@ export function ShareCardDialog({
                 value={dimensions}
                 onValueChange={(v) => setDimensions(v as ShareCardDimensionKey)}
               >
-                <TabsList className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
                   {(["x", "ig"] as const).map((dim) => (
                     <TabsTrigger key={dim} value={dim} className="flex-1">
                       {t(`shareCard.dimensions.${dim}`)}
