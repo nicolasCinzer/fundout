@@ -55,6 +55,7 @@ export function ShareCardDialog({
   const kpiLabels = {
     netPnl:       t("shareCard.kpi.netPnl"),
     roi:          t("shareCard.kpi.roi"),
+    evaluations:  t("shareCard.kpi.evaluations"),
     totalSpent:   t("shareCard.kpi.totalSpent"),
     totalPayouts: t("shareCard.kpi.totalPayouts"),
     fundingRatio: t("shareCard.kpi.fundingRatio"),
@@ -85,12 +86,13 @@ export function ShareCardDialog({
   }, [cardRef, period, width, height, t])
 
   const shareCardKpis = {
-    netPnl:          kpis.netPnl,
-    totalSpent:      kpis.totalSpent,
-    totalPayoutsNet: kpis.totalPayoutsNet,
-    fundingRatio:    kpis.fundingRatio,
-    payoutRatio:     kpis.payoutRatio,
-    roi:             kpis.roi,
+    netPnl:           kpis.netPnl,
+    totalSpent:       kpis.totalSpent,
+    totalPayoutsNet:  kpis.totalPayoutsNet,
+    fundingRatio:     kpis.fundingRatio,
+    payoutRatio:      kpis.payoutRatio,
+    totalEvaluations: kpis.totalEvaluations,
+    roi:              kpis.roi,
   }
 
   return (
@@ -99,7 +101,7 @@ export function ShareCardDialog({
         {trigger}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl overflow-hidden">
+      <DialogContent className="overflow-hidden sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("shareCard.dialogTitle")}</DialogTitle>
           <DialogDescription>{t("shareCard.dialogDescription")}</DialogDescription>
@@ -114,7 +116,7 @@ export function ShareCardDialog({
               handle={handle}
               dimensions={dimensions}
               kpiLabels={kpiLabels}
-              maxWidth={440}
+              maxWidth={520}
               cardRef={cardRef}
             />
           </div>

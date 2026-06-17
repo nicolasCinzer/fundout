@@ -105,7 +105,7 @@
     "dimensionsLabel": "Format",
     "dimensions": {
       "x": "X (1200 × 630)",
-      "ig": "Instagram (1080 × 1080)"
+      "ig": "Instagram (1080 × 1350)"
     },
     "handleLabel": "Your handle (optional)",
     "handlePlaceholder": "@yourhandle",
@@ -120,6 +120,7 @@
     "kpi": {
       "netPnl": "Net P&L",
       "roi": "ROI",
+      "evaluations": "Evaluations",
       "totalSpent": "Total spent",
       "totalPayouts": "Total payouts",
       "fundingRatio": "Funding ratio",

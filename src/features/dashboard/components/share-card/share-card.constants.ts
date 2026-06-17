@@ -17,7 +17,7 @@ export const SHARE_CARD_THEME = {
 
 export const SHARE_CARD_DIMENSIONS = {
   x:  { width: 1200, height: 630,  label: "1200 × 630 (X)" },
-  ig: { width: 1080, height: 1080, label: "1080 × 1080 (IG)" },
+  ig: { width: 1080, height: 1350, label: "1080 × 1350 (IG)" },
 } as const
 
 export type ShareCardDimensionKey = keyof typeof SHARE_CARD_DIMENSIONS
@@ -52,7 +52,7 @@ export const SIZING = {
   },
   ig: {
     padding:             96,   // was 80 — more breathing room, pushes footer down
-    heroFont:            180,  // was 160 — more presence in square format
+    heroFont:            160,  // was 160 — more presence in square format
     roiFont:             52,   // for reference; inline ROI uses Math.round(heroFont * 0.32)
     secondaryValueFont:  64,   // was 56
     secondaryLabelFont:  28,   // was 26
@@ -60,8 +60,8 @@ export const SIZING = {
     brandSymbolSize:     60,   // was 72 (intentionally reduced — less crowded header)
     badgeFont:           20,
     footerFont:          30,   // was 28
-    gridGap:             48,   // wider gap for 2-col layout
-    sectionGap:          56,   // was 48
+    gridGap:             64,   // wider gap for 2-col layout
+    sectionGap:          72,   // was 48
     watermarkSize:       960,  // was 640 — fills more visual space
     watermarkBottom:     -160,
     watermarkRight:      -160,
