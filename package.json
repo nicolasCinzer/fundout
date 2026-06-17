@@ -1,0 +1,24 @@
+{
+  "name": "fundout-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "db:diff": "supabase db diff",
+    "db:status": "supabase migration list",
+    "db:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > apps/web/src/types/database.ts",
+    "migration:new": "supabase migration new"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "supabase": "^2.101.0"
+  }
+}
