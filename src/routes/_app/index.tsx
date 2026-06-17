@@ -36,9 +36,11 @@ import { useEvaluations } from "@/features/evaluations/api/evaluations-queries"
 import { useFundedAccounts } from "@/features/funded-accounts/api/funded-accounts-queries"
 import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
+import { ShareCardButton } from "@/features/dashboard/components/share-card"
 import { formatCurrency, formatPercent } from "@/lib/format"
 import { useFormatters } from "@/lib/i18n/use-formatters"
 import { format } from "date-fns"
+import type { DashboardKpis } from "@/features/dashboard/lib/compute-kpis"
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -77,6 +79,12 @@ function DashboardPage() {
       ? `${format(range.start, "MMM d, yyyy", { locale: formatters.dateLocale })} – ${format(range.end, "MMM d, yyyy", { locale: formatters.dateLocale })}`
       : ""
 
+  // Lift kpis computation to page level so ShareCardButton can live in the period row
+  const kpis =
+    ready && evaluations.data!.length > 0
+      ? computeKpis(evaluations.data!, fundedAccounts.data!, payouts.data!, range)
+      : null
+
   const handlePeriodChange = (next: Period, nextCustom?: CustomRange) => {
     const usingCustom = next === "custom"
     navigate({
@@ -105,11 +113,14 @@ function DashboardPage() {
               })}
             </span>
           </p>
-          <TimePeriodSelect
-            value={period}
-            custom={custom}
-            onChange={handlePeriodChange}
-          />
+          <div className="flex items-center gap-2">
+            <TimePeriodSelect
+              value={period}
+              custom={custom}
+              onChange={handlePeriodChange}
+            />
+            {kpis && <ShareCardButton kpis={kpis} period={period} />}
+          </div>
         </div>
 
         {!ready ? (
@@ -129,6 +140,7 @@ function DashboardPage() {
             evaluations={evaluations.data!}
             fundedAccounts={fundedAccounts.data!}
             payouts={payouts.data!}
+            kpis={kpis!}
           />
         )}
       </main>
@@ -142,6 +154,7 @@ type DashboardContentProps = {
   evaluations: NonNullable<ReturnType<typeof useEvaluations>["data"]>
   fundedAccounts: NonNullable<ReturnType<typeof useFundedAccounts>["data"]>
   payouts: NonNullable<ReturnType<typeof usePayouts>["data"]>
+  kpis: DashboardKpis
 }
 
 function DashboardContent({
@@ -150,10 +163,10 @@ function DashboardContent({
   evaluations,
   fundedAccounts,
   payouts,
+  kpis,
 }: DashboardContentProps) {
   const { t } = useTranslation("dashboard")
   const range = periodRange(period, new Date(), custom)
-  const kpis = computeKpis(evaluations, fundedAccounts, payouts, range)
   const flow = computeFlow(evaluations, payouts, range)
   const leaderboard = computeLeaderboard(
     evaluations,
