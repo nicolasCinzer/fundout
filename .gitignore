@@ -29,6 +29,9 @@ openspec/
 # Local brand authoring sandboxes (HTML mockups for social assets)
 brand/templates/
 
+# Drafted social copy (tweets, threads, posts) — local only
+brand/copy/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
