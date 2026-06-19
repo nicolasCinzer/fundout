@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "Home",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "about": "About",
+    "signIn": "Sign in",
+    "startFree": "Start free"
+  },
+  "hero": {
+    "eyebrow": "Propfirm trading analytics",
+    "headline": "It's not your trading. It's just math.",
+    "subhead": "Journal every trade. See the math behind your evaluations. Stay funded.",
+    "primaryCta": "Start free",
+    "secondaryCta": "How it works"
+  },
+  "cta": {
+    "joinFree": "Join free",
+    "learnMore": "Learn more"
+  },
+  "footer": {
+    "tagline": "Built for prop traders who want to stay funded.",
+    "rights": "All rights reserved.",
+    "columns": {
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal"
+    }
+  },
+  "newsletter": {
+    "title": "Get the weekly drop",
+    "subtitle": "One email. New analytics, propfirm rule changes, and field notes.",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Subscribe",
+    "success": "Check your inbox to confirm.",
+    "error": "Something went wrong. Try again.",
+    "botBlocked": "Request blocked. Please try again."
+  },
+  "blogMeta": {
+    "readingTime": "{minutes} min read",
+    "publishedOn": "Published {date}",
+    "by": "by {author}",
+    "backToBlog": "Back to blog",
+    "allPosts": "All posts"
+  }
+}
