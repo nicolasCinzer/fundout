@@ -4,7 +4,7 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   // Root request → Accept-Language redirect (default EN per locked decision)
   if (req.nextUrl.pathname === "/") {
     const accept = req.headers.get("accept-language") || "";
