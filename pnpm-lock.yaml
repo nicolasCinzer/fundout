@@ -23,6 +23,9 @@ importers:
       '@fontsource-variable/outfit':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fundout/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
       '@hookform/resolvers':
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.76.1(react@19.2.6))
@@ -165,6 +168,31 @@ importers:
       vitest:
         specifier: ^4
         version: 4.1.7(@types/node@24.12.4)(@vitest/ui@4.1.7)(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0))
+
+  packages/i18n-marketing: {}
+
+  packages/tokens: {}
+
+  packages/ui:
+    dependencies:
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      radix-ui:
+        specifier: ^1.4.3
+        version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.6(react@19.2.6)
+      tailwind-merge:
+        specifier: ^3.6.0
+        version: 3.6.0
 
 packages:
 
