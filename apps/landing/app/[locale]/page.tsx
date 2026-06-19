@@ -4,7 +4,6 @@ import { Link } from "@/i18n/navigation";
 
 export default function HomePage() {
   const t = useTranslations("hero");
-  const tNav = useTranslations("nav");
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
