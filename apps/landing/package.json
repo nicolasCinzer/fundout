@@ -14,8 +14,6 @@
     "@fundout/i18n-marketing": "workspace:*",
     "@fundout/tokens": "workspace:*",
     "@fundout/ui": "workspace:*",
-    "@fontsource-variable/manrope": "^5.2.8",
-    "@fontsource-variable/outfit": "^5.2.8",
     "@vercel/analytics": "^1.4.0",
     "next": "^16.2.9",
     "next-intl": "^4.0.0",

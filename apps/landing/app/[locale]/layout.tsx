@@ -4,10 +4,12 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/next";
-import "@fontsource-variable/manrope";
-import "@fontsource-variable/outfit";
+import { Manrope, Outfit } from "next/font/google";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
+
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +43,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={`${manrope.variable} ${outfit.variable}`}>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider messages={messages}>
