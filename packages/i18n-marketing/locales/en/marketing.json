@@ -43,5 +43,10 @@
     "by": "by {author}",
     "backToBlog": "Back to blog",
     "allPosts": "All posts"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "We couldn't find what you were looking for.",
+    "cta": "Go home"
   }
 }

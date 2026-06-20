@@ -43,5 +43,10 @@
     "by": "por {author}",
     "backToBlog": "Volver al blog",
     "allPosts": "Todos los artículos"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "No pudimos encontrar lo que buscabas.",
+    "cta": "Volver al inicio"
   }
 }
