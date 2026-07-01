@@ -1,0 +1,12 @@
+{
+  "name": "@fundout/i18n-marketing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./en/marketing.json": "./locales/en/marketing.json",
+    "./es/marketing.json": "./locales/es/marketing.json",
+    "./package.json": "./package.json"
+  },
+  "files": ["locales"]
+}

@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Precios",
+    "blog": "Blog",
+    "about": "Nosotros",
+    "signIn": "Iniciar sesión",
+    "startFree": "Empezar gratis"
+  },
+  "hero": {
+    "eyebrow": "Analítica para traders de propfirms",
+    "headline": "No es tu trading. Es solo matemática.",
+    "subhead": "Registrá cada operación. Entendé los números detrás de tus evaluaciones. Seguí fondeado.",
+    "primaryCta": "Empezar gratis",
+    "secondaryCta": "Cómo funciona"
+  },
+  "cta": {
+    "joinFree": "Unirse gratis",
+    "learnMore": "Saber más"
+  },
+  "footer": {
+    "tagline": "Hecho para traders de propfirms que quieren seguir fondeados.",
+    "rights": "Todos los derechos reservados.",
+    "columns": {
+      "product": "Producto",
+      "company": "Empresa",
+      "legal": "Legal"
+    }
+  },
+  "newsletter": {
+    "title": "El resumen semanal",
+    "subtitle": "Un correo. Nuevas analíticas, cambios en las reglas de propfirms y notas del campo.",
+    "emailPlaceholder": "vos@ejemplo.com",
+    "submit": "Suscribirse",
+    "success": "Revisá tu bandeja para confirmar.",
+    "error": "Algo salió mal. Intentá de nuevo.",
+    "botBlocked": "Solicitud bloqueada. Intentá de nuevo."
+  },
+  "blogMeta": {
+    "readingTime": "{minutes} min de lectura",
+    "publishedOn": "Publicado el {date}",
+    "by": "por {author}",
+    "backToBlog": "Volver al blog",
+    "allPosts": "Todos los artículos"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "No pudimos encontrar lo que buscabas.",
+    "cta": "Volver al inicio"
+  }
+}

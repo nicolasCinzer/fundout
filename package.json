@@ -4,7 +4,11 @@
   "packageManager": "pnpm@9.12.3",
   "scripts": {
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@fundout/web",
+    "dev:landing": "turbo run dev --filter=@fundout/landing",
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=@fundout/web",
+    "build:landing": "turbo run build --filter=@fundout/landing",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
