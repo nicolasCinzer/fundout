@@ -13,7 +13,7 @@ import { formatCurrency } from "@/lib/format"
 export type ShareCardKpiLabels = {
   netPnl: string
   roi: string
-  evaluations: string
+  attempts: string
   totalSpent: string
   totalPayouts: string
   fundingRatio: string
@@ -30,7 +30,7 @@ export type ShareCardProps = {
     | "totalPayoutsNet"
     | "fundingRatio"
     | "payoutRatio"
-    | "totalEvaluations"
+    | "totalAttempts"
   > & { roi: number | null }
   periodLabel: string
   handle: string
@@ -57,6 +57,51 @@ function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`
 }
 
+/**
+ * Measures rendered text width via an offscreen canvas, using the SAME font
+ * shorthand the DOM node uses. Reused canvas to avoid per-call allocation.
+ * Returns 0 when unavailable (SSR / no 2D context) so callers can fall back.
+ */
+let measureCanvas: HTMLCanvasElement | null = null
+function measureTextWidth(text: string, font: string): number {
+  if (typeof document === "undefined") return 0
+  measureCanvas ??= document.createElement("canvas")
+  const ctx = measureCanvas.getContext("2d")
+  if (!ctx) return 0
+  ctx.font = font
+  return ctx.measureText(text).width
+}
+
+/**
+ * Fixed-canvas fit: the hero PnL and the ROI badge are both nowrap + flexShrink:0,
+ * so a large PnL would push the badge past the card edge (clipped by overflow:hidden).
+ * The whole hero row (gap, badge font, badge padding) scales linearly with heroFont,
+ * so we measure the row at the base size and shrink heroFont just enough to fit.
+ */
+function fitHeroFont(params: {
+  heroText: string
+  badgeText: string
+  baseHeroFont: number
+  availableWidth: number
+}): number {
+  const { heroText, badgeText, baseHeroFont, availableWidth } = params
+  const gap = baseHeroFont * 0.16
+  const badgeFont = baseHeroFont * 0.2
+  const badgePadX = baseHeroFont * 0.14
+  const heroWidth = measureTextWidth(
+    heroText,
+    `800 ${baseHeroFont}px ${SHARE_CARD_FONT_STACK.heading}`,
+  )
+  if (heroWidth === 0) return baseHeroFont // measurement unavailable — keep base
+  const badgeWidth = measureTextWidth(
+    badgeText,
+    `600 ${badgeFont}px ${SHARE_CARD_FONT_STACK.heading}`,
+  )
+  const rowWidth = heroWidth + gap + badgeWidth + badgePadX * 2 + 4 // +4 = badge border
+  if (rowWidth <= availableWidth) return baseHeroFont
+  return Math.floor(baseHeroFont * (availableWidth / rowWidth))
+}
+
 export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
   ({ kpis, periodLabel, handle, dimensions, kpiLabels }, ref) => {
     const { width, height } = SHARE_CARD_DIMENSIONS[dimensions]
@@ -74,8 +119,16 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
         ? kpiLabels.emptyValue
         : formatSignedPercent(kpis.roi)
 
+    const heroText = formatSignedCurrency(kpis.netPnl)
+    const heroFont = fitHeroFont({
+      heroText,
+      badgeText: `${roiDisplay} ${kpiLabels.roi}`,
+      baseHeroFont: s.heroFont,
+      availableWidth: width - s.padding * 2,
+    })
+
     const secondaryMetrics = [
-      { label: kpiLabels.evaluations,  value: String(kpis.totalEvaluations) },
+      { label: kpiLabels.attempts,     value: String(kpis.totalAttempts) },
       { label: kpiLabels.totalSpent,   value: formatCurrency(kpis.totalSpent) },
       { label: kpiLabels.totalPayouts, value: formatCurrency(kpis.totalPayoutsNet) },
       { label: kpiLabels.fundingRatio, value: formatPercent(kpis.fundingRatio) },
@@ -203,13 +256,13 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
               display: "flex",
               alignItems: "flex-start",
               justifyContent: "space-between",
-              gap: Math.round(s.heroFont * 0.16),
+              gap: Math.round(heroFont * 0.16),
               marginBottom: s.sectionGap * 0.5,
             }}
           >
             <span
               style={{
-                fontSize: s.heroFont,
+                fontSize: heroFont,
                 fontFamily: SHARE_CARD_FONT_STACK.heading,
                 fontWeight: 800,
                 color: pnlColor,
@@ -225,7 +278,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             {/* ROI — top-right badge pill */}
             <span
               style={{
-                fontSize: Math.round(s.heroFont * 0.20),
+                fontSize: Math.round(heroFont * 0.20),
                 fontFamily: SHARE_CARD_FONT_STACK.heading,
                 fontWeight: 600,
                 color: SHARE_CARD_THEME.accent,
@@ -233,7 +286,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
                 letterSpacing: "-0.01em",
                 whiteSpace: "nowrap",
                 flexShrink: 0,
-                padding: `${Math.round(s.heroFont * 0.08)}px ${Math.round(s.heroFont * 0.14)}px`,
+                padding: `${Math.round(heroFont * 0.08)}px ${Math.round(heroFont * 0.14)}px`,
                 border: `2px solid ${SHARE_CARD_THEME.accent}`,
                 borderRadius: 999,
               }}

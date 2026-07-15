@@ -120,7 +120,7 @@
     "kpi": {
       "netPnl": "P&L neto",
       "roi": "ROI",
-      "evaluations": "Evaluaciones",
+      "attempts": "Intentos",
       "totalSpent": "Gasto total",
       "totalPayouts": "Pagos totales",
       "fundingRatio": "Ratio de fondeo",

@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { XIcon, InstagramIcon } from "@/features/dashboard/components/share-card/social-icons"
 import { ShareCardPreview } from "@/features/dashboard/components/share-card/share-card-preview"
 import { useShareHandle } from "@/features/dashboard/components/share-card/hooks/use-share-handle"
 import { exportNodeToPng } from "@/features/dashboard/components/share-card/lib/export-png"
@@ -55,7 +55,7 @@ export function ShareCardDialog({
   const kpiLabels = {
     netPnl:       t("shareCard.kpi.netPnl"),
     roi:          t("shareCard.kpi.roi"),
-    evaluations:  t("shareCard.kpi.evaluations"),
+    attempts:     t("shareCard.kpi.attempts"),
     totalSpent:   t("shareCard.kpi.totalSpent"),
     totalPayouts: t("shareCard.kpi.totalPayouts"),
     fundingRatio: t("shareCard.kpi.fundingRatio"),
@@ -91,7 +91,9 @@ export function ShareCardDialog({
     totalPayoutsNet:  kpis.totalPayoutsNet,
     fundingRatio:     kpis.fundingRatio,
     payoutRatio:      kpis.payoutRatio,
-    totalEvaluations: kpis.totalEvaluations,
+    // Attempts = evaluations + resets. The card's ratios divide by attempts, so
+    // the displayed count must match that denominator for the numbers to reconcile.
+    totalAttempts:    kpis.totalAttempts,
     roi:              kpis.roi,
   }
 
@@ -101,13 +103,13 @@ export function ShareCardDialog({
         {trigger}
       </DialogTrigger>
 
-      <DialogContent className="overflow-hidden sm:max-w-2xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("shareCard.dialogTitle")}</DialogTitle>
           <DialogDescription>{t("shareCard.dialogDescription")}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6">
+        <div className="grid gap-4">
           {/* Card preview — scaled to fit dialog */}
           <div className="flex justify-center py-2">
             <ShareCardPreview
@@ -117,62 +119,70 @@ export function ShareCardDialog({
               dimensions={dimensions}
               kpiLabels={kpiLabels}
               maxWidth={520}
+              maxHeight={420}
               cardRef={cardRef}
             />
           </div>
 
-          <div className="space-y-4">
-            {/* Dimensions toggle — segmented control via Tabs */}
-            <div className="space-y-2">
-              <Label>{t("shareCard.dimensionsLabel")}</Label>
-              <Tabs
-                value={dimensions}
-                onValueChange={(v) => setDimensions(v as ShareCardDimensionKey)}
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  {(["x", "ig"] as const).map((dim) => (
-                    <TabsTrigger key={dim} value={dim} className="flex-1">
-                      {t(`shareCard.dimensions.${dim}`)}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            </div>
+          {/* Compact controls toolbar — format + handle + download in one row below the preview */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Format toggle — icon-only segmented control */}
+            <Tabs
+              value={dimensions}
+              onValueChange={(v) => setDimensions(v as ShareCardDimensionKey)}
+            >
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger
+                  value="x"
+                  className="px-4"
+                  aria-label={t("shareCard.dimensions.x")}
+                  title={t("shareCard.dimensions.x")}
+                >
+                  <XIcon className="h-4 w-4" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="ig"
+                  className="px-4"
+                  aria-label={t("shareCard.dimensions.ig")}
+                  title={t("shareCard.dimensions.ig")}
+                >
+                  <InstagramIcon className="h-4 w-4" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Handle input with @ prefix */}
-            <div className="space-y-2">
-              <Label htmlFor="share-handle">{t("shareCard.handleLabel")}</Label>
-              <div className="relative">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  @
-                </span>
-                <Input
-                  id="share-handle"
-                  value={handle.replace(/^@/, "")}
-                  onChange={(e) => setHandle(e.target.value)}
-                  placeholder={t("shareCard.handlePlaceholder").replace(/^@/, "")}
-                  className="pl-7"
-                />
-              </div>
+            <div className="relative min-w-[140px] flex-1">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                @
+              </span>
+              <Input
+                id="share-handle"
+                value={handle.replace(/^@/, "")}
+                onChange={(e) => setHandle(e.target.value)}
+                placeholder={t("shareCard.handlePlaceholder").replace(/^@/, "")}
+                aria-label={t("shareCard.handleLabel")}
+                className="pl-7"
+              />
             </div>
-
-            {/* iOS hint — amber toast-style box */}
-            {iosHint && (
-              <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
-                {t("shareCard.iosHint")}
-              </div>
-            )}
 
             {/* Download CTA */}
             <Button
               onClick={handleDownload}
               disabled={busy}
-              className="w-full"
+              className="shrink-0"
             >
               <Download className="h-4 w-4" />
               {busy ? t("shareCard.downloadingButton") : t("shareCard.downloadButton")}
             </Button>
           </div>
+
+          {/* iOS hint — amber toast-style box */}
+          {iosHint && (
+            <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+              {t("shareCard.iosHint")}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
