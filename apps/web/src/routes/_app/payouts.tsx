@@ -265,7 +265,15 @@ function PayoutsPage() {
                       return (
                         <TableRow key={p.id}>
                           <TableCell className="font-medium">
-                            {p.funded_account?.evaluation?.propfirm?.name ?? "—"}
+                            <span>
+                              {p.funded_account?.evaluation?.propfirm?.name ??
+                                "—"}
+                            </span>
+                            {p.funded_account?.evaluation?.name ? (
+                              <span className="block text-xs font-normal text-muted-foreground">
+                                {p.funded_account.evaluation.name}
+                              </span>
+                            ) : null}
                           </TableCell>
                           <TableCell>{formatDate(p.paid_at)}</TableCell>
                           <TableCell className="text-right tabular-nums">

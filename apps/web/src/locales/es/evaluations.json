@@ -65,8 +65,13 @@
   },
   "stats": {
     "total": "Total",
+    "attemptsLabel": "Intentos",
     "funded": "Fondeadas",
     "failed": "Falladas",
+    "lossStreak": "Racha perdedora",
+    "longestStreak": "Máxima: {{count}}",
+    "avgStreak": "prom. {{value}}",
+    "noLosses": "Sin pérdidas aún",
     "active": "activa",
     "attempt": "intento",
     "attempts": "intentos",
@@ -81,6 +86,9 @@
     "fields": {
       "resetFee": "Comisión de reset (USD)",
       "resetDate": "Fecha del reset",
+      "newAccountId": "Nuevo ID de cuenta (opcional)",
+      "newAccountIdPlaceholder": "ej. el ID de la cuenta nueva",
+      "newAccountIdHint": "Un reset es una cuenta nueva — normalmente con otro ID. Actualizalo acá.",
       "notes": "Notas (opcional)",
       "notesPlaceholder": "¿Por qué hiciste el reset?"
     },

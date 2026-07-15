@@ -136,6 +136,7 @@ export type Database = {
           created_at: string
           fee_paid: number
           id: string
+          name: string | null
           notes: string | null
           propfirm_id: string
           purchase_date: string
@@ -149,6 +150,7 @@ export type Database = {
           created_at?: string
           fee_paid: number
           id?: string
+          name?: string | null
           notes?: string | null
           propfirm_id: string
           purchase_date: string
@@ -162,6 +164,7 @@ export type Database = {
           created_at?: string
           fee_paid?: number
           id?: string
+          name?: string | null
           notes?: string | null
           propfirm_id?: string
           purchase_date?: string

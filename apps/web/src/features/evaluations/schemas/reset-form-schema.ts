@@ -8,6 +8,7 @@ export const resetFormSchema = z.object({
     .string()
     .min(1, "Pick a date")
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
+  name: z.string().max(100, "Max 100 characters").optional().or(z.literal("")),
   notes: z.string().max(500, "Max 500 characters").optional().or(z.literal("")),
 })
 

@@ -65,8 +65,13 @@
   },
   "stats": {
     "total": "Total",
+    "attemptsLabel": "Attempts",
     "funded": "Funded",
     "failed": "Failed",
+    "lossStreak": "Loss streak",
+    "longestStreak": "Longest: {{count}}",
+    "avgStreak": "avg {{value}}",
+    "noLosses": "No losses yet",
     "active": "active",
     "attempt": "attempt",
     "attempts": "attempts",
@@ -81,6 +86,9 @@
     "fields": {
       "resetFee": "Reset fee (USD)",
       "resetDate": "Reset date",
+      "newAccountId": "New account ID (optional)",
+      "newAccountIdPlaceholder": "e.g. the new account ID",
+      "newAccountIdHint": "A reset is a fresh account — usually with a new ID. Update it here.",
       "notes": "Notes (optional)",
       "notesPlaceholder": "Why did you reset?"
     },

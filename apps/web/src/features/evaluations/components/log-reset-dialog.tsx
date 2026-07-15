@@ -16,6 +16,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,6 +36,10 @@ type LogResetDialogProps = {
   onOpenChange: (open: boolean) => void
   evaluationId: string
   propfirmName?: string | null
+  /** Current account ID, shown as a reference when inviting a new one. */
+  currentName?: string | null
+  /** When the reset is logged on a failed evaluation, revive it to in_progress. */
+  reviveFromFailed?: boolean
 }
 
 export function LogResetDialog({
@@ -42,6 +47,8 @@ export function LogResetDialog({
   onOpenChange,
   evaluationId,
   propfirmName,
+  currentName,
+  reviveFromFailed = false,
 }: LogResetDialogProps) {
   const { t } = useTranslation(["evaluations", "common"])
   const mutation = useLogEvaluationReset()
@@ -49,8 +56,9 @@ export function LogResetDialog({
   const form = useForm<ResetFormInput, undefined, ResetFormValues>({
     resolver: zodResolver(resetFormSchema),
     defaultValues: {
-      fee: 60,
+      fee: undefined,
       reset_at: format(new Date(), "yyyy-MM-dd"),
+      name: "",
       notes: "",
     },
   })
@@ -59,8 +67,9 @@ export function LogResetDialog({
   useEffect(() => {
     if (open) {
       form.reset({
-        fee: 60,
+        fee: undefined,
         reset_at: format(new Date(), "yyyy-MM-dd"),
+        name: "",
         notes: "",
       })
     }
@@ -73,6 +82,8 @@ export function LogResetDialog({
         fee: values.fee,
         reset_at: values.reset_at,
         notes: values.notes || null,
+        reviveFromFailed,
+        newName: values.name?.trim() || undefined,
       },
       {
         onSuccess: () => {
@@ -114,7 +125,7 @@ export function LogResetDialog({
                           inputMode="decimal"
                           min={0}
                           step="0.01"
-                          placeholder="60.00"
+                          placeholder="0.00"
                           autoFocus
                           {...rest}
                           value={(value as number | string | undefined) ?? ""}
@@ -139,6 +150,31 @@ export function LogResetDialog({
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("evaluations:logReset.fields.newAccountId")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={
+                        currentName ||
+                        t("evaluations:logReset.fields.newAccountIdPlaceholder")
+                      }
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t("evaluations:logReset.fields.newAccountIdHint")}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="notes"

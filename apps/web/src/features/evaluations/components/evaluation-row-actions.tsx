@@ -48,6 +48,7 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
   const deleteEvaluation = useDeleteEvaluation()
 
   const isInProgress = evaluation.status === "in_progress"
+  const isFailed = evaluation.status === "failed"
   const isPending =
     updateStatus.isPending ||
     undoMarkFailed.isPending ||
@@ -190,6 +191,23 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
           </>
         ) : (
           <>
+            {isFailed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setResetDialogOpen(true)}
+                    disabled={isPending}
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span className="sr-only">{t("actions.logReset")}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("actions.logReset")}</TooltipContent>
+              </Tooltip>
+            ) : null}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -245,6 +263,8 @@ export function EvaluationRowActions({ evaluation }: EvaluationRowActionsProps) 
         onOpenChange={setResetDialogOpen}
         evaluationId={evaluation.id}
         propfirmName={propfirmName}
+        currentName={evaluation.name}
+        reviveFromFailed={isFailed}
       />
       <MarkFundedDialog
         open={fundedDialogOpen}

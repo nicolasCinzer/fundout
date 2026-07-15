@@ -45,8 +45,8 @@ export function PayoutForm({
     resolver: zodResolver(payoutFormSchema),
     defaultValues: {
       funded_account_id: fundedAccountId,
-      amount: 1000,
-      fee_taken: 0,
+      amount: undefined,
+      fee_taken: undefined,
       paid_at: today,
       notes: "",
     },
@@ -104,7 +104,7 @@ export function PayoutForm({
                       inputMode="decimal"
                       min={0}
                       step="0.01"
-                      placeholder="1000.00"
+                      placeholder="0.00"
                       autoFocus
                       {...rest}
                       value={(value as number | string | undefined) ?? ""}

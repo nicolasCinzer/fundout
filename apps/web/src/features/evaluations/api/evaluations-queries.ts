@@ -59,6 +59,7 @@ export function resetsTotal(e: Evaluation): number {
 export type UpdateEvaluationInput = {
   id: string
   propfirm_id: string
+  name: string | null
   account_size: number
   fee_paid: number
   purchase_date: string
@@ -172,11 +173,29 @@ export function useUpdateEvaluationStatus() {
   })
 }
 
+export type LogResetInput = NewResetInput & {
+  /**
+   * When the reset is logged on a `failed` evaluation, flip it back to
+   * `in_progress`. Paying a reset means the trader is back in the game, so a
+   * `failed` + resets combination should never be a live state.
+   */
+  reviveFromFailed?: boolean
+  /**
+   * A reset yields a fresh account, usually with a new propfirm-assigned ID.
+   * When provided (non-empty), update the evaluation's name to the new ID.
+   */
+  newName?: string | null
+}
+
 export function useLogEvaluationReset() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   return useMutation({
-    mutationFn: async (input: NewResetInput) => {
+    mutationFn: async ({
+      reviveFromFailed = false,
+      newName,
+      ...input
+    }: LogResetInput) => {
       if (!user) throw new Error("Not authenticated")
       const { data, error } = await supabase
         .from("evaluation_resets")
@@ -184,6 +203,24 @@ export function useLogEvaluationReset() {
         .select()
         .single()
       if (error) throw error
+
+      // A reset can both revive a failed eval AND rename it to the new
+      // account's ID. Fold both into one evaluations update.
+      const patch: Database["public"]["Tables"]["evaluations"]["Update"] = {}
+      if (reviveFromFailed) {
+        patch.status = "in_progress"
+        patch.closed_at = null
+      }
+      if (newName != null && newName !== "") {
+        patch.name = newName
+      }
+      if (Object.keys(patch).length > 0) {
+        const { error: patchError } = await supabase
+          .from("evaluations")
+          .update(patch)
+          .eq("id", input.evaluation_id)
+        if (patchError) throw patchError
+      }
       return data
     },
     onSuccess: () => {
