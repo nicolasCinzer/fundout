@@ -48,6 +48,7 @@ import {
   type EvaluationStatus,
   type Evaluation,
 } from "@/features/evaluations/api/evaluations-queries"
+import { usePayouts } from "@/features/payouts/api/payouts-queries"
 import { EvaluationFormDialog } from "@/features/evaluations/components/evaluation-form-dialog"
 import { EvaluationRowActions } from "@/features/evaluations/components/evaluation-row-actions"
 import { EvaluationsStats } from "@/features/evaluations/components/evaluations-stats"
@@ -141,9 +142,21 @@ function EvaluationsPage() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const { data, isLoading } = useEvaluations()
+  const { data: payouts } = usePayouts()
 
   const total = data?.length ?? 0
   const hasFilters = !!search.q || !!search.status
+
+  // Evaluations that ultimately produced a withdrawal (payout → funded → eval).
+  // These are the only "wins" for the loss-streak stat.
+  const withdrewEvalIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const p of payouts ?? []) {
+      const evalId = p.funded_account?.evaluation_id
+      if (evalId) ids.add(evalId)
+    }
+    return ids
+  }, [payouts])
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -208,7 +221,10 @@ function EvaluationsPage() {
       />
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {!isLoading && data && data.length > 0 && (
-          <EvaluationsStats evaluations={data} />
+          <EvaluationsStats
+            evaluations={data}
+            withdrewEvalIds={withdrewEvalIds}
+          />
         )}
         <Card className="rounded-2xl">
           <CardHeader>
@@ -355,7 +371,12 @@ function EvaluationsPage() {
                       return (
                         <TableRow key={e.id}>
                           <TableCell className="font-medium">
-                            {e.propfirm?.name ?? "—"}
+                            <span>{e.propfirm?.name ?? "—"}</span>
+                            {e.name ? (
+                              <span className="block text-xs font-normal text-muted-foreground">
+                                {e.name}
+                              </span>
+                            ) : null}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">
                             {formatCurrency(e.account_size)}

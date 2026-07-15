@@ -5,6 +5,7 @@ const STATUSES = ["in_progress", "passed", "failed"] as const
 export const evaluationFormSchema = z
   .object({
     propfirm_id: z.string().min(1, "Select a propfirm"),
+    name: z.string().max(100, "Max 100 characters").optional().or(z.literal("")),
     account_size: z.coerce
       .number({ error: "Enter a valid amount" })
       .positive("Must be greater than 0"),
@@ -42,6 +43,7 @@ export type EvaluationFormValues = z.output<typeof evaluationFormSchema>
 
 export const evaluationEditFormSchema = z.object({
   propfirm_id: z.string().min(1, "Select a propfirm"),
+  name: z.string().max(100, "Max 100 characters").optional().or(z.literal("")),
   account_size: z.coerce
     .number({ error: "Enter a valid amount" })
     .positive("Must be greater than 0"),

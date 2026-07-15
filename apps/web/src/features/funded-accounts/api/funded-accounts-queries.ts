@@ -8,7 +8,10 @@ export type FundedAccountStatus =
 
 type PropfirmRef = Pick<Tables<"propfirms">, "id" | "name" | "slug"> | null
 type EvaluationRef =
-  | (Pick<Tables<"evaluations">, "id" | "account_size" | "propfirm_id"> & {
+  | (Pick<
+      Tables<"evaluations">,
+      "id" | "name" | "account_size" | "propfirm_id"
+    > & {
       propfirm: PropfirmRef
     })
   | null
@@ -29,7 +32,7 @@ export function useFundedAccounts() {
       const { data, error } = await supabase
         .from("funded_accounts")
         .select(
-          "*, evaluation:evaluations(id, account_size, propfirm_id, propfirm:propfirms(id, name, slug))",
+          "*, evaluation:evaluations(id, name, account_size, propfirm_id, propfirm:propfirms(id, name, slug))",
         )
         .order("start_date", { ascending: false })
       if (error) throw error

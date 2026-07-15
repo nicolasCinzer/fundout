@@ -94,8 +94,9 @@ function CreateEvaluationForm({
     resolver: zodResolver(evaluationFormSchema),
     defaultValues: {
       propfirm_id: "",
-      account_size: 100_000,
-      fee_paid: 540,
+      name: "",
+      account_size: undefined,
+      fee_paid: undefined,
       purchase_date: format(new Date(), "yyyy-MM-dd"),
       status: "in_progress",
       closed_at: "",
@@ -116,6 +117,7 @@ function CreateEvaluationForm({
     createMutation.mutate(
       {
         propfirm_id: values.propfirm_id,
+        name: values.name || null,
         account_size: values.account_size,
         fee_paid: values.fee_paid,
         purchase_date: values.purchase_date,
@@ -165,6 +167,28 @@ function CreateEvaluationForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name / Account ID (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g. the account ID your propfirm assigned"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormDescription>
+                Most propfirms assign an ID to each account — save it here to
+                trace what happens to this one.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-3">
           <FormField
             control={form.control}
@@ -174,7 +198,7 @@ function CreateEvaluationForm({
                 <FormLabel>Account size</FormLabel>
                 <Select
                   onValueChange={(v) => field.onChange(Number(v))}
-                  value={String(field.value)}
+                  value={field.value ? String(field.value) : undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -208,7 +232,7 @@ function CreateEvaluationForm({
                       inputMode="decimal"
                       min={0}
                       step="0.01"
-                      placeholder="540.00"
+                      placeholder="0.00"
                       {...rest}
                       value={(value as number | string | undefined) ?? ""}
                     />
@@ -340,6 +364,7 @@ function EditEvaluationForm({
     resolver: zodResolver(evaluationEditFormSchema),
     defaultValues: {
       propfirm_id: evaluation.propfirm_id,
+      name: evaluation.name ?? "",
       account_size: Number(evaluation.account_size),
       fee_paid: Number(evaluation.fee_paid),
       purchase_date: evaluation.purchase_date,
@@ -352,6 +377,7 @@ function EditEvaluationForm({
       {
         id: evaluation.id,
         propfirm_id: values.propfirm_id,
+        name: values.name || null,
         account_size: values.account_size,
         fee_paid: values.fee_paid,
         purchase_date: values.purchase_date,
@@ -394,6 +420,24 @@ function EditEvaluationForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name / Account ID (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g. the account ID your propfirm assigned"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-3">
           <FormField
             control={form.control}
@@ -403,7 +447,7 @@ function EditEvaluationForm({
                 <FormLabel>Account size</FormLabel>
                 <Select
                   onValueChange={(v) => field.onChange(Number(v))}
-                  value={String(field.value)}
+                  value={field.value ? String(field.value) : undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -437,7 +481,7 @@ function EditEvaluationForm({
                       inputMode="decimal"
                       min={0}
                       step="0.01"
-                      placeholder="540.00"
+                      placeholder="0.00"
                       {...rest}
                       value={(value as number | string | undefined) ?? ""}
                     />

@@ -5,7 +5,7 @@ import type { Tables, TablesInsert } from "@/types/database"
 
 type PropfirmRef = Pick<Tables<"propfirms">, "id" | "name" | "slug"> | null
 type EvaluationRef =
-  | (Pick<Tables<"evaluations">, "id" | "propfirm_id"> & {
+  | (Pick<Tables<"evaluations">, "id" | "name" | "propfirm_id"> & {
       propfirm: PropfirmRef
     })
   | null
@@ -44,7 +44,7 @@ export function usePayouts() {
       const { data, error } = await supabase
         .from("payouts")
         .select(
-          "*, funded_account:funded_accounts(id, evaluation_id, start_date, evaluation:evaluations(id, propfirm_id, propfirm:propfirms(id, name, slug)))",
+          "*, funded_account:funded_accounts(id, evaluation_id, start_date, evaluation:evaluations(id, name, propfirm_id, propfirm:propfirms(id, name, slug)))",
         )
         .order("paid_at", { ascending: false })
       if (error) throw error

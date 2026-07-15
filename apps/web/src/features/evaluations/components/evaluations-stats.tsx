@@ -5,9 +5,15 @@ import { KpiCard } from "@/features/dashboard/components/kpi-card"
 import { formatPercent } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { Evaluation } from "@/features/evaluations/api/evaluations-queries"
+import {
+  toOutcomeTimeline,
+  computeLossStreak,
+} from "@/features/evaluations/lib/loss-streak"
 
 type Props = {
   evaluations: Evaluation[]
+  /** Evaluation ids that ultimately produced a withdrawal (a payout). */
+  withdrewEvalIds: Set<string>
 }
 
 const TOP_N = 3
@@ -20,52 +26,61 @@ function topEntry(map: Map<string, number>): [string, number] | null {
   return best && best[1] > 0 ? best : null
 }
 
-export function EvaluationsStats({ evaluations }: Props) {
+export function EvaluationsStats({ evaluations, withdrewEvalIds }: Props) {
   const { t } = useTranslation("evaluations")
   const stats = useMemo(() => {
     const total = evaluations.length
+    // An "attempt" is a paid shot at getting funded: the evaluation itself
+    // plus every reset. Same definition as computeKpis / computeLeaderboard.
+    let totalAttempts = 0
     let passed = 0
-    let failed = 0
     let inProgress = 0
     const byFirm = new Map<string, number>()
     const byFirmPassed = new Map<string, number>()
-    const byFirmFailed = new Map<string, number>()
     const byFirmActive = new Map<string, number>()
 
     for (const e of evaluations) {
       const name = e.propfirm?.name ?? "Unknown"
-      byFirm.set(name, (byFirm.get(name) ?? 0) + 1)
+      const attempts = 1 + (e.resets?.length ?? 0)
+      totalAttempts += attempts
+      byFirm.set(name, (byFirm.get(name) ?? 0) + attempts)
 
       if (e.status === "passed") {
         passed++
         byFirmPassed.set(name, (byFirmPassed.get(name) ?? 0) + 1)
-      } else if (e.status === "failed") {
-        failed++
-        byFirmFailed.set(name, (byFirmFailed.get(name) ?? 0) + 1)
-      } else {
+      } else if (e.status === "in_progress") {
         inProgress++
         byFirmActive.set(name, (byFirmActive.get(name) ?? 0) + 1)
       }
     }
 
+    const lossStreak = computeLossStreak(
+      toOutcomeTimeline(evaluations, withdrewEvalIds),
+    )
     const topFirms = [...byFirm.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, TOP_N)
 
     return {
       total,
+      totalAttempts,
       passed,
-      failed,
       inProgress,
+      lossStreak,
       topFirms,
       topActive: topEntry(byFirmActive),
       topPassed: topEntry(byFirmPassed),
-      topFailed: topEntry(byFirmFailed),
     }
-  }, [evaluations])
+  }, [evaluations, withdrewEvalIds])
 
-  const passedPct = stats.total ? stats.passed / stats.total : 0
-  const failedPct = stats.total ? stats.failed / stats.total : 0
+  // Funding ratio is per attempt (evals + resets), matching the dashboard's
+  // fundingRatio in computeKpis — not per evaluation.
+  const passedPct = stats.totalAttempts ? stats.passed / stats.totalAttempts : 0
+
+  const avgStreak = stats.lossStreak.average
+  const avgStreakLabel = Number.isInteger(avgStreak)
+    ? String(avgStreak)
+    : avgStreak.toFixed(1)
 
   const hint = (entry: [string, number] | null, suffix: string) =>
     entry ? `${entry[0]} · ${entry[1]} ${suffix}` : undefined
@@ -74,8 +89,8 @@ export function EvaluationsStats({ evaluations }: Props) {
     <div className="grid items-stretch gap-3 grid-cols-2 lg:grid-cols-6">
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label={t("stats.total")}
-          value={String(stats.total)}
+          label={t("stats.attemptsLabel")}
+          value={String(stats.totalAttempts)}
           hint={
             stats.inProgress > 0
               ? hint(stats.topActive, t("stats.active"))
@@ -95,12 +110,20 @@ export function EvaluationsStats({ evaluations }: Props) {
       </div>
       <div className="lg:col-span-1 [&>*]:h-full">
         <KpiCard
-          label={t("stats.failed")}
-          value={String(stats.failed)}
-          hint={hint(stats.topFailed, t("stats.failed").toLowerCase())}
-          badge={stats.total ? formatPercent(failedPct) : undefined}
-          tone="negative"
+          label={t("stats.lossStreak")}
+          value={String(stats.lossStreak.current)}
+          hint={
+            stats.lossStreak.longest > 0
+              ? t("stats.longestStreak", { count: stats.lossStreak.longest })
+              : t("stats.noLosses")
+          }
+          badge={
+            avgStreak > 0
+              ? t("stats.avgStreak", { value: avgStreakLabel })
+              : undefined
+          }
           badgeTone="negative"
+          tone={stats.lossStreak.current > 0 ? "negative" : "default"}
         />
       </div>
       <div className="col-span-2 lg:col-span-3 [&>*]:h-full">

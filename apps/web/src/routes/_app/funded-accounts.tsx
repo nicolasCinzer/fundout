@@ -371,7 +371,12 @@ function FundedAccountsPage() {
                       return (
                         <TableRow key={fa.id}>
                           <TableCell className="font-medium">
-                            {fa.evaluation?.propfirm?.name ?? "—"}
+                            <span>{fa.evaluation?.propfirm?.name ?? "—"}</span>
+                            {fa.evaluation?.name ? (
+                              <span className="block text-xs font-normal text-muted-foreground">
+                                {fa.evaluation.name}
+                              </span>
+                            ) : null}
                           </TableCell>
                           <TableCell className="text-right tabular-nums">
                             {fa.evaluation
