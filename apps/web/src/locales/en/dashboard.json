@@ -120,7 +120,7 @@
     "kpi": {
       "netPnl": "Net P&L",
       "roi": "ROI",
-      "evaluations": "Evaluations",
+      "attempts": "Attempts",
       "totalSpent": "Total spent",
       "totalPayouts": "Total payouts",
       "fundingRatio": "Funding ratio",

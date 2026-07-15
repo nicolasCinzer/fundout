@@ -5,6 +5,8 @@ import { SHARE_CARD_DIMENSIONS } from "@/features/dashboard/components/share-car
 type ShareCardPreviewProps = ShareCardProps & {
   /** Available pixel width inside the dialog content area (e.g. 480) */
   maxWidth: number
+  /** Available pixel height — caps tall formats (IG 4:5) so the dialog fits short viewports */
+  maxHeight: number
   /** Ref forwarded to the UNSCALED ShareCard — this is what html-to-image captures */
   cardRef: RefObject<HTMLDivElement | null>
 }
@@ -16,11 +18,12 @@ type ShareCardPreviewProps = ShareCardProps & {
  */
 export function ShareCardPreview({
   maxWidth,
+  maxHeight,
   cardRef,
   ...shareCardProps
 }: ShareCardPreviewProps) {
   const { width, height } = SHARE_CARD_DIMENSIONS[shareCardProps.dimensions]
-  const scale = Math.min(1, maxWidth / width)
+  const scale = Math.min(1, maxWidth / width, maxHeight / height)
 
   return (
     <div
