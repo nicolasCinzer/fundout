@@ -177,5 +177,131 @@
     "edit": "Editar",
     "delete": "Eliminar backtest",
     "viewDetail": "Ver detalle"
+  },
+  "tracker": {
+    "rules": {
+      "title": "Reglas de cuenta",
+      "immutableNote": "Las reglas se configuran una sola vez y no se pueden modificar.",
+      "dialog": {
+        "set": "Configurar reglas de cuenta",
+        "view": "Ver reglas de cuenta",
+        "description": "Definí las reglas de drawdown y objetivo para este backtest. Una vez guardadas son permanentes."
+      },
+      "sections": {
+        "core": "Reglas base (obligatorias)",
+        "evalOptional": "Opcionales — Evaluación",
+        "fundedOptional": "Opcionales — Fondeado"
+      },
+      "fields": {
+        "dd_starting_balance": "Balance inicial (USD)",
+        "dd_amount": "Drawdown máximo (USD)",
+        "dd_type": "Tipo de drawdown",
+        "dd_type_eod": "EOD — Trailing al cierre del día",
+        "dd_type_intraday": "Intraday — Trailing en cada pico",
+        "eval_profit_target": "Objetivo de ganancia (USD)",
+        "eval_consistency_pct": "Consistencia eval % (0–1, opcional)",
+        "eval_min_profit_days": "Días mínimos de ganancia eval (opcional)",
+        "eval_min_profit_amount": "Ganancia mínima por día eval (USD, opcional)",
+        "funded_consistency_pct": "Consistencia fondeado % (0–1, opcional)",
+        "funded_min_profit_days": "Días mínimos de ganancia fondeado (opcional)",
+        "funded_min_profit_amount": "Ganancia mínima por día fondeado (USD, opcional)"
+      },
+      "submit": "Guardar reglas",
+      "saving": "Guardando…",
+      "set": "Las reglas ya están configuradas y no se pueden cambiar",
+      "saved": "Reglas de cuenta guardadas",
+      "createSection": "Reglas de cuenta (opcional) — habilita el tracking de balance",
+      "createSectionHint": "Definí las reglas de drawdown y objetivo al crear el backtest. Una vez guardadas son permanentes y no se pueden modificar.",
+      "validationError": "Revisá la sección de reglas de cuenta para corregir los errores."
+    },
+    "empty": {
+      "title": "Este backtest no tiene tracking de balance",
+      "description": "Las reglas de cuenta se definen al crear el backtest y no se pueden agregar después. Este backtest no tiene tracking configurado."
+    },
+    "phase": {
+      "eval": "Evaluación",
+      "funded": "Fondeado",
+      "switchToFunded": "Pasar a fondeado",
+      "switchToEval": "Volver a evaluación"
+    },
+    "status": {
+      "inProgress": "En curso",
+      "breached": "Perdida",
+      "passed": "Pasada",
+      "funded": "Fondeada — activa",
+      "withdrawalEligible": "Retiro habilitado"
+    },
+    "actions": {
+      "markFunded": "Marcar como fondeada",
+      "markingFunded": "Marcando como fondeada…",
+      "newEval": "Nueva evaluación"
+    },
+    "dd": {
+      "balance": "Balance de cuenta",
+      "startingBalance": "Balance inicial",
+      "threshold": "Límite de DD (MLL)",
+      "buffer": "Buffer de DD",
+      "locked": "Límite bloqueado",
+      "breached": "Drawdown superado",
+      "breachedAlert": "Cuenta perdida — se superó el límite de drawdown."
+    },
+    "eval": {
+      "target": "Objetivo de ganancia",
+      "effectiveTarget": "Objetivo efectivo",
+      "passEligible": "Apta para pasar",
+      "notPassEligible": "Todavía no apta",
+      "targetRaisedBy": "Target subió a {{target}} — tu mejor día de ${{bestDay}} supera el {{pct}}% de consistencia",
+      "profitDays": "Días de ganancia",
+      "profitDaysMet": "Días mínimos cumplidos",
+      "profitDaysNotMet": "Faltan {{remaining}} día(s) de ganancia"
+    },
+    "funded": {
+      "profitDays": "Días de ganancia",
+      "periodProfit": "Ganancia del período",
+      "consistency": "Consistencia",
+      "consistencyOk": "Consistencia OK",
+      "consistencyBlocked": "Consistencia bloqueada",
+      "withdrawalEligible": "Retiro habilitado",
+      "withdrawalBlocked": "Retiro bloqueado — las condiciones no se cumplen aún",
+      "ok": "OK",
+      "blocked": "Bloqueado",
+      "takePayout": "Tomar retiro",
+      "takingPayout": "Procesando retiro…",
+      "payoutAmountPlaceholder": "Monto del retiro"
+    },
+    "progress": {
+      "mll": "MLL",
+      "target": "OBJETIVO",
+      "balanceMarker": "Balance"
+    },
+    "day": {
+      "add": "Nuevo día de trading",
+      "remove": "Eliminar día",
+      "label": "Día {{n}}",
+      "date": "Fecha (opcional)",
+      "noTrades": "Sin operaciones — agregá una abajo",
+      "net": "Neto del día",
+      "daysTitle": "Días de trading",
+      "noDays": "Agregá un día para empezar"
+    },
+    "trade": {
+      "add": "Agregar operación",
+      "adding": "Agregando…",
+      "remove": "Eliminar",
+      "pnl": "P&L (USD, con signo)",
+      "pnlPlaceholder": "p. ej. 500 o -200",
+      "undoLast": "Deshacer último",
+      "pressEnter": "Enter para agregar"
+    },
+    "session": {
+      "reset": "Reiniciar sesión",
+      "resetConfirm": "Esto eliminará todas las operaciones de esta fase. ¿Estás seguro?"
+    },
+    "curve": {
+      "title": "Curva de balance",
+      "balance": "Balance",
+      "threshold": "Límite",
+      "empty": "Agregá operaciones para ver la curva de balance."
+    }
   }
 }
