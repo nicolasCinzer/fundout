@@ -106,6 +106,35 @@ export type AccountState = {
   funded: FundedProgress
 }
 
+/**
+ * Map a backtest DB row with complete core rules to the engine's AccountRules type.
+ * Asserts that the caller has already verified hasCompleteCore(b).
+ */
+export function toAccountRules(b: Tables<'backtests'> & {
+  dd_starting_balance: number
+  dd_amount: number
+  dd_type: string
+  eval_profit_target: number
+}): AccountRules {
+  // Supabase returns `numeric` columns as strings at runtime (the generated
+  // types say `number`, but the wire format is a string). Coerce every numeric
+  // rule to a real number, mirroring how the detail page treats bankroll_initial.
+  const num = (v: number | string | null): number | null =>
+    v === null ? null : Number(v)
+  return {
+    startingBalance: Number(b.dd_starting_balance),
+    ddAmount: Number(b.dd_amount),
+    ddType: b.dd_type as 'EOD' | 'Intraday',
+    evalProfitTarget: Number(b.eval_profit_target),
+    evalConsistencyPct: num(b.eval_consistency_pct),
+    evalMinProfitDays: num(b.eval_min_profit_days),
+    evalMinProfitAmount: num(b.eval_min_profit_amount),
+    fundedConsistencyPct: num(b.funded_consistency_pct),
+    fundedMinProfitDays: num(b.funded_min_profit_days),
+    fundedMinProfitAmount: num(b.funded_min_profit_amount),
+  }
+}
+
 /** Type guard: backtest has all four CORE rule columns set. */
 export function hasCompleteCore(
   b: Tables<'backtests'>,

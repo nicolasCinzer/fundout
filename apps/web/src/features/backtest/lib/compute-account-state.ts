@@ -190,6 +190,14 @@ export function computeAccountState(
         ;(last as { endBalance: number }).endBalance = balance
         ;(last as { endBuffer: number }).endBuffer = balance - threshold
 
+        // A withdrawal that drops the balance to/below the floor is a breach.
+        // The per-trade loop already ran for this day, so re-check here.
+        if (!breached && balance <= threshold) {
+          breached = true
+          breachedAt = { dayId: tradingDay.id, tradeId: `${tradingDay.id}-withdrawal` }
+        }
+        ;(last as { breached: boolean }).breached = breached
+
         // Reset per-period counters for the new period
         periodAnchor = balance
         periodProfitDaysCount = 0
