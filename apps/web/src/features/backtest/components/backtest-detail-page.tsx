@@ -12,6 +12,7 @@ import {
 import { computeStats } from "@/features/backtest/lib/compute-stats"
 import { groupLifecycles } from "@/features/backtest/lib/group-lifecycles"
 import { computeBankrollCurve } from "@/features/backtest/lib/compute-bankroll-curve"
+import { hasCompleteCore, toAccountRules } from "@/features/backtest/types"
 import { BacktestEventForm } from "./backtest-event-form"
 import { BacktestUndoButton } from "./backtest-undo-button"
 import { BacktestLifecycleTable } from "./backtest-lifecycle-table"
@@ -20,6 +21,8 @@ import { BacktestStatusLegend } from "./backtest-status-legend"
 import { BacktestBankrollChart } from "./backtest-bankroll-chart"
 import { EditBacktestMetaDialog } from "./edit-backtest-meta-dialog"
 import { BacktestMetaHeader } from "./backtest-meta-header"
+import { BalanceTrackerEmptyState } from "./balance-tracker-empty-state"
+import { BalanceTracker } from "./balance-tracker"
 
 type Props = {
   id: string
@@ -112,23 +115,43 @@ export function BacktestDetailPage({ id }: Props) {
 
         {/* Three-column layout */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)]">
-          {/* Left: Event form + Undo + Bankroll chart */}
+          {/* Left column:
+              - tracking ON (rules set): bankroll chart + tracker (drives events, undo inside)
+              - tracking OFF: manual Record-event form + undo (legacy flow) */}
           <div className="space-y-3">
-            <Card className="gap-3 px-4 py-3.5">
-              <p className="text-sm font-medium text-muted-foreground border-b pb-2">
-                {t("detail.recordEvent")}
-              </p>
-              <BacktestEventForm
-                backtestId={id}
-                lastEvent={lastEvent}
-                isGameOver={isGameOver}
-              />
-              <BacktestUndoButton backtestId={id} events={eventsArr} />
-            </Card>
-            <BacktestBankrollChart
-              data={bankrollCurve}
-              initialBankroll={Number(backtest.bankroll_initial)}
-            />
+            {hasCompleteCore(backtest) ? (
+              <>
+                <BacktestBankrollChart
+                  data={bankrollCurve}
+                  initialBankroll={Number(backtest.bankroll_initial)}
+                />
+                {/* Balance tracker — integrated below the bankroll evolution */}
+                <BalanceTracker
+                  backtest={backtest}
+                  rules={toAccountRules(backtest)}
+                  events={eventsArr}
+                />
+              </>
+            ) : (
+              <>
+                <Card className="gap-3 px-4 py-3.5">
+                  <p className="text-sm font-medium text-muted-foreground border-b pb-2">
+                    {t("detail.recordEvent")}
+                  </p>
+                  <BacktestEventForm
+                    backtestId={id}
+                    lastEvent={lastEvent}
+                    isGameOver={isGameOver}
+                  />
+                  <BacktestUndoButton backtestId={id} events={eventsArr} />
+                </Card>
+                <BacktestBankrollChart
+                  data={bankrollCurve}
+                  initialBankroll={Number(backtest.bankroll_initial)}
+                />
+                <BalanceTrackerEmptyState />
+              </>
+            )}
           </div>
 
           {/* Center: Lifecycle table + legend */}
@@ -148,6 +171,7 @@ export function BacktestDetailPage({ id }: Props) {
           {/* Right: Stats panel */}
           {stats && <BacktestStatsPanel stats={stats} />}
         </div>
+
       </main>
 
       <EditBacktestMetaDialog

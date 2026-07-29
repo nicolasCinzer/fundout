@@ -177,5 +177,131 @@
     "edit": "Edit",
     "delete": "Delete backtest",
     "viewDetail": "View detail"
+  },
+  "tracker": {
+    "rules": {
+      "title": "Account rules",
+      "immutableNote": "Rules are set once and cannot be changed.",
+      "dialog": {
+        "set": "Set account rules",
+        "view": "View account rules",
+        "description": "Define the drawdown and target rules for this backtest. Once saved they are permanent."
+      },
+      "sections": {
+        "core": "Core rules (required)",
+        "evalOptional": "Eval optional",
+        "fundedOptional": "Funded optional"
+      },
+      "fields": {
+        "dd_starting_balance": "Starting balance (USD)",
+        "dd_amount": "Max drawdown amount (USD)",
+        "dd_type": "Drawdown type",
+        "dd_type_eod": "EOD — Trailing at end of day",
+        "dd_type_intraday": "Intraday — Trailing on every peak",
+        "eval_profit_target": "Profit target (USD)",
+        "eval_consistency_pct": "Eval consistency % (0–1, optional)",
+        "eval_min_profit_days": "Eval min profit days (optional)",
+        "eval_min_profit_amount": "Eval min day profit (USD, optional)",
+        "funded_consistency_pct": "Funded consistency % (0–1, optional)",
+        "funded_min_profit_days": "Funded min profit days (optional)",
+        "funded_min_profit_amount": "Funded min day profit (USD, optional)"
+      },
+      "submit": "Save rules",
+      "saving": "Saving…",
+      "set": "Rules are set and cannot be changed",
+      "saved": "Account rules saved",
+      "createSection": "Account rules (optional) — enables balance tracking",
+      "createSectionHint": "Define drawdown and target rules at creation. Once saved they are permanent and cannot be changed.",
+      "validationError": "Check the account rules section for errors."
+    },
+    "empty": {
+      "title": "No balance tracking for this backtest",
+      "description": "Account rules are defined at creation and cannot be added later. This backtest has no balance tracking configured."
+    },
+    "phase": {
+      "eval": "Evaluation",
+      "funded": "Funded",
+      "switchToFunded": "Move to funded",
+      "switchToEval": "Back to eval view"
+    },
+    "status": {
+      "inProgress": "In progress",
+      "breached": "Breached",
+      "passed": "Passed",
+      "funded": "Funded — active",
+      "withdrawalEligible": "Withdrawal eligible"
+    },
+    "actions": {
+      "markFunded": "Mark funded",
+      "markingFunded": "Marking funded…",
+      "newEval": "New evaluation"
+    },
+    "dd": {
+      "balance": "Account balance",
+      "startingBalance": "Starting balance",
+      "threshold": "DD threshold (MLL)",
+      "buffer": "DD buffer",
+      "locked": "Threshold locked",
+      "breached": "Drawdown breached",
+      "breachedAlert": "Account breached — drawdown limit hit."
+    },
+    "eval": {
+      "target": "Profit target",
+      "effectiveTarget": "Effective target",
+      "passEligible": "Pass eligible",
+      "notPassEligible": "Not yet eligible",
+      "targetRaisedBy": "Target raised to {{target}} — best day ${{bestDay}} exceeds {{pct}}% consistency limit",
+      "profitDays": "Profit days",
+      "profitDaysMet": "Min profit days met",
+      "profitDaysNotMet": "Need {{remaining}} more profit day(s)"
+    },
+    "funded": {
+      "profitDays": "Profit days",
+      "periodProfit": "Period profit",
+      "consistency": "Consistency",
+      "consistencyOk": "Consistency OK",
+      "consistencyBlocked": "Consistency blocked",
+      "withdrawalEligible": "Withdrawal eligible",
+      "withdrawalBlocked": "Withdrawal blocked — gates not yet met",
+      "ok": "OK",
+      "blocked": "Blocked",
+      "takePayout": "Take payout",
+      "takingPayout": "Taking payout…",
+      "payoutAmountPlaceholder": "Payout amount"
+    },
+    "progress": {
+      "mll": "MLL",
+      "target": "TARGET",
+      "balanceMarker": "Balance"
+    },
+    "day": {
+      "add": "New trading day",
+      "remove": "Remove day",
+      "label": "Day {{n}}",
+      "date": "Date (optional)",
+      "noTrades": "No trades — add one below",
+      "net": "Day net",
+      "daysTitle": "Trading days",
+      "noDays": "Add a trading day to start"
+    },
+    "trade": {
+      "add": "Add trade",
+      "adding": "Adding…",
+      "remove": "Remove",
+      "pnl": "P&L (USD, signed)",
+      "pnlPlaceholder": "e.g. 500 or -200",
+      "undoLast": "Undo last",
+      "pressEnter": "Press Enter to add"
+    },
+    "session": {
+      "reset": "Reset session",
+      "resetConfirm": "This will clear all trades for this phase. Are you sure?"
+    },
+    "curve": {
+      "title": "Balance curve",
+      "balance": "Balance",
+      "threshold": "Threshold",
+      "empty": "Add trades to see the balance curve."
+    }
   }
 }

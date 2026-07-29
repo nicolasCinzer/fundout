@@ -3,7 +3,12 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { computeStats } from "@/features/backtest/lib/compute-stats"
 import type { Backtest, BacktestEvent, BacktestStats } from "@/features/backtest/types"
+import { hasCompleteCore } from "@/features/backtest/types"
 import type { BacktestCreateInput, BacktestEventAppendInput } from "@/features/backtest/schemas/backtest-form-schema"
+import type { AccountRulesInput } from "@/features/backtest/schemas/account-rules-schema"
+
+// Combined create payload: base fields + optional rule columns
+export type BacktestCreateWithRulesInput = BacktestCreateInput & AccountRulesInput
 
 export type BacktestWithStats = {
   backtest: Backtest
@@ -105,7 +110,7 @@ export function useBacktestEvents(id: string) {
 export function useCreateBacktest() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (input: BacktestCreateInput): Promise<Backtest> => {
+    mutationFn: async (input: BacktestCreateWithRulesInput): Promise<Backtest> => {
       const { data: { user }, error: authErr } = await supabase.auth.getUser()
       if (authErr || !user) throw new Error("No autenticado")
       const { data, error } = await supabase
@@ -114,6 +119,22 @@ export function useCreateBacktest() {
         .select()
         .single()
       if (error) throw error
+
+      // If created with a complete rule set, seed the initial "bought eval" (E)
+      // event so the first eval is a real lifecycle from the start — the
+      // tracker's Mark-funded (F) needs a preceding E to attach to.
+      if (hasCompleteCore(data)) {
+        const { error: evErr } = await supabase.from("backtest_events").insert({
+          backtest_id: data.id,
+          user_id: user.id,
+          position: 1,
+          type: "E",
+          amount: null,
+          notes: null,
+        })
+        if (evErr) throw evErr
+      }
+
       return data
     },
     onSuccess: () => {

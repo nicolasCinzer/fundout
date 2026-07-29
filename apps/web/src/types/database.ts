@@ -7,10 +7,30 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -60,7 +80,17 @@ export type Database = {
           asset: string | null
           bankroll_initial: number
           created_at: string
+          dd_amount: number | null
+          dd_starting_balance: number | null
+          dd_type: string | null
+          eval_consistency_pct: number | null
           eval_cost: number
+          eval_min_profit_amount: number | null
+          eval_min_profit_days: number | null
+          eval_profit_target: number | null
+          funded_consistency_pct: number | null
+          funded_min_profit_amount: number | null
+          funded_min_profit_days: number | null
           id: string
           name: string
           period: string | null
@@ -71,7 +101,17 @@ export type Database = {
           asset?: string | null
           bankroll_initial: number
           created_at?: string
+          dd_amount?: number | null
+          dd_starting_balance?: number | null
+          dd_type?: string | null
+          eval_consistency_pct?: number | null
           eval_cost: number
+          eval_min_profit_amount?: number | null
+          eval_min_profit_days?: number | null
+          eval_profit_target?: number | null
+          funded_consistency_pct?: number | null
+          funded_min_profit_amount?: number | null
+          funded_min_profit_days?: number | null
           id?: string
           name: string
           period?: string | null
@@ -82,7 +122,17 @@ export type Database = {
           asset?: string | null
           bankroll_initial?: number
           created_at?: string
+          dd_amount?: number | null
+          dd_starting_balance?: number | null
+          dd_type?: string | null
+          eval_consistency_pct?: number | null
           eval_cost?: number
+          eval_min_profit_amount?: number | null
+          eval_min_profit_days?: number | null
+          eval_profit_target?: number | null
+          funded_consistency_pct?: number | null
+          funded_min_profit_amount?: number | null
+          funded_min_profit_days?: number | null
           id?: string
           name?: string
           period?: string | null
@@ -456,6 +506,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       evaluation_status: ["in_progress", "passed", "failed"],
@@ -463,3 +516,4 @@ export const Constants = {
     },
   },
 } as const
+
