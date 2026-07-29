@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase"
 import { computeStats } from "@/features/backtest/lib/compute-stats"
 import type { Backtest, BacktestEvent, BacktestStats } from "@/features/backtest/types"
 import type { BacktestCreateInput, BacktestEventAppendInput } from "@/features/backtest/schemas/backtest-form-schema"
+import type { AccountRulesInput } from "@/features/backtest/schemas/account-rules-schema"
 
 export type BacktestWithStats = {
   backtest: Backtest
@@ -207,6 +208,37 @@ export function useAppendBacktestEvent(backtestId: string) {
       queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
         toast.error("Otro tab modificó este backtest, recargamos los eventos.")
       }
+    },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Account Rules mutation (backtest-balance change)
+// ---------------------------------------------------------------------------
+export function useSetAccountRules(backtestId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (patch: AccountRulesInput): Promise<Backtest> => {
+      // Immutability guard: once dd_starting_balance is set the entire rule set
+      // is immutable. Mirrors the bankroll_initial / eval_cost guard (ADR-5 / REQ-IMM-01).
+      const cached = queryClient.getQueryData<Backtest>(backtestsKeys.detail(backtestId))
+      if (cached && cached.dd_starting_balance !== null) {
+        throw new Error("Account rules are immutable once set.")
+      }
+
+      const { data, error } = await supabase
+        .from("backtests")
+        .update(patch)
+        .eq("id", backtestId)
+        .select()
+        .single()
+      if (error) throw error
+      return data
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: backtestsKeys.detail(data.id) })
+      queryClient.invalidateQueries({ queryKey: backtestsKeys.list() })
+      queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
     },
   })
 }

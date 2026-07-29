@@ -60,7 +60,17 @@ export type Database = {
           asset: string | null
           bankroll_initial: number
           created_at: string
+          dd_amount: number | null
+          dd_starting_balance: number | null
+          dd_type: string | null
+          eval_consistency_pct: number | null
           eval_cost: number
+          eval_min_profit_amount: number | null
+          eval_min_profit_days: number | null
+          eval_profit_target: number | null
+          funded_consistency_pct: number | null
+          funded_min_profit_amount: number | null
+          funded_min_profit_days: number | null
           id: string
           name: string
           period: string | null
@@ -71,7 +81,17 @@ export type Database = {
           asset?: string | null
           bankroll_initial: number
           created_at?: string
+          dd_amount?: number | null
+          dd_starting_balance?: number | null
+          dd_type?: string | null
+          eval_consistency_pct?: number | null
           eval_cost: number
+          eval_min_profit_amount?: number | null
+          eval_min_profit_days?: number | null
+          eval_profit_target?: number | null
+          funded_consistency_pct?: number | null
+          funded_min_profit_amount?: number | null
+          funded_min_profit_days?: number | null
           id?: string
           name: string
           period?: string | null
@@ -82,7 +102,17 @@ export type Database = {
           asset?: string | null
           bankroll_initial?: number
           created_at?: string
+          dd_amount?: number | null
+          dd_starting_balance?: number | null
+          dd_type?: string | null
+          eval_consistency_pct?: number | null
           eval_cost?: number
+          eval_min_profit_amount?: number | null
+          eval_min_profit_days?: number | null
+          eval_profit_target?: number | null
+          funded_consistency_pct?: number | null
+          funded_min_profit_amount?: number | null
+          funded_min_profit_days?: number | null
           id?: string
           name?: string
           period?: string | null

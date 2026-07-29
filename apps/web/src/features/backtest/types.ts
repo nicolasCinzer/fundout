@@ -1,5 +1,128 @@
 import type { Tables } from "@/types/database"
 
+// ---------------------------------------------------------------------------
+// Live balance tracker — domain types (backtest-balance change)
+// ---------------------------------------------------------------------------
+
+export type Phase = 'eval' | 'funded'
+
+/** A single trade with a signed P&L. Order within TradingDay.trades is significant. */
+export type Trade = { id: string; pnl: number }
+
+/** An ordered trading day containing ordered trades.
+ *  `withdrawal` (funded phase only): payout amount taken at end of this day.
+ *  Applying a withdrawal closes the current payout period and opens a new one. */
+export type TradingDay = { id: string; date?: string; trades: Trade[]; withdrawal?: number }
+
+/** Rule columns from the DB (camelCase mirror). All four CORE fields are required
+ *  together; optional add-ons may be null independently.
+ *  Min-profit pairs are symmetric per phase: days ⇔ amount (both or neither). */
+export type AccountRules = {
+  startingBalance: number
+  ddAmount: number
+  ddType: 'EOD' | 'Intraday'
+  evalProfitTarget: number
+  evalConsistencyPct: number | null
+  evalMinProfitDays: number | null
+  evalMinProfitAmount: number | null
+  fundedConsistencyPct: number | null
+  fundedMinProfitDays: number | null
+  fundedMinProfitAmount: number | null
+}
+
+/** Running state captured after each trade is applied. */
+export type TradeState = {
+  tradeId: string
+  balance: number
+  hwm: number
+  threshold: number
+  ddBuffer: number
+  locked: boolean
+  breached: boolean
+}
+
+/** End-of-day summary produced by the engine. */
+export type DayState = {
+  dayId: string
+  date?: string
+  trades: TradeState[]
+  endBalance: number
+  dayNet: number
+  endThreshold: number
+  endBuffer: number
+  locked: boolean
+  breached: boolean
+  /** True when dayNet >= fundedMinProfitAmount (only meaningful when that pair is set). */
+  isProfitDay: boolean
+}
+
+/** Dynamic consistency result — same math for eval and funded, different gate. */
+export type ConsistencyResult = {
+  pct: number
+  bestWinningDay: number
+  currentNetProfit: number
+  effectiveTarget: number
+  raisedByConsistency: boolean
+  /** eval: currentNetProfit >= effectiveTarget; funded: bestWinningDay/currentNetProfit <= pct */
+  satisfied: boolean
+} | null // null when the relevant pct column is unset
+
+/** Funded-phase live counters (all figures are for the CURRENT payout period). Null in eval phase. */
+export type FundedProgress = {
+  /** Current period profit = current_balance - period_anchor. */
+  periodProfit: number
+  /** Count of profit days within the current period only. */
+  profitDaysCount: number
+  minRequired: number | null
+  profitDaysMet: boolean
+  withdrawalEligible: boolean
+} | null
+
+/** Full result returned by computeAccountState. */
+export type AccountState = {
+  phase: Phase
+  days: DayState[]
+  final: {
+    balance: number
+    threshold: number
+    ddBuffer: number
+    locked: boolean
+    breached: boolean
+    breachedAt: { dayId: string; tradeId: string } | null
+  }
+  consistency: ConsistencyResult
+  /** Non-null only when phase === 'eval'. */
+  eval: {
+    effectiveTarget: number
+    passEligible: boolean
+    /** Count of eval profit days (dayNet >= evalMinProfitAmount). Undefined when gate not configured. */
+    profitDaysCount?: number
+    /** Required eval profit days. Undefined when gate not configured. */
+    minProfitDaysRequired?: number
+    /** True when gate not configured (null pair) OR count >= required. */
+    profitDaysMet: boolean
+  } | null
+  /** Non-null only when phase === 'funded'. */
+  funded: FundedProgress
+}
+
+/** Type guard: backtest has all four CORE rule columns set. */
+export function hasCompleteCore(
+  b: Tables<'backtests'>,
+): b is Tables<'backtests'> & {
+  dd_starting_balance: number
+  dd_amount: number
+  dd_type: string
+  eval_profit_target: number
+} {
+  return (
+    b.dd_starting_balance !== null &&
+    b.dd_amount !== null &&
+    b.dd_type !== null &&
+    b.eval_profit_target !== null
+  )
+}
+
 export type Backtest = Tables<"backtests">
 export type BacktestEvent = Tables<"backtest_events">
 export type BacktestEventType = "E" | "F" | "P"
