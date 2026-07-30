@@ -13,6 +13,7 @@ function makeEvent(type: "E" | "F" | "P", amount?: number): BacktestEvent {
     type,
     amount: amount ?? (type === "P" ? 100 : null),
     notes: null,
+    lifecycle_id: null,
     created_at: new Date().toISOString(),
   }
 }

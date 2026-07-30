@@ -40,6 +40,8 @@ export type Database = {
           backtest_id: string
           created_at: string
           id: string
+          // TODO: regenerate types after remote migration
+          lifecycle_id: string | null
           notes: string | null
           position: number
           type: string
@@ -50,6 +52,8 @@ export type Database = {
           backtest_id: string
           created_at?: string
           id?: string
+          // TODO: regenerate types after remote migration
+          lifecycle_id?: string | null
           notes?: string | null
           position: number
           type: string
@@ -60,6 +64,8 @@ export type Database = {
           backtest_id?: string
           created_at?: string
           id?: string
+          // TODO: regenerate types after remote migration
+          lifecycle_id?: string | null
           notes?: string | null
           position?: number
           type?: string
