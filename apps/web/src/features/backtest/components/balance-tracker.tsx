@@ -74,15 +74,22 @@ export function BalanceTracker({ backtest, rules, events }: Props) {
   const isBreached = state.final.breached
 
   async function handleMarkFunded() {
-    await appendEvent.mutateAsync({ type: "F" })
+    // F inherits the current (selected) lifecycle's id
+    const lcs = groupLifecycles(events)
+    const current = lcs.length > 0 ? lcs[lcs.length - 1] : null
+    if (!current) return
+    await appendEvent.mutateAsync({
+      input: { type: "F" },
+      lifecycleId: current.evalEvent.lifecycle_id ?? current.evalEvent.id,
+    })
     // The events will be re-fetched, deriving phase = "funded" automatically.
-    // The funded session is fresh (empty localStorage for this lifecycle + funded key).
   }
 
   async function handleNewEval() {
-    await appendEvent.mutateAsync({ type: "E" })
-    // New E opens a new lifecycle with a new evalEvent.id → new lifecycleKey.
-    // Fresh eval session automatically.
+    // E always mints a fresh uuid so the caller can pre-select the new account
+    const newLcId = crypto.randomUUID()
+    await appendEvent.mutateAsync({ input: { type: "E" }, lifecycleId: newLcId })
+    // New E opens a new lifecycle. COMMIT 9 orchestration will lift selectedLifecycleId.
   }
 
   async function handleTakePayout(amount: number) {
@@ -91,12 +98,18 @@ export function BalanceTracker({ backtest, rules, events }: Props) {
     const lastDay = sessionDays[sessionDays.length - 1]
     ops.updateDay(lastDay.id, (d) => ({ ...d, withdrawal: amount }))
 
-    // 2. Record P event in DB
-    await appendEvent.mutateAsync({ type: "P", amount })
+    // 2. Record P event inheriting the current lifecycle's id
+    const lcs = groupLifecycles(events)
+    const current = lcs.length > 0 ? lcs[lcs.length - 1] : null
+    if (!current) return
+    await appendEvent.mutateAsync({
+      input: { type: "P", amount },
+      lifecycleId: current.evalEvent.lifecycle_id ?? current.evalEvent.id,
+    })
   }
 
   return (
-    <div className="space-y-3">
+    <div className="@container space-y-3">
       {isEval && (
         <>
           <BacktestTrackerCard

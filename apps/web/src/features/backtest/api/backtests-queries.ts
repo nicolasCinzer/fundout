@@ -131,6 +131,7 @@ export function useCreateBacktest() {
           type: "E",
           amount: null,
           notes: null,
+          lifecycle_id: crypto.randomUUID(), // mint on creation
         })
         if (evErr) throw evErr
       }
@@ -188,14 +189,26 @@ export function useDeleteBacktest() {
   })
 }
 
+// ---------------------------------------------------------------------------
+// Append event payload: event input + explicit lifecycleId (ADR-5).
+// `lifecycleId` is separate from the discriminated-union schema to keep
+// the Zod schema untouched (RHF+zodResolver gotcha: transforms break resolvers).
+// For E events: caller mints crypto.randomUUID() BEFORE calling mutate so it
+// can pre-select the new account. For F/P: caller passes selected lifecycle's id.
+// ---------------------------------------------------------------------------
+export type AppendEventPayload = {
+  input: BacktestEventAppendInput
+  lifecycleId: string
+}
+
 export function useAppendBacktestEvent(backtestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (input: BacktestEventAppendInput): Promise<BacktestEvent> => {
+    mutationFn: async ({ input, lifecycleId }: AppendEventPayload): Promise<BacktestEvent> => {
       const { data: { user }, error: authErr } = await supabase.auth.getUser()
       if (authErr || !user) throw new Error("No autenticado")
 
-      // Compute next position from cached events
+      // Compute next position from cached events (positions remain globally monotonic)
       const cached = queryClient.getQueryData<BacktestEvent[]>(
         backtestsKeys.events(backtestId),
       )
@@ -211,6 +224,7 @@ export function useAppendBacktestEvent(backtestId: string) {
           type: input.type,
           amount: input.type === "P" ? input.amount : null,
           notes: input.notes ?? null,
+          lifecycle_id: lifecycleId,
         })
         .select()
         .single()
@@ -225,7 +239,7 @@ export function useAppendBacktestEvent(backtestId: string) {
       if (error.code === "23505") {
         // UNIQUE(backtest_id, position) violation — another tab modified events
         queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
-      queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
+        queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
         toast.error("Otro tab modificó este backtest, recargamos los eventos.")
       }
     },
