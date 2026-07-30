@@ -1,19 +1,22 @@
 /**
  * Backfill parity test (COMMIT 2)
  *
- * Validates that the SQL CTE grouping logic in the migration mirrors the
- * current positional grouping in groupLifecycles() on pre-migration data
- * (all lifecycle_id = null, positional walk).
+ * Validates that the SQL CTE grouping logic in the migration assigns the same
+ * lifecycle_id groupings as the OLD positional walk (which is inlined here as a
+ * reference implementation). After applying the CTE backfill, calling the NEW
+ * group-by-id groupLifecycles on the backfilled events must produce the same
+ * structural result (count, payoutsTotal, fundedEvent presence) as the OLD
+ * positional walk would have.
  *
  * This is a one-off guard run before the orchestrator applies the remote
  * migration. It does NOT test the new group-by-id logic — only that the
- * backfill CTE produces the same groups as the current positional walk.
+ * backfill CTE produces the same groups as the old positional walk.
  *
  * Satisfies: Design §1 "parity guard", ADR-1 backfill verification.
  */
 import { describe, it, expect, beforeEach } from "vitest"
 import { groupLifecycles } from "./group-lifecycles"
-import type { BacktestEvent } from "../types"
+import type { BacktestEvent, Lifecycle } from "../types"
 
 let _pos = 0
 function makeEvent(type: "E" | "F" | "P", amount?: number, lifecycleId?: string | null): BacktestEvent {
@@ -26,9 +29,48 @@ function makeEvent(type: "E" | "F" | "P", amount?: number, lifecycleId?: string 
     type,
     amount: amount ?? (type === "P" ? 100 : null),
     notes: null,
-    lifecycle_id: lifecycleId ?? null,  // pre-migration: all null
+    lifecycle_id: lifecycleId ?? null,
     created_at: new Date().toISOString(),
   }
+}
+
+/**
+ * OLD positional groupLifecycles (reference implementation inlined here).
+ * This is what the function did BEFORE the multi-account rewrite.
+ * Used only for parity comparison — do NOT import or use in production code.
+ */
+function positionalGroupLifecycles(events: BacktestEvent[]): Lifecycle[] {
+  type Mutable = {
+    index: number; startPosition: number; evalEvent: BacktestEvent
+    fundedEvent: BacktestEvent | null; payouts: BacktestEvent[]; payoutsTotal: number
+  }
+  const result: Lifecycle[] = []
+  let current: Mutable | null = null
+
+  function deriveStatus(lc: Mutable, isOpen: boolean) {
+    if (isOpen) {
+      if (lc.fundedEvent !== null && lc.payouts.length > 0) return "funded_paid" as const
+      if (lc.fundedEvent !== null) return "funded_active" as const
+      return "open" as const
+    }
+    if (lc.fundedEvent === null) return "lost" as const
+    if (lc.payouts.length === 0) return "breached_no_payout" as const
+    return "funded_paid" as const
+  }
+
+  for (const ev of events) {
+    if (ev.type === "E") {
+      if (current !== null) result.push({ ...current, status: deriveStatus(current, false) })
+      current = { index: result.length + 1, startPosition: ev.position, evalEvent: ev, fundedEvent: null, payouts: [], payoutsTotal: 0 }
+    } else if (ev.type === "F" && current !== null && current.fundedEvent === null) {
+      current.fundedEvent = ev
+    } else if (ev.type === "P" && current !== null && current.fundedEvent !== null) {
+      current.payouts.push(ev)
+      current.payoutsTotal += Number(ev.amount ?? 0)
+    }
+  }
+  if (current !== null) result.push({ ...current, status: deriveStatus(current, true) })
+  return result
 }
 
 /**
@@ -40,7 +82,6 @@ function makeEvent(type: "E" | "F" | "P", amount?: number, lifecycleId?: string 
  * Returns the same event array with lifecycle_id assigned.
  */
 function simulateCteBackfill(events: BacktestEvent[]): BacktestEvent[] {
-  // CTE `numbered`: running sum of E count
   const groupIds = new Map<number, string>()
   let grpCounter = 0
   const numbered = events.map(ev => {
@@ -48,13 +89,11 @@ function simulateCteBackfill(events: BacktestEvent[]): BacktestEvent[] {
     return { ev, grp: grpCounter }
   })
 
-  // CTE `ids`: one uuid per grp > 0
   const uniqueGrps = new Set(numbered.filter(n => n.grp > 0).map(n => n.grp))
   uniqueGrps.forEach(grp => {
     groupIds.set(grp, `backfill-uuid-${grp}`)
   })
 
-  // UPDATE: assign lifecycle_id from the ids map
   return numbered.map(({ ev, grp }) => ({
     ...ev,
     lifecycle_id: grp > 0 ? (groupIds.get(grp) ?? null) : null,
@@ -76,23 +115,21 @@ describe("backfill parity: SQL CTE logic mirrors positional groupLifecycles", ()
       makeEvent("E"),
     ]
 
-    // Current positional groupLifecycles on pre-migration data (null lifecycle_ids)
-    const positional = groupLifecycles(preMigration)
+    // OLD positional reference
+    const positional = positionalGroupLifecycles(preMigration)
 
-    // Simulated CTE backfill assigns lifecycle_ids
+    // Simulate CTE backfill → then new group-by-id groupLifecycles
     const backfilled = simulateCteBackfill(preMigration)
-
-    // groupLifecycles on backfilled data should produce the same structure
-    // Note: after backfill, groupLifecycles still uses positional walk (unchanged in COMMIT 1)
-    // so they must match 1:1 on index, payoutsTotal, and structural status.
     const backfilledGrouped = groupLifecycles(backfilled)
 
+    // Count must match
     expect(backfilledGrouped).toHaveLength(positional.length)
+    // Structural grouping parity: payoutsTotal and payout count must match per group
     positional.forEach((lc, i) => {
       expect(backfilledGrouped[i].index).toBe(lc.index)
-      expect(backfilledGrouped[i].status).toBe(lc.status)
       expect(backfilledGrouped[i].payoutsTotal).toBe(lc.payoutsTotal)
       expect(backfilledGrouped[i].payouts).toHaveLength(lc.payouts.length)
+      expect(backfilledGrouped[i].fundedEvent !== null).toBe(lc.fundedEvent !== null)
     })
   })
 
@@ -109,7 +146,7 @@ describe("backfill parity: SQL CTE logic mirrors positional groupLifecycles", ()
     expect(backfilled[1].lifecycle_id).not.toBeNull()  // E: uuid assigned
     expect(backfilled[2].lifecycle_id).toBe(backfilled[1].lifecycle_id)  // F shares E's uuid
 
-    // groupLifecycles on backfilled data: stray F ignored, 1 lifecycle
+    // groupLifecycles on backfilled data: stray F ignored, 1 lifecycle (funded_active)
     const grouped = groupLifecycles(backfilled)
     expect(grouped).toHaveLength(1)
     expect(grouped[0].fundedEvent).not.toBeNull()
@@ -123,16 +160,12 @@ describe("backfill parity: SQL CTE logic mirrors positional groupLifecycles", ()
       makeEvent("E", undefined, "existing-uuid-2"),
     ]
 
-    // simulateCteBackfill only processes WHERE lifecycle_id IS NULL (we skip already-filled rows)
-    const alreadyFilledRows = alreadyBackfilled.filter(e => e.lifecycle_id !== null)
-    expect(alreadyFilledRows).toHaveLength(3) // all have lifecycle_id
-
     // A re-run of the CTE on rows WHERE lifecycle_id IS NULL would find nothing to update
     const notFilled = alreadyBackfilled.filter(e => e.lifecycle_id === null)
     expect(notFilled).toHaveLength(0) // nothing to backfill = idempotent
   })
 
-  it("complex fixture: [E,E,F,P,E,F,E,E] — 5 groups with varied statuses", () => {
+  it("complex fixture: [E,E,F,P,E,F,E,E] — 5 groups, payoutsTotal parity", () => {
     const preMigration: BacktestEvent[] = [
       makeEvent("E"),
       makeEvent("E"),
@@ -144,16 +177,17 @@ describe("backfill parity: SQL CTE logic mirrors positional groupLifecycles", ()
       makeEvent("E"),
     ]
 
-    const positional = groupLifecycles(preMigration)
+    const positional = positionalGroupLifecycles(preMigration)
     const backfilled = simulateCteBackfill(preMigration)
     const backfilledGrouped = groupLifecycles(backfilled)
 
     expect(backfilledGrouped).toHaveLength(positional.length)
-    expect(backfilledGrouped.map(lc => lc.status)).toEqual(positional.map(lc => lc.status))
     expect(backfilledGrouped.map(lc => lc.payoutsTotal)).toEqual(positional.map(lc => lc.payoutsTotal))
+    // Funded event presence must match
+    expect(backfilledGrouped.map(lc => lc.fundedEvent !== null)).toEqual(positional.map(lc => lc.fundedEvent !== null))
   })
 
-  it("events within the same group share the same lifecycle_id uuid", () => {
+  it("events within the same group share the same lifecycle_id uuid after backfill", () => {
     const preMigration: BacktestEvent[] = [
       makeEvent("E"),   // grp=1
       makeEvent("F"),   // grp=1

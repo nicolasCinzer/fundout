@@ -5,7 +5,8 @@ import type { BacktestEvent } from "../types"
 const BASE_BACKTEST = { bankroll_initial: 1000, eval_cost: 100 }
 
 let _pos = 0
-function makeEvent(type: "E" | "F" | "P", amount?: number): BacktestEvent {
+
+function makeEvent(type: "E" | "F" | "P", lifecycleId: string | null, amount?: number): BacktestEvent {
   _pos++
   return {
     id: `ev-${_pos}`,
@@ -15,16 +16,27 @@ function makeEvent(type: "E" | "F" | "P", amount?: number): BacktestEvent {
     type,
     amount: amount ?? (type === "P" ? 100 : null),
     notes: null,
-    lifecycle_id: null,
+    lifecycle_id: lifecycleId,
     created_at: new Date().toISOString(),
   }
 }
 
+/**
+ * Build events simulating post-backfill data:
+ * each E opens a new lifecycle (lc-1, lc-2, ...); F and P inherit the preceding E's id.
+ */
 function events(...types: Array<"E" | "F" | "P" | [type: "P", amount: number]>): BacktestEvent[] {
   _pos = 0
+  let currentLcId: string | null = null
+  let lcCounter = 0 // reset per call
   return types.map((t) => {
-    if (Array.isArray(t)) return makeEvent(t[0], t[1])
-    return makeEvent(t)
+    const type = Array.isArray(t) ? t[0] : t
+    const amount = Array.isArray(t) ? t[1] : undefined
+    if (type === "E") {
+      lcCounter++
+      currentLcId = `lc-${lcCounter}`
+    }
+    return makeEvent(type, currentLcId, amount)
   })
 }
 
