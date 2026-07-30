@@ -165,16 +165,20 @@ export function BacktestDetailPage({ id }: Props) {
   // Breach detection: animate ONLY lifecycles that JUST crossed into breached.
   // prevBreachedRef remembers what was already breached so pre-existing breaches
   // don't re-animate on mount or on every unrelated recompute (payout, new eval,
-  // refetch). Seeded (no animation) on the first render.
+  // refetch). Seeded (no animation) on the first render AFTER data has loaded —
+  // seeding while events are still loading would seed an EMPTY set and then flag
+  // every already-breached account as "new" once data arrives (the refresh bug).
   const prevBreachedRef = useRef<Set<string> | null>(null)
   useEffect(() => {
+    if (isLoading) return // wait for events to load before seeding/detecting
+
     const currentBreached = enrichedLifecycles
       .filter(el => el.breached)
       .map(el => el.lifecycle.evalEvent.lifecycle_id ?? el.lifecycle.evalEvent.id)
     const currentSet = new Set(currentBreached)
 
     if (prevBreachedRef.current === null) {
-      // First render — seed without animating already-breached accounts.
+      // First loaded render — seed without animating already-breached accounts.
       prevBreachedRef.current = currentSet
       return
     }
@@ -196,7 +200,7 @@ export function BacktestDetailPage({ id }: Props) {
     }
 
     prevBreachedRef.current = currentSet
-  }, [enrichedLifecycles]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [enrichedLifecycles, isLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const appendEvent = useAppendBacktestEvent(id)
 
