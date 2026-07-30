@@ -147,11 +147,7 @@ export function BalanceTracker({
       )}
 
       {/* Undo the last lifecycle event for the SELECTED lifecycle */}
-      <BacktestUndoButton
-        backtestId={backtest.id}
-        events={events}
-        lifecycleId={selectedLifecycleId ?? ""}
-      />
+      <BacktestUndoButton backtestId={backtest.id} events={events} />
     </div>
   )
 }

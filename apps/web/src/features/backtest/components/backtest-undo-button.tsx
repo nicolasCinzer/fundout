@@ -9,19 +9,16 @@ import type { BacktestEvent } from "@/features/backtest/types"
 type Props = {
   backtestId: string
   events: BacktestEvent[]
-  /** The selected lifecycle's id — undo targets only this lifecycle's last event. */
-  lifecycleId: string
   // NOTE: isGameOver is intentionally NOT a prop here.
   // Undo MUST remain available even when game is over (Amendment 2 requirement).
 }
 
-export function BacktestUndoButton({ backtestId, events, lifecycleId }: Props) {
+export function BacktestUndoButton({ backtestId, events }: Props) {
   const { t } = useTranslation("backtest")
   const { t: tc } = useTranslation("common")
-  const undoMutation = useUndoLastBacktestEvent(backtestId, lifecycleId)
-  // Show undo as disabled if the selected lifecycle has no events
-  const lcEvents = events.filter(ev => ev.lifecycle_id === lifecycleId)
-  const last = lcEvents.length > 0 ? lcEvents.reduce((m, ev) => ev.position > m.position ? ev : m) : null
+  const undoMutation = useUndoLastBacktestEvent(backtestId)
+  // Undo targets the REAL last event across all lifecycles (highest position).
+  const last = events.length > 0 ? events.reduce((m, ev) => ev.position > m.position ? ev : m) : null
 
   const handleUndo = async () => {
     try {

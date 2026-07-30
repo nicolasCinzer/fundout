@@ -147,14 +147,20 @@ export function BacktestDetailPage({ id }: Props) {
     [enrichedLifecycles],
   )
 
-  // Initialize selectedLifecycleId to the LAST live lifecycle (most recently created live)
+  // Keep selection valid: pick the last live lifecycle when nothing is selected,
+  // OR when the selected lifecycle no longer EXISTS (e.g. undo deleted it). We
+  // check existence against ALL lifecycles (not just live) so a breached-but-
+  // still-present selection is left alone for its 3s animation before the jump.
   useEffect(() => {
-    if (selectedLifecycleId !== null) return // already set
-    const lastLive = liveLifecycles[liveLifecycles.length - 1]
-    if (lastLive) {
-      setSelectedLifecycleId(lastLive.evalEvent.lifecycle_id ?? lastLive.evalEvent.id)
+    if (selectedLifecycleId !== null) {
+      const stillExists = lifecycles.some(
+        (lc) => (lc.evalEvent.lifecycle_id ?? lc.evalEvent.id) === selectedLifecycleId,
+      )
+      if (stillExists) return
     }
-  }, [liveLifecycles, selectedLifecycleId])
+    const lastLive = liveLifecycles[liveLifecycles.length - 1]
+    setSelectedLifecycleId(lastLive ? (lastLive.evalEvent.lifecycle_id ?? lastLive.evalEvent.id) : null)
+  }, [lifecycles, liveLifecycles, selectedLifecycleId])
 
   // Breach detection: animate ONLY lifecycles that JUST crossed into breached.
   // prevBreachedRef remembers what was already breached so pre-existing breaches
@@ -318,11 +324,7 @@ export function BacktestDetailPage({ id }: Props) {
                     lastEvent={lastEvent}
                     isGameOver={isGameOver}
                   />
-                  <BacktestUndoButton
-                    backtestId={id}
-                    events={eventsArr}
-                    lifecycleId={lastEvent?.lifecycle_id ?? ""}
-                  />
+                  <BacktestUndoButton backtestId={id} events={eventsArr} />
                 </Card>
                 <BacktestBankrollChart
                   data={bankrollCurve}

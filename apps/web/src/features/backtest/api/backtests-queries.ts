@@ -231,7 +231,14 @@ export function useAppendBacktestEvent(backtestId: string) {
       if (error) throw error
       return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Optimistically append the new event so the new lifecycle exists in the
+      // cache immediately — otherwise the caller's optimistic selection points to
+      // a lifecycle not yet present and the tracker flashes/unmounts until refetch.
+      queryClient.setQueryData<BacktestEvent[]>(
+        backtestsKeys.events(backtestId),
+        (old) => (old ? [...old, data] : [data]),
+      )
       queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
       queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
     },
@@ -247,37 +254,38 @@ export function useAppendBacktestEvent(backtestId: string) {
 }
 
 /**
- * Undo the last event of the SELECTED lifecycle.
+ * Undo the REAL last event of the backtest — the one with the highest position
+ * across ALL lifecycles (the most recent action). Not scoped to a lifecycle:
+ * "Undo last event" means the last event in the log, regardless of which account
+ * it belongs to. (Supersedes the earlier lifecycle-scoped ADR-6 behavior.)
  *
- * Scoped to `lifecycleId`: filters cached events by that lifecycle_id and
- * deletes the one with the highest position. This ensures interleaved appends
- * across multiple lifecycles don't bleed into each other (ADR-6).
- *
- * No-op when no events match the lifecycle (disabled state at call site).
- *
- * Satisfies: REQ-MA-UNDO-01..04, SCENARIO MA-UNDO-1..3.
+ * Returns the deleted event id so the cache can be updated optimistically.
+ * No-op when there are no events.
  */
-export function useUndoLastBacktestEvent(backtestId: string, lifecycleId: string) {
+export function useUndoLastBacktestEvent(backtestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (): Promise<void> => {
+    mutationFn: async (): Promise<string | null> => {
       const cached = queryClient.getQueryData<BacktestEvent[]>(
         backtestsKeys.events(backtestId),
       )
-      if (!cached || cached.length === 0) return
+      if (!cached || cached.length === 0) return null
 
-      // Filter to selected lifecycle only and find its last event by position
-      const lcEvents = cached.filter(ev => ev.lifecycle_id === lifecycleId)
-      if (lcEvents.length === 0) return // no-op
-
-      const last = lcEvents.reduce((max, ev) => ev.position > max.position ? ev : max)
+      const last = cached.reduce((max, ev) => (ev.position > max.position ? ev : max))
       const { error } = await supabase
         .from("backtest_events")
         .delete()
         .eq("id", last.id)
       if (error) throw error
+      return last.id
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
+      if (deletedId) {
+        queryClient.setQueryData<BacktestEvent[]>(
+          backtestsKeys.events(backtestId),
+          (old) => old?.filter((ev) => ev.id !== deletedId) ?? old,
+        )
+      }
       queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
       queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
     },
