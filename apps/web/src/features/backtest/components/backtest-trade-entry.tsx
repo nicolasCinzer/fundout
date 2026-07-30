@@ -78,7 +78,7 @@ export function BacktestTradeEntry({ days, ops }: Props) {
 
       {/* Day squares */}
       {days.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <div className="grid grid-cols-2 gap-2 @xs:grid-cols-3 @sm:grid-cols-4 @md:grid-cols-5">
           {days.map((day, idx) => {
             const net = netOf(day)
             const pct = net > 0 && totalNet > 0 ? net / totalNet : 0
