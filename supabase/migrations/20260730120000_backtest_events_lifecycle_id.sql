@@ -36,12 +36,19 @@ WITH
     WHERE lifecycle_id IS NULL
   ),
   ids AS (
-    SELECT DISTINCT
+    -- One fresh uuid per DISTINCT (backtest_id, grp). The DISTINCT must run
+    -- in an inner query BEFORE gen_random_uuid(): the function is VOLATILE and
+    -- is evaluated per output row, so distinct-ing the group keys first is what
+    -- guarantees exactly one uuid per lifecycle group.
+    SELECT
       backtest_id,
       grp,
       gen_random_uuid() AS lid
-    FROM numbered
-    WHERE grp > 0
+    FROM (
+      SELECT DISTINCT backtest_id, grp
+      FROM numbered
+      WHERE grp > 0
+    ) g
   )
 UPDATE public.backtest_events e
 SET lifecycle_id = ids.lid
