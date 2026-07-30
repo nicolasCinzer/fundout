@@ -133,7 +133,8 @@
     "empty": {
       "title": "Sin eventos todavía",
       "description": "Empezá registrando un evento de Compra de Evaluación."
-    }
+    },
+    "newEval": "Nueva evaluación"
   },
   "detail": {
     "description": "Detalle del backtest",
