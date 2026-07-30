@@ -3,7 +3,12 @@
  * Satisfies: REQ-MA-STATUS-01..04, ADR-3, SCENARIO MA-GL-4..6
  */
 import { describe, it, expect } from "vitest"
-import { deriveLifecycleStatus, isLifecycleLive, BREACH_ANIM_MS } from "./compute-lifecycle-status"
+import {
+  deriveLifecycleStatus,
+  isLifecycleLive,
+  nextSelectionAfterBreach,
+  BREACH_ANIM_MS,
+} from "./compute-lifecycle-status"
 import type { Lifecycle } from "../types"
 
 function makeLc(
@@ -115,5 +120,29 @@ describe("isLifecycleLive", () => {
 describe("BREACH_ANIM_MS", () => {
   it("is 3000ms", () => {
     expect(BREACH_ANIM_MS).toBe(3000)
+  })
+})
+
+describe("nextSelectionAfterBreach", () => {
+  // The selection only moves when the BREACHED lifecycle was the SELECTED one.
+  it("keeps current selection when a NON-selected lifecycle breaches", () => {
+    expect(nextSelectionAfterBreach("lc-B", ["lc-A", "lc-C"], "lc-A")).toBe("lc-A")
+  })
+
+  it("jumps to the first live lifecycle when the selected one breaches", () => {
+    expect(nextSelectionAfterBreach("lc-A", ["lc-B", "lc-C"], "lc-A")).toBe("lc-B")
+  })
+
+  it("excludes the breached id even if it lingers in the live list", () => {
+    expect(nextSelectionAfterBreach("lc-A", ["lc-A", "lc-B"], "lc-A")).toBe("lc-B")
+  })
+
+  it("returns null when the selected one breaches and no live remain", () => {
+    expect(nextSelectionAfterBreach("lc-A", [], "lc-A")).toBeNull()
+    expect(nextSelectionAfterBreach("lc-A", ["lc-A"], "lc-A")).toBeNull()
+  })
+
+  it("keeps null selection untouched", () => {
+    expect(nextSelectionAfterBreach("lc-A", ["lc-B"], null)).toBeNull()
   })
 })

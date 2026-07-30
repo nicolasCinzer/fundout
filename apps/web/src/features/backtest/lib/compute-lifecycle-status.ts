@@ -51,3 +51,26 @@ export function deriveLifecycleStatus(lc: Lifecycle, breached: boolean): Lifecyc
 export function isLifecycleLive(breached: boolean): boolean {
   return !breached
 }
+
+/**
+ * Pick the selection after a lifecycle breaches.
+ *
+ * The selection only moves when the breached lifecycle WAS the selected one —
+ * a background account breaching must not steal focus. When it was selected,
+ * jump to the first still-live lifecycle (excluding the breached id), or null
+ * if none remain.
+ *
+ * This runs when the breach animation completes (after BREACH_ANIM_MS), so the
+ * user sees the chip go red before the view moves — matches the intended UX:
+ * red → 3s → chip removed + selection jumps.
+ *
+ * Satisfies: REQ-MA-BREACH-03, ADR-8.
+ */
+export function nextSelectionAfterBreach(
+  breachedId: string,
+  liveIds: string[],
+  currentSelected: string | null,
+): string | null {
+  if (currentSelected !== breachedId) return currentSelected
+  return liveIds.find((id) => id !== breachedId) ?? null
+}

@@ -16,7 +16,8 @@ import { computeBankrollCurve } from "@/features/backtest/lib/compute-bankroll-c
 import { hasCompleteCore, toAccountRules } from "@/features/backtest/types"
 import { computeAccountState } from "@/features/backtest/lib/compute-account-state"
 import { readAllLifecycleSessions } from "@/features/backtest/lib/read-all-lifecycle-sessions"
-import { deriveLifecycleStatus, isLifecycleLive, BREACH_ANIM_MS } from "@/features/backtest/lib/compute-lifecycle-status"
+import { deriveLifecycleStatus, isLifecycleLive, nextSelectionAfterBreach, BREACH_ANIM_MS } from "@/features/backtest/lib/compute-lifecycle-status"
+import type { AccountChip } from "./backtest-account-chips"
 import { BacktestEventForm } from "./backtest-event-form"
 import { BacktestUndoButton } from "./backtest-undo-button"
 import { BacktestLifecycleTable } from "./backtest-lifecycle-table"
@@ -109,6 +110,29 @@ export function BacktestDetailPage({ id }: Props) {
     return map
   }, [backtest, enrichedLifecycles, allSessions])
 
+  // Chips = live lifecycles PLUS any currently animating their breach (so the
+  // red chip shows for BREACH_ANIM_MS before it disappears). Breached-and-done
+  // lifecycles drop out entirely — they only live on in the Lifecycles table.
+  const chips = useMemo<AccountChip[]>(() => {
+    return enrichedLifecycles
+      .filter((el) => {
+        const lcId = el.lifecycle.evalEvent.lifecycle_id ?? el.lifecycle.evalEvent.id
+        return el.isLive || breachingIds.has(lcId)
+      })
+      .map((el) => {
+        const lc = el.lifecycle
+        const lcId = lc.evalEvent.lifecycle_id ?? lc.evalEvent.id
+        return {
+          id: lcId,
+          index: lc.index,
+          label: `Account ${lc.index}`,
+          profit: lifecycleProfits.get(lcId) ?? 0,
+          selected: selectedLifecycleId === lcId,
+          breaching: breachingIds.has(lcId),
+        }
+      })
+  }, [enrichedLifecycles, breachingIds, lifecycleProfits, selectedLifecycleId])
+
   // Lifecycle table shows ALL lifecycles with terminal status
   const lifecyclesWithStatus = useMemo(
     () => enrichedLifecycles.map(el => ({ ...el.lifecycle, status: el.status })) as Lifecycle[],
@@ -129,26 +153,21 @@ export function BacktestDetailPage({ id }: Props) {
     enrichedLifecycles.forEach(el => {
       const lcId = el.lifecycle.evalEvent.lifecycle_id ?? el.lifecycle.evalEvent.id
       if (el.breached && !breachingIds.has(lcId)) {
-        // Newly breached — start animation, schedule selection jump after BREACH_ANIM_MS
+        // Newly breached — start the red animation. Capture the live ids now
+        // (they already exclude the breached one) for the post-animation jump.
         setBreachingIds(prev => new Set([...prev, lcId]))
+        const liveIds = liveLifecycles.map(lc => lc.evalEvent.lifecycle_id ?? lc.evalEvent.id)
 
-        // If this was the selected lifecycle, jump selection immediately (DESIGN ADR-8 says
-        // selection jump is at breach detection, not after animation)
-        if (selectedLifecycleId === lcId) {
-          const nextLive = liveLifecycles.find(lc => {
-            const candidateId = lc.evalEvent.lifecycle_id ?? lc.evalEvent.id
-            return candidateId !== lcId
-          })
-          setSelectedLifecycleId(nextLive ? (nextLive.evalEvent.lifecycle_id ?? nextLive.evalEvent.id) : null)
-        }
-
-        // Remove from breachingIds after animation completes
+        // After the animation completes: remove the chip AND jump selection if
+        // the breached account was the selected one. Intended UX:
+        // red → BREACH_ANIM_MS → chip removed + selection jumps to first live.
         setTimeout(() => {
           setBreachingIds(prev => {
             const next = new Set(prev)
             next.delete(lcId)
             return next
           })
+          setSelectedLifecycleId(prev => nextSelectionAfterBreach(lcId, liveIds, prev))
         }, BREACH_ANIM_MS)
       }
     })
@@ -262,10 +281,9 @@ export function BacktestDetailPage({ id }: Props) {
                   rules={toAccountRules(backtest)}
                   events={eventsArr}
                   selectedLifecycleId={selectedLifecycleId}
+                  chips={chips}
                   onSelect={handleSelect}
                   onNewEval={handleNewEval}
-                  lifecycleProfits={lifecycleProfits}
-                  breachingIds={breachingIds}
                   onBreachDone={handleBreachDone}
                 />
               </>

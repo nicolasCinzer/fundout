@@ -27,14 +27,12 @@ type Props = {
   events: BacktestEvent[]
   /** The currently selected lifecycle's id (controlled from parent). */
   selectedLifecycleId: string | null
+  /** Chip descriptors (live + currently-breaching) built by the owner (detail-page). */
+  chips: AccountChip[]
   /** Called when user selects a different lifecycle chip. */
   onSelect: (lifecycleId: string) => void
   /** Called when user wants to open a new evaluation. */
   onNewEval: () => void
-  /** Chip-level: computed per-lifecycle profit for the chip display (lifecycle.id → profit). */
-  lifecycleProfits?: Map<string, number>
-  /** Ids currently in breach animation (from parent state). */
-  breachingIds?: Set<string>
   /** Called when a chip's breach animation timer completes. */
   onBreachDone?: (id: string) => void
 }
@@ -44,9 +42,8 @@ export function BalanceTracker({
   rules,
   events,
   selectedLifecycleId,
+  chips,
   onSelect,
-  lifecycleProfits,
-  breachingIds,
   onBreachDone,
 }: Props) {
   const appendEvent = useAppendBacktestEvent(backtest.id)
@@ -92,21 +89,6 @@ export function BalanceTracker({
       lifecycleId: selectedLifecycleId,
     })
   }
-
-  // Build chips for all live lifecycles (non-breached)
-  const chips = useMemo((): AccountChip[] => {
-    return lifecycles.map(lc => {
-      const lcId = lc.evalEvent.lifecycle_id ?? lc.evalEvent.id
-      return {
-        id: lcId,
-        index: lc.index,
-        label: `Account ${lc.index}`,
-        profit: lifecycleProfits?.get(lcId) ?? 0,
-        selected: selectedLifecycleId === lcId,
-        breaching: breachingIds?.has(lcId) ?? false,
-      }
-    })
-  }, [lifecycles, selectedLifecycleId, lifecycleProfits, breachingIds])
 
   if (!selectedLc) {
     // No lifecycle selected (empty state — no events yet or all breached)
