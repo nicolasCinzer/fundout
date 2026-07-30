@@ -74,3 +74,19 @@ export function nextSelectionAfterBreach(
   if (currentSelected !== breachedId) return currentSelected
   return liveIds.find((id) => id !== breachedId) ?? null
 }
+
+/**
+ * Which lifecycle ids JUST crossed into breached — i.e. are breached now but
+ * were not breached before. The breach animation must fire ONLY for these, not
+ * for already-breached accounts on mount or on every unrelated recompute
+ * (adding a payout, opening a new eval, a refetch).
+ *
+ * The caller seeds `previouslyBreached` on first render (so pre-existing
+ * breaches don't animate) and updates it every render.
+ */
+export function newlyBreachedIds(
+  previouslyBreached: Set<string>,
+  currentBreachedIds: string[],
+): string[] {
+  return currentBreachedIds.filter((id) => !previouslyBreached.has(id))
+}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AlertTriangle, Pencil, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/components/ui/card"
@@ -16,7 +16,7 @@ import { computeBankrollCurve } from "@/features/backtest/lib/compute-bankroll-c
 import { hasCompleteCore, toAccountRules } from "@/features/backtest/types"
 import { computeAccountState } from "@/features/backtest/lib/compute-account-state"
 import { readAllLifecycleSessions } from "@/features/backtest/lib/read-all-lifecycle-sessions"
-import { deriveLifecycleStatus, isLifecycleLive, nextSelectionAfterBreach, BREACH_ANIM_MS } from "@/features/backtest/lib/compute-lifecycle-status"
+import { deriveLifecycleStatus, isLifecycleLive, nextSelectionAfterBreach, newlyBreachedIds, BREACH_ANIM_MS } from "@/features/backtest/lib/compute-lifecycle-status"
 import type { AccountChip } from "./backtest-account-chips"
 import { BacktestEventForm } from "./backtest-event-form"
 import { BacktestUndoButton } from "./backtest-undo-button"
@@ -148,29 +148,40 @@ export function BacktestDetailPage({ id }: Props) {
     }
   }, [liveLifecycles, selectedLifecycleId])
 
-  // Breach detection: when a previously-live lifecycle becomes breached, animate then jump selection
+  // Breach detection: animate ONLY lifecycles that JUST crossed into breached.
+  // prevBreachedRef remembers what was already breached so pre-existing breaches
+  // don't re-animate on mount or on every unrelated recompute (payout, new eval,
+  // refetch). Seeded (no animation) on the first render.
+  const prevBreachedRef = useRef<Set<string> | null>(null)
   useEffect(() => {
-    enrichedLifecycles.forEach(el => {
-      const lcId = el.lifecycle.evalEvent.lifecycle_id ?? el.lifecycle.evalEvent.id
-      if (el.breached && !breachingIds.has(lcId)) {
-        // Newly breached — start the red animation. Capture the live ids now
-        // (they already exclude the breached one) for the post-animation jump.
-        setBreachingIds(prev => new Set([...prev, lcId]))
-        const liveIds = liveLifecycles.map(lc => lc.evalEvent.lifecycle_id ?? lc.evalEvent.id)
+    const currentBreached = enrichedLifecycles
+      .filter(el => el.breached)
+      .map(el => el.lifecycle.evalEvent.lifecycle_id ?? el.lifecycle.evalEvent.id)
+    const currentSet = new Set(currentBreached)
 
-        // After the animation completes: remove the chip AND jump selection if
-        // the breached account was the selected one. Intended UX:
-        // red → BREACH_ANIM_MS → chip removed + selection jumps to first live.
-        setTimeout(() => {
-          setBreachingIds(prev => {
-            const next = new Set(prev)
-            next.delete(lcId)
-            return next
-          })
-          setSelectedLifecycleId(prev => nextSelectionAfterBreach(lcId, liveIds, prev))
-        }, BREACH_ANIM_MS)
-      }
-    })
+    if (prevBreachedRef.current === null) {
+      // First render — seed without animating already-breached accounts.
+      prevBreachedRef.current = currentSet
+      return
+    }
+
+    const liveIds = liveLifecycles.map(lc => lc.evalEvent.lifecycle_id ?? lc.evalEvent.id)
+    for (const lcId of newlyBreachedIds(prevBreachedRef.current, currentBreached)) {
+      // Start the red animation for this account only.
+      setBreachingIds(prev => new Set([...prev, lcId]))
+      // After the animation: remove the chip AND jump selection if it was the
+      // selected one. UX: red → BREACH_ANIM_MS → chip removed + selection jumps.
+      setTimeout(() => {
+        setBreachingIds(prev => {
+          const next = new Set(prev)
+          next.delete(lcId)
+          return next
+        })
+        setSelectedLifecycleId(prev => nextSelectionAfterBreach(lcId, liveIds, prev))
+      }, BREACH_ANIM_MS)
+    }
+
+    prevBreachedRef.current = currentSet
   }, [enrichedLifecycles]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const appendEvent = useAppendBacktestEvent(id)
@@ -271,11 +282,7 @@ export function BacktestDetailPage({ id }: Props) {
           <div className="space-y-3">
             {hasCompleteCore(backtest) ? (
               <>
-                <BacktestBankrollChart
-                  data={bankrollCurve}
-                  initialBankroll={Number(backtest.bankroll_initial)}
-                />
-                {/* Balance tracker — controlled child */}
+                {/* Balance tracker first — the evals are what matters, kept on top */}
                 <BalanceTracker
                   backtest={backtest}
                   rules={toAccountRules(backtest)}
@@ -285,6 +292,10 @@ export function BacktestDetailPage({ id }: Props) {
                   onSelect={handleSelect}
                   onNewEval={handleNewEval}
                   onBreachDone={handleBreachDone}
+                />
+                <BacktestBankrollChart
+                  data={bankrollCurve}
+                  initialBankroll={Number(backtest.bankroll_initial)}
                 />
               </>
             ) : (

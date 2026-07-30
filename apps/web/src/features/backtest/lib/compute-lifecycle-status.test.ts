@@ -7,6 +7,7 @@ import {
   deriveLifecycleStatus,
   isLifecycleLive,
   nextSelectionAfterBreach,
+  newlyBreachedIds,
   BREACH_ANIM_MS,
 } from "./compute-lifecycle-status"
 import type { Lifecycle } from "../types"
@@ -144,5 +145,27 @@ describe("nextSelectionAfterBreach", () => {
 
   it("keeps null selection untouched", () => {
     expect(nextSelectionAfterBreach("lc-A", ["lc-B"], null)).toBeNull()
+  })
+})
+
+describe("newlyBreachedIds", () => {
+  // Only ids that JUST crossed into breached (not already-breached) should animate.
+  it("returns ids breached now but not previously", () => {
+    const prev = new Set(["lc-A"])
+    expect(newlyBreachedIds(prev, ["lc-A", "lc-B"])).toEqual(["lc-B"])
+  })
+
+  it("returns nothing when all currently-breached were already breached", () => {
+    const prev = new Set(["lc-A", "lc-B"])
+    expect(newlyBreachedIds(prev, ["lc-A", "lc-B"])).toEqual([])
+  })
+
+  it("returns all when previously-breached is empty EXCEPT nothing on first-seed use (caller seeds)", () => {
+    expect(newlyBreachedIds(new Set(), ["lc-A", "lc-B"])).toEqual(["lc-A", "lc-B"])
+  })
+
+  it("ignores ids that recovered (breached before, not now)", () => {
+    const prev = new Set(["lc-A"])
+    expect(newlyBreachedIds(prev, [])).toEqual([])
   })
 })
