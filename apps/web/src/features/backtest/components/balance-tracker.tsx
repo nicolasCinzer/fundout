@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { computeAccountState } from "@/features/backtest/lib/compute-account-state"
 import { useBacktestSession } from "@/features/backtest/hooks/use-backtest-session"
 import { useAppendBacktestEvent } from "@/features/backtest/api/backtests-queries"
@@ -35,6 +35,9 @@ type Props = {
   onNewEval: () => void
   /** Called when a chip's breach animation timer completes. */
   onBreachDone?: (id: string) => void
+  /** Notifies the owner that the selected account's localStorage session changed,
+   *  so it can re-read all sessions (breach detection, chip profits, table). */
+  onSessionChange?: () => void
 }
 
 export function BalanceTracker({
@@ -45,6 +48,7 @@ export function BalanceTracker({
   chips,
   onSelect,
   onBreachDone,
+  onSessionChange,
 }: Props) {
   const appendEvent = useAppendBacktestEvent(backtest.id)
 
@@ -61,6 +65,14 @@ export function BalanceTracker({
 
   const session = useBacktestSession(backtest.id, lifecycleKey, phase)
   const { days: sessionDays, ...ops } = session
+
+  // The parent derives breach/profits/table from a localStorage snapshot that is
+  // NOT reactive to trade edits. Ping it whenever the selected session changes so
+  // it re-reads. (useBacktestSession writes localStorage in an effect registered
+  // before this one, so the parent's re-read sees fresh data.)
+  useEffect(() => {
+    onSessionChange?.()
+  }, [sessionDays, onSessionChange])
 
   const state = useMemo(
     () => computeAccountState(rules, phase, sessionDays),

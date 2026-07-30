@@ -58,8 +58,16 @@ export function BacktestDetailPage({ id }: Props) {
 
   const lifecycles = useMemo(() => groupLifecycles(eventsArr), [eventsArr])
 
+  // Bumped by the tracker whenever the selected account's localStorage session
+  // changes, forcing a re-read below (localStorage isn't reactive on its own).
+  const [sessionVersion, setSessionVersion] = useState(0)
+  const handleSessionChange = useCallback(() => setSessionVersion(v => v + 1), [])
+
   // Read all lifecycle sessions and compute per-lifecycle account state
-  const allSessions = useMemo(() => readAllLifecycleSessions(id, lifecycles), [id, lifecycles])
+  const allSessions = useMemo(
+    () => readAllLifecycleSessions(id, lifecycles),
+    [id, lifecycles, sessionVersion],
+  )
 
   // Build enriched lifecycles with breach info and full status
   const enrichedLifecycles = useMemo(() => {
@@ -292,6 +300,7 @@ export function BacktestDetailPage({ id }: Props) {
                   onSelect={handleSelect}
                   onNewEval={handleNewEval}
                   onBreachDone={handleBreachDone}
+                  onSessionChange={handleSessionChange}
                 />
                 <BacktestBankrollChart
                   data={bankrollCurve}
