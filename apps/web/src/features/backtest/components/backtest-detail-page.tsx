@@ -143,7 +143,11 @@ export function BacktestDetailPage({ id }: Props) {
                     lastEvent={lastEvent}
                     isGameOver={isGameOver}
                   />
-                  <BacktestUndoButton backtestId={id} events={eventsArr} />
+                  <BacktestUndoButton
+                    backtestId={id}
+                    events={eventsArr}
+                    lifecycleId={lastEvent?.lifecycle_id ?? ""}
+                  />
                 </Card>
                 <BacktestBankrollChart
                   data={bankrollCurve}

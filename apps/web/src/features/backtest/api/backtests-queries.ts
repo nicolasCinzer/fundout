@@ -246,7 +246,18 @@ export function useAppendBacktestEvent(backtestId: string) {
   })
 }
 
-export function useUndoLastBacktestEvent(backtestId: string) {
+/**
+ * Undo the last event of the SELECTED lifecycle.
+ *
+ * Scoped to `lifecycleId`: filters cached events by that lifecycle_id and
+ * deletes the one with the highest position. This ensures interleaved appends
+ * across multiple lifecycles don't bleed into each other (ADR-6).
+ *
+ * No-op when no events match the lifecycle (disabled state at call site).
+ *
+ * Satisfies: REQ-MA-UNDO-01..04, SCENARIO MA-UNDO-1..3.
+ */
+export function useUndoLastBacktestEvent(backtestId: string, lifecycleId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (): Promise<void> => {
@@ -255,7 +266,11 @@ export function useUndoLastBacktestEvent(backtestId: string) {
       )
       if (!cached || cached.length === 0) return
 
-      const last = cached[cached.length - 1]
+      // Filter to selected lifecycle only and find its last event by position
+      const lcEvents = cached.filter(ev => ev.lifecycle_id === lifecycleId)
+      if (lcEvents.length === 0) return // no-op
+
+      const last = lcEvents.reduce((max, ev) => ev.position > max.position ? ev : max)
       const { error } = await supabase
         .from("backtest_events")
         .delete()

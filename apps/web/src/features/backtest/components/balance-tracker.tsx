@@ -139,7 +139,11 @@ export function BalanceTracker({ backtest, rules, events }: Props) {
       )}
 
       {/* Undo the last lifecycle event (Mark funded / payout / New eval) */}
-      <BacktestUndoButton backtestId={backtest.id} events={events} />
+      <BacktestUndoButton
+        backtestId={backtest.id}
+        events={events}
+        lifecycleId={lifecycleKey}
+      />
     </div>
   )
 }
