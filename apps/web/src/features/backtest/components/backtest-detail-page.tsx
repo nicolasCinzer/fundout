@@ -92,6 +92,23 @@ export function BacktestDetailPage({ id }: Props) {
     [enrichedLifecycles],
   )
 
+  // Profit per lifecycle (for chip display) — derived from enriched account state
+  const lifecycleProfits = useMemo(() => {
+    if (!backtest || !hasCompleteCore(backtest)) return new Map<string, number>()
+    const rules = toAccountRules(backtest)
+    const map = new Map<string, number>()
+    for (const el of enrichedLifecycles) {
+      const lc = el.lifecycle
+      const lcId = lc.evalEvent.lifecycle_id ?? lc.evalEvent.id
+      const session = allSessions.get(lc.evalEvent.id)
+      const phase = lc.fundedEvent ? "funded" : "eval"
+      const days = phase === "funded" ? (session?.funded ?? []) : (session?.eval ?? [])
+      const accountState = computeAccountState(rules, phase, days)
+      map.set(lcId, accountState.final.balance - rules.startingBalance)
+    }
+    return map
+  }, [backtest, enrichedLifecycles, allSessions])
+
   // Lifecycle table shows ALL lifecycles with terminal status
   const lifecyclesWithStatus = useMemo(
     () => enrichedLifecycles.map(el => ({ ...el.lifecycle, status: el.status })) as Lifecycle[],
@@ -148,6 +165,14 @@ export function BacktestDetailPage({ id }: Props) {
 
   const handleSelect = useCallback((lcId: string) => {
     setSelectedLifecycleId(lcId)
+  }, [])
+
+  const handleBreachDone = useCallback((lcId: string) => {
+    setBreachingIds(prev => {
+      const next = new Set(prev)
+      next.delete(lcId)
+      return next
+    })
   }, [])
 
   const bankrollCurve = useMemo(() => {
@@ -239,6 +264,9 @@ export function BacktestDetailPage({ id }: Props) {
                   selectedLifecycleId={selectedLifecycleId}
                   onSelect={handleSelect}
                   onNewEval={handleNewEval}
+                  lifecycleProfits={lifecycleProfits}
+                  breachingIds={breachingIds}
+                  onBreachDone={handleBreachDone}
                 />
               </>
             ) : (

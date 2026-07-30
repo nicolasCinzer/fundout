@@ -7,6 +7,8 @@ import { BacktestTrackerCard } from "./backtest-tracker-card"
 import { BacktestFundedCard } from "./backtest-funded-card"
 import { BacktestTradeEntry } from "./backtest-trade-entry"
 import { BacktestUndoButton } from "./backtest-undo-button"
+import { BacktestAccountChips } from "./backtest-account-chips"
+import type { AccountChip } from "./backtest-account-chips"
 import type { AccountRules, Backtest, BacktestEvent, Phase } from "@/features/backtest/types"
 
 // ---------------------------------------------------------------------------
@@ -29,6 +31,12 @@ type Props = {
   onSelect: (lifecycleId: string) => void
   /** Called when user wants to open a new evaluation. */
   onNewEval: () => void
+  /** Chip-level: computed per-lifecycle profit for the chip display (lifecycle.id → profit). */
+  lifecycleProfits?: Map<string, number>
+  /** Ids currently in breach animation (from parent state). */
+  breachingIds?: Set<string>
+  /** Called when a chip's breach animation timer completes. */
+  onBreachDone?: (id: string) => void
 }
 
 export function BalanceTracker({
@@ -36,6 +44,10 @@ export function BalanceTracker({
   rules,
   events,
   selectedLifecycleId,
+  onSelect,
+  lifecycleProfits,
+  breachingIds,
+  onBreachDone,
 }: Props) {
   const appendEvent = useAppendBacktestEvent(backtest.id)
 
@@ -81,6 +93,21 @@ export function BalanceTracker({
     })
   }
 
+  // Build chips for all live lifecycles (non-breached)
+  const chips = useMemo((): AccountChip[] => {
+    return lifecycles.map(lc => {
+      const lcId = lc.evalEvent.lifecycle_id ?? lc.evalEvent.id
+      return {
+        id: lcId,
+        index: lc.index,
+        label: `Account ${lc.index}`,
+        profit: lifecycleProfits?.get(lcId) ?? 0,
+        selected: selectedLifecycleId === lcId,
+        breaching: breachingIds?.has(lcId) ?? false,
+      }
+    })
+  }, [lifecycles, selectedLifecycleId, lifecycleProfits, breachingIds])
+
   if (!selectedLc) {
     // No lifecycle selected (empty state — no events yet or all breached)
     return null
@@ -88,10 +115,20 @@ export function BalanceTracker({
 
   return (
     <div className="@container space-y-3">
+      {/* Account selector chips (multi-account) */}
+      {chips.length > 1 && (
+        <BacktestAccountChips
+          chips={chips}
+          onSelect={onSelect}
+          onBreachDone={onBreachDone ?? (() => {})}
+        />
+      )}
+
       {isEval && (
         <>
           <BacktestTrackerCard
             backtestName={backtest.name}
+            accountIndex={selectedLc.index}
             rules={rules}
             state={state}
             onMarkFunded={passEligible && !currentHasFunded ? handleMarkFunded : undefined}
@@ -105,6 +142,7 @@ export function BalanceTracker({
         <>
           <BacktestFundedCard
             backtestName={backtest.name}
+            accountIndex={selectedLc.index}
             rules={rules}
             state={state}
             onTakePayout={handleTakePayout}

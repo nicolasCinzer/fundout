@@ -31,22 +31,22 @@ import type { AccountRules, AccountState } from "@/features/backtest/types"
 
 type Props = {
   backtestName: string
+  /** 1-based account index shown as "1 · Name". */
+  accountIndex: number
   rules: AccountRules
   state: AccountState
   /** Called with the payout amount when the user confirms "Take payout". */
   onTakePayout: (amount: number) => Promise<void>
   isPayoutPending?: boolean
-  /** When set (breached), show "New eval" action. */
-  onNewEval?: () => void
 }
 
 export function BacktestFundedCard({
   backtestName,
+  accountIndex,
   rules,
   state,
   onTakePayout,
   isPayoutPending,
-  onNewEval,
 }: Props) {
   const { t } = useTranslation("backtest")
   const [payoutInput, setPayoutInput] = useState("")
@@ -110,7 +110,7 @@ export function BacktestFundedCard({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium">{backtestName}</span>
+          <span className="text-sm font-medium">{accountIndex} · {backtestName}</span>
           <Badge variant="outline" className="text-[10px] px-1.5 py-0">
             {t("tracker.phase.funded")}
           </Badge>
@@ -124,7 +124,7 @@ export function BacktestFundedCard({
       </div>
 
       {/* Metrics row */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-3">
         {/* Balance */}
         <div className="space-y-0.5">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -199,12 +199,12 @@ export function BacktestFundedCard({
 
       {/* DD floor — static, never trails in funded */}
       <Separator />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 @xs:grid-cols-2">
         <div className="space-y-0.5">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
             {t("tracker.dd.threshold")}
           </p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <p className="text-sm font-semibold tabular-nums text-rose-600 dark:text-rose-400">
               {formatCurrency(ddFloor)}
             </p>
@@ -295,15 +295,6 @@ export function BacktestFundedCard({
         </>
       )}
 
-      {/* New eval action (breached) */}
-      {onNewEval && isBreached && (
-        <>
-          <Separator />
-          <Button variant="outline" size="sm" onClick={onNewEval}>
-            {t("tracker.actions.newEval")}
-          </Button>
-        </>
-      )}
     </Card>
   )
 }
