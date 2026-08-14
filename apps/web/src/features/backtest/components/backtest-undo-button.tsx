@@ -17,7 +17,8 @@ export function BacktestUndoButton({ backtestId, events }: Props) {
   const { t } = useTranslation("backtest")
   const { t: tc } = useTranslation("common")
   const undoMutation = useUndoLastBacktestEvent(backtestId)
-  const last = events.length > 0 ? events[events.length - 1] : null
+  // Undo targets the REAL last event across all lifecycles (highest position).
+  const last = events.length > 0 ? events.reduce((m, ev) => ev.position > m.position ? ev : m) : null
 
   const handleUndo = async () => {
     try {

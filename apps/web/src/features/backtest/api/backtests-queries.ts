@@ -131,6 +131,7 @@ export function useCreateBacktest() {
           type: "E",
           amount: null,
           notes: null,
+          lifecycle_id: crypto.randomUUID(), // mint on creation
         })
         if (evErr) throw evErr
       }
@@ -188,14 +189,26 @@ export function useDeleteBacktest() {
   })
 }
 
+// ---------------------------------------------------------------------------
+// Append event payload: event input + explicit lifecycleId (ADR-5).
+// `lifecycleId` is separate from the discriminated-union schema to keep
+// the Zod schema untouched (RHF+zodResolver gotcha: transforms break resolvers).
+// For E events: caller mints crypto.randomUUID() BEFORE calling mutate so it
+// can pre-select the new account. For F/P: caller passes selected lifecycle's id.
+// ---------------------------------------------------------------------------
+export type AppendEventPayload = {
+  input: BacktestEventAppendInput
+  lifecycleId: string
+}
+
 export function useAppendBacktestEvent(backtestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (input: BacktestEventAppendInput): Promise<BacktestEvent> => {
+    mutationFn: async ({ input, lifecycleId }: AppendEventPayload): Promise<BacktestEvent> => {
       const { data: { user }, error: authErr } = await supabase.auth.getUser()
       if (authErr || !user) throw new Error("No autenticado")
 
-      // Compute next position from cached events
+      // Compute next position from cached events (positions remain globally monotonic)
       const cached = queryClient.getQueryData<BacktestEvent[]>(
         backtestsKeys.events(backtestId),
       )
@@ -211,13 +224,21 @@ export function useAppendBacktestEvent(backtestId: string) {
           type: input.type,
           amount: input.type === "P" ? input.amount : null,
           notes: input.notes ?? null,
+          lifecycle_id: lifecycleId,
         })
         .select()
         .single()
       if (error) throw error
       return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Optimistically append the new event so the new lifecycle exists in the
+      // cache immediately — otherwise the caller's optimistic selection points to
+      // a lifecycle not yet present and the tracker flashes/unmounts until refetch.
+      queryClient.setQueryData<BacktestEvent[]>(
+        backtestsKeys.events(backtestId),
+        (old) => (old ? [...old, data] : [data]),
+      )
       queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
       queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
     },
@@ -225,30 +246,46 @@ export function useAppendBacktestEvent(backtestId: string) {
       if (error.code === "23505") {
         // UNIQUE(backtest_id, position) violation — another tab modified events
         queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
-      queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
+        queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
         toast.error("Otro tab modificó este backtest, recargamos los eventos.")
       }
     },
   })
 }
 
+/**
+ * Undo the REAL last event of the backtest — the one with the highest position
+ * across ALL lifecycles (the most recent action). Not scoped to a lifecycle:
+ * "Undo last event" means the last event in the log, regardless of which account
+ * it belongs to. (Supersedes the earlier lifecycle-scoped ADR-6 behavior.)
+ *
+ * Returns the deleted event id so the cache can be updated optimistically.
+ * No-op when there are no events.
+ */
 export function useUndoLastBacktestEvent(backtestId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (): Promise<void> => {
+    mutationFn: async (): Promise<string | null> => {
       const cached = queryClient.getQueryData<BacktestEvent[]>(
         backtestsKeys.events(backtestId),
       )
-      if (!cached || cached.length === 0) return
+      if (!cached || cached.length === 0) return null
 
-      const last = cached[cached.length - 1]
+      const last = cached.reduce((max, ev) => (ev.position > max.position ? ev : max))
       const { error } = await supabase
         .from("backtest_events")
         .delete()
         .eq("id", last.id)
       if (error) throw error
+      return last.id
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
+      if (deletedId) {
+        queryClient.setQueryData<BacktestEvent[]>(
+          backtestsKeys.events(backtestId),
+          (old) => old?.filter((ev) => ev.id !== deletedId) ?? old,
+        )
+      }
       queryClient.invalidateQueries({ queryKey: backtestsKeys.events(backtestId) })
       queryClient.invalidateQueries({ queryKey: backtestsKeys.listWithStats() })
     },

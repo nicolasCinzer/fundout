@@ -70,20 +70,31 @@ export function computeStats(
   const roi = bankrollInitial > 0 ? netProfit / bankrollInitial : 0
 
   // --- Worst streak (Amendment 1: lifecycle-status based) ---
+  // For stats purposes, derive "terminal" state from structural status:
+  //   - The lifecycle(s) with the MAX startPosition are treated as "current" (in-progress) → skip.
+  //   - For all prior lifecycles:
+  //       open          → was a lost evaluation (no F before next lifecycle opened)
+  //       funded_active → was funded but breached without payout
+  //       funded_paid   → success, breaks streak
   let worstStreak = 0
   let currentStreak = 0
 
+  const maxStartPosition = lifecycles.length > 0
+    ? Math.max(...lifecycles.map(lc => lc.startPosition))
+    : -1
+
   for (const lc of lifecycles) {
-    if (lc.status === "open" || lc.status === "funded_active") {
-      // Skip in-progress lifecycles — not yet resolved, neither extend nor break the streak
+    if (lc.startPosition === maxStartPosition) {
+      // Current (most recent) lifecycle — skip (not yet resolved)
       continue
     }
-    if (lc.status === "lost" || lc.status === "breached_no_payout") {
+    if (lc.status === "funded_paid") {
+      // Success — breaks the streak
+      currentStreak = 0
+    } else {
+      // open = lost for stats; funded_active = breached_no_payout for stats
       currentStreak++
       if (currentStreak > worstStreak) worstStreak = currentStreak
-    } else {
-      // funded_paid — breaks the streak
-      currentStreak = 0
     }
   }
 

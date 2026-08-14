@@ -78,7 +78,12 @@ export function BacktestEventForm({ backtestId, lastEvent, isGameOver }: Props) 
     }
 
     try {
-      await appendMutation.mutateAsync(parsed.data)
+      // Derive lifecycleId: E always mints a new uuid; F/P inherit the last event's lifecycle_id.
+      const lifecycleId =
+        selectedType === "E"
+          ? crypto.randomUUID()
+          : (lastEvent?.lifecycle_id ?? crypto.randomUUID())
+      await appendMutation.mutateAsync({ input: parsed.data, lifecycleId })
       setSelectedType(null)
       form.reset({ type: "E", amount: "", notes: "" })
     } catch (err) {

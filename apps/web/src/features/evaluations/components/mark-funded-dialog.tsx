@@ -17,6 +17,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,6 +35,7 @@ const schema = z.object({
     .string()
     .min(1, "Pick a date")
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date"),
+  name: z.string().max(100, "Max 100 characters").optional().or(z.literal("")),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -56,11 +58,11 @@ export function MarkFundedDialog({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { funded_at: today },
+    defaultValues: { funded_at: today, name: "" },
   })
 
   useEffect(() => {
-    if (open) form.reset({ funded_at: today })
+    if (open) form.reset({ funded_at: today, name: "" })
   }, [open, form, today])
 
   const onSubmit = (values: FormValues) => {
@@ -74,8 +76,9 @@ export function MarkFundedDialog({
       form.setError("funded_at", { message: t("evaluations:markFunded.errors.dateInFuture") })
       return
     }
+    const newName = values.name?.trim() || undefined
     markFunded.mutate(
-      { evaluationId: evaluation.id, fundedAt: values.funded_at },
+      { evaluationId: evaluation.id, fundedAt: values.funded_at, newName },
       {
         onSuccess: (fundedAccount) => {
           onOpenChange(false)
@@ -88,6 +91,7 @@ export function MarkFundedDialog({
                   {
                     evaluationId: evaluation.id,
                     fundedAccountId: fundedAccount.id,
+                    previousName: newName ? evaluation.name : undefined,
                   },
                   {
                     onSuccess: () => toast.success(t("evaluations:markFunded.toasts.undone"), { duration: 3000 }),
@@ -133,6 +137,31 @@ export function MarkFundedDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("evaluations:markFunded.fields.newAccountId")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={
+                        evaluation.name ||
+                        t("evaluations:markFunded.fields.newAccountIdPlaceholder")
+                      }
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t("evaluations:markFunded.fields.newAccountIdHint")}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

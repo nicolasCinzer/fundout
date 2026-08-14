@@ -28,11 +28,41 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    let cancelled = false
+
     // Initial session read. Supabase's createClient already parsed the URL hash
     // (detectSessionInUrl is on by default), so any magic-link token is already
     // in localStorage by the time we ask.
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (cancelled) return
+      if (data.session) {
+        setSession(data.session)
+        setIsLoading(false)
+        return
+      }
+
+      // Dev-only convenience: seed a session from a password so localhost
+      // reloads don't demand a fresh magic link every time. This block is
+      // stripped from production builds (import.meta.env.DEV is false there)
+      // and stays inert unless .env.local defines the two vars — so it never
+      // reaches app.fundout.app. See .env.local.example.
+      if (import.meta.env.DEV) {
+        const email = import.meta.env.VITE_DEV_AUTOLOGIN_EMAIL
+        const password = import.meta.env.VITE_DEV_AUTOLOGIN_PASSWORD
+        if (email && password) {
+          const { data: dev } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          })
+          if (!cancelled && dev.session) {
+            setSession(dev.session)
+            setIsLoading(false)
+            return
+          }
+        }
+      }
+
+      setSession(null)
       setIsLoading(false)
     })
 
@@ -44,6 +74,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     })
 
     return () => {
+      cancelled = true
       subscription.unsubscribe()
     }
   }, [])

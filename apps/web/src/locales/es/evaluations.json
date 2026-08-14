@@ -105,7 +105,10 @@
     "title": "Marcar como fondeada",
     "description": "¿Cuándo se fondeó esta evaluación? Esto define el inicio de la ventana de retiros.",
     "fields": {
-      "fundedOn": "Fondeada el"
+      "fundedOn": "Fondeada el",
+      "newAccountId": "Nuevo ID de cuenta (opcional)",
+      "newAccountIdPlaceholder": "ej. el ID de la cuenta fondeada",
+      "newAccountIdHint": "Al fondearte es una cuenta nueva — algunas firmas asignan un ID nuevo. Actualizalo acá."
     },
     "submit": {
       "save": "Marcar como fondeada",

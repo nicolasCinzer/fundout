@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { computeAccountState } from "@/features/backtest/lib/compute-account-state"
 import { useBacktestSession } from "@/features/backtest/hooks/use-backtest-session"
 import { useAppendBacktestEvent } from "@/features/backtest/api/backtests-queries"
@@ -7,104 +7,125 @@ import { BacktestTrackerCard } from "./backtest-tracker-card"
 import { BacktestFundedCard } from "./backtest-funded-card"
 import { BacktestTradeEntry } from "./backtest-trade-entry"
 import { BacktestUndoButton } from "./backtest-undo-button"
+import { BacktestAccountChips } from "./backtest-account-chips"
+import type { AccountChip } from "./backtest-account-chips"
 import type { AccountRules, Backtest, BacktestEvent, Phase } from "@/features/backtest/types"
 
 // ---------------------------------------------------------------------------
-// BalanceTracker
+// BalanceTracker — CONTROLLED child (multi-account refactor, ADR-7)
 //
-// Orchestrator: derives phase from events (Option A — tracker-driven),
-// keys sessions per lifecycle attempt + phase, and surfaces lifecycle
-// transition actions (Mark funded, New eval) and payout action.
+// Receives selectedLifecycleId from backtest-detail-page (the owner).
+// Renders the balance card, trade entry, and undo button for the SELECTED
+// lifecycle only.
 //
-// Phase = funded if the CURRENT open lifecycle has an F event, else eval.
-// lifecycleKey = the current lifecycle's eval event id (stable per attempt).
-//
-// Satisfies: C2b-2, REQ-TRANS-01..06, decision #204 (tracker-driven transitions).
+// No longer derives "the last lifecycle" — all state is passed in as props.
 // ---------------------------------------------------------------------------
 
 type Props = {
   backtest: Backtest
   rules: AccountRules
   events: BacktestEvent[]
+  /** The currently selected lifecycle's id (controlled from parent). */
+  selectedLifecycleId: string | null
+  /** Chip descriptors (live + currently-breaching) built by the owner (detail-page). */
+  chips: AccountChip[]
+  /** Called when user selects a different lifecycle chip. */
+  onSelect: (lifecycleId: string) => void
+  /** Called when user wants to open a new evaluation. */
+  onNewEval: () => void
+  /** Called when a chip's breach animation timer completes. */
+  onBreachDone?: (id: string) => void
+  /** Notifies the owner that the selected account's localStorage session changed,
+   *  so it can re-read all sessions (breach detection, chip profits, table). */
+  onSessionChange?: () => void
 }
 
-/** Derive the current phase and a stable lifecycle key from the events array. */
-function derivePhaseAndKey(events: BacktestEvent[]): {
-  phase: Phase
-  lifecycleKey: string
-  currentHasFunded: boolean
-} {
-  const lifecycles = groupLifecycles(events)
-  if (lifecycles.length === 0) {
-    return { phase: "eval", lifecycleKey: "init", currentHasFunded: false }
-  }
-  const current = lifecycles[lifecycles.length - 1]
-  const hasFunded = current.fundedEvent !== null
-  return {
-    phase: hasFunded ? "funded" : "eval",
-    lifecycleKey: current.evalEvent.id,
-    currentHasFunded: hasFunded,
-  }
-}
+export function BalanceTracker({
+  backtest,
+  rules,
+  events,
+  selectedLifecycleId,
+  chips,
+  onSelect,
+  onBreachDone,
+  onSessionChange,
+}: Props) {
+  const appendEvent = useAppendBacktestEvent(backtest.id)
 
-export function BalanceTracker({ backtest, rules, events }: Props) {
-  const { phase, lifecycleKey, currentHasFunded } = useMemo(
-    () => derivePhaseAndKey(events),
-    [events],
+  // Derive the selected lifecycle from events + selectedLifecycleId
+  const lifecycles = useMemo(() => groupLifecycles(events), [events])
+  const selectedLc = useMemo(
+    () => (selectedLifecycleId ? lifecycles.find(lc => lc.evalEvent.lifecycle_id === selectedLifecycleId) ?? null : null),
+    [lifecycles, selectedLifecycleId],
   )
 
-  const appendEvent = useAppendBacktestEvent(backtest.id)
+  // Determine phase and lifecycle key for session management
+  const phase: Phase = selectedLc?.fundedEvent ? "funded" : "eval"
+  const lifecycleKey = selectedLc?.evalEvent.id ?? "init"
 
   const session = useBacktestSession(backtest.id, lifecycleKey, phase)
   const { days: sessionDays, ...ops } = session
+
+  // The parent derives breach/profits/table from a localStorage snapshot that is
+  // NOT reactive to trade edits. Ping it whenever the selected session changes so
+  // it re-reads. (useBacktestSession writes localStorage in an effect registered
+  // before this one, so the parent's re-read sees fresh data.)
+  useEffect(() => {
+    onSessionChange?.()
+  }, [sessionDays, onSessionChange])
 
   const state = useMemo(
     () => computeAccountState(rules, phase, sessionDays),
     [rules, phase, sessionDays],
   )
 
-  // Phase-override: allow user to manually view the funded panel when
-  // the current lifecycle is already in funded phase (phase === "funded").
-  // We don't need a UI tab — the phase is DERIVED from events.
-  // The only thing we need is the "Mark funded" and "New eval" action state.
   const isEval = phase === "eval"
   const isFunded = phase === "funded"
-
   const passEligible = state.eval?.passEligible ?? false
-  const isBreached = state.final.breached
+  const currentHasFunded = selectedLc?.fundedEvent !== null
 
   async function handleMarkFunded() {
-    await appendEvent.mutateAsync({ type: "F" })
-    // The events will be re-fetched, deriving phase = "funded" automatically.
-    // The funded session is fresh (empty localStorage for this lifecycle + funded key).
-  }
-
-  async function handleNewEval() {
-    await appendEvent.mutateAsync({ type: "E" })
-    // New E opens a new lifecycle with a new evalEvent.id → new lifecycleKey.
-    // Fresh eval session automatically.
+    if (!selectedLifecycleId) return
+    await appendEvent.mutateAsync({
+      input: { type: "F" },
+      lifecycleId: selectedLifecycleId,
+    })
   }
 
   async function handleTakePayout(amount: number) {
-    // 1. Apply withdrawal to last funded day in localStorage session
-    if (sessionDays.length === 0) return
+    if (!selectedLifecycleId || sessionDays.length === 0) return
     const lastDay = sessionDays[sessionDays.length - 1]
     ops.updateDay(lastDay.id, (d) => ({ ...d, withdrawal: amount }))
+    await appendEvent.mutateAsync({
+      input: { type: "P", amount },
+      lifecycleId: selectedLifecycleId,
+    })
+  }
 
-    // 2. Record P event in DB
-    await appendEvent.mutateAsync({ type: "P", amount })
+  if (!selectedLc) {
+    // No lifecycle selected (empty state — no events yet or all breached)
+    return null
   }
 
   return (
-    <div className="space-y-3">
+    <div className="@container space-y-3">
+      {/* Account selector chips (multi-account) */}
+      {chips.length > 1 && (
+        <BacktestAccountChips
+          chips={chips}
+          onSelect={onSelect}
+          onBreachDone={onBreachDone ?? (() => {})}
+        />
+      )}
+
       {isEval && (
         <>
           <BacktestTrackerCard
             backtestName={backtest.name}
+            accountIndex={selectedLc.index}
             rules={rules}
             state={state}
             onMarkFunded={passEligible && !currentHasFunded ? handleMarkFunded : undefined}
-            onNewEval={isBreached ? handleNewEval : undefined}
             isMarkFundedPending={appendEvent.isPending}
           />
           <BacktestTradeEntry days={sessionDays} ops={ops} />
@@ -115,17 +136,17 @@ export function BalanceTracker({ backtest, rules, events }: Props) {
         <>
           <BacktestFundedCard
             backtestName={backtest.name}
+            accountIndex={selectedLc.index}
             rules={rules}
             state={state}
             onTakePayout={handleTakePayout}
-            onNewEval={isBreached ? handleNewEval : undefined}
             isPayoutPending={appendEvent.isPending}
           />
           <BacktestTradeEntry days={sessionDays} ops={ops} />
         </>
       )}
 
-      {/* Undo the last lifecycle event (Mark funded / payout / New eval) */}
+      {/* Undo the last lifecycle event for the SELECTED lifecycle */}
       <BacktestUndoButton backtestId={backtest.id} events={events} />
     </div>
   )

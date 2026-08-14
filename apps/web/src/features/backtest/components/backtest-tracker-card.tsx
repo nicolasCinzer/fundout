@@ -22,13 +22,13 @@ import type { AccountRules, AccountState } from "@/features/backtest/types"
 
 type Props = {
   backtestName: string
+  /** 1-based account index shown as "1 · Name". */
+  accountIndex: number
   rules: AccountRules
   state: AccountState
   /** When set, show "Mark funded" CTA (passEligible reached). */
   onMarkFunded?: () => void
   isMarkFundedPending?: boolean
-  /** When set, show "New eval" CTA (breached). */
-  onNewEval?: () => void
 }
 
 type StatusVariant = "in-progress" | "breached" | "passed"
@@ -65,11 +65,11 @@ const statusConfig: Record<
 
 export function BacktestTrackerCard({
   backtestName,
+  accountIndex,
   rules,
   state,
   onMarkFunded,
   isMarkFundedPending,
-  onNewEval,
 }: Props) {
   const { t } = useTranslation("backtest")
 
@@ -114,7 +114,7 @@ export function BacktestTrackerCard({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium">{backtestName}</span>
+          <span className="text-sm font-medium">{accountIndex} · {backtestName}</span>
           <Badge variant="outline" className="text-[10px] px-1.5 py-0">
             {t("tracker.phase.eval")}
           </Badge>
@@ -128,7 +128,7 @@ export function BacktestTrackerCard({
       </div>
 
       {/* Metrics row */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-3">
         {/* Balance */}
         <div className="space-y-0.5">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -138,7 +138,7 @@ export function BacktestTrackerCard({
             {formatCurrency(final.balance)}
           </p>
           <p className="text-[10px] text-muted-foreground tabular-nums">
-            {t("tracker.dd.startingBalance")} {formatCurrency(rules.startingBalance)}
+            {t("tracker.dd.availableDd")} {formatCurrency(final.ddBuffer)}
           </p>
         </div>
 
@@ -269,34 +269,19 @@ export function BacktestTrackerCard({
       </div>
 
       {/* Lifecycle transition actions (C2b — tracker-driven) */}
-      {(onMarkFunded || onNewEval) && (
+      {onMarkFunded && (
         <>
           <Separator />
-          <div className="flex gap-2">
-            {onMarkFunded && (
-              <Button
-                size="sm"
-                className="flex-1"
-                onClick={onMarkFunded}
-                disabled={isMarkFundedPending}
-              >
-                {isMarkFundedPending
-                  ? t("tracker.actions.markingFunded")
-                  : t("tracker.actions.markFunded")}
-              </Button>
-            )}
-            {onNewEval && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={onNewEval}
-                disabled={isMarkFundedPending}
-              >
-                {t("tracker.actions.newEval")}
-              </Button>
-            )}
-          </div>
+          <Button
+            size="sm"
+            className="w-full"
+            onClick={onMarkFunded}
+            disabled={isMarkFundedPending}
+          >
+            {isMarkFundedPending
+              ? t("tracker.actions.markingFunded")
+              : t("tracker.actions.markFunded")}
+          </Button>
         </>
       )}
 
