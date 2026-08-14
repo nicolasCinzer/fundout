@@ -25,6 +25,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "#content": [
+        "./.velite/index"
+      ],
+      "#content/*": [
+        "./.velite/*"
       ]
     }
   },
@@ -36,6 +42,7 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".archive"
   ]
 }

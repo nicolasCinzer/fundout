@@ -1,0 +1,50 @@
+---
+title: "Risk Management for Prop Firm Traders: The Numbers You Must Track"
+description: "Four metrics every prop firm trader needs to monitor daily: drawdown velocity, daily loss %, consistency score, and risk-of-ruin."
+publishedAt: "2025-03-10"
+locale: en
+author: "Nicolás Cinzer"
+tags: ["risk-management", "propfirm", "analytics"]
+draft: false
+---
+
+Most trading education focuses on entries and exits. Prop firm education should focus on **not breaking the rules** while entries and exits take care of themselves.
+
+Here are the four numbers you actually need to track.
+
+## 1. Drawdown velocity
+
+Drawdown velocity is how fast your account is approaching the max drawdown limit. A slow drift is manageable. A fast spike on a single bad day is what ends challenges.
+
+```python
+drawdown_velocity = (equity_high - current_equity) / days_elapsed
+safe_pace = total_drawdown_limit / total_days_allowed
+```
+
+If your velocity exceeds the safe pace, you're on a path to breach — even if you're still profitable.
+
+## 2. Daily loss proximity
+
+How close are you to the max daily loss right now? This is the number that should be on your screen at all times during a session.
+
+<Callout type="warning">
+  Most platforms show your P&L. Very few show your proximity to the daily loss limit. Those are not the same thing, and confusing them is the #1 reason traders get surprised by a blown account.
+</Callout>
+
+## 3. Consistency score
+
+Many firms penalize "one big day" traders. If 60% of your profit came from a single session, some firms won't fund you — even if you hit the target.
+
+Track the distribution of your daily P&L as a percentage of total profit. No single day should represent more than 30–40% of your total.
+
+## 4. Risk-of-ruin
+
+Given your current win rate, average win, and average loss, what is the statistical probability of hitting max drawdown before hitting the profit target?
+
+This number should scare you into trading smaller. It usually does.
+
+## Fundout tracks all four
+
+You could build a spreadsheet. Many traders do. Fundout automates it and surfaces alerts before they become problems.
+
+[See the dashboard →](https://app.fundout.app/login)

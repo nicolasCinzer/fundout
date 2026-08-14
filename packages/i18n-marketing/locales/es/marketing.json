@@ -1,32 +1,127 @@
 {
   "nav": {
-    "home": "Inicio",
-    "howItWorks": "Cómo funciona",
+    "features": "Funcionalidades",
+    "tools": "Herramientas",
     "pricing": "Precios",
-    "blog": "Blog",
-    "about": "Nosotros",
+    "faq": "Preguntas",
     "signIn": "Iniciar sesión",
-    "startFree": "Empezar gratis"
+    "getStarted": "Empezar"
   },
   "hero": {
-    "eyebrow": "Analítica para traders de propfirms",
-    "headline": "No es tu trading. Es solo matemática.",
-    "subhead": "Registrá cada operación. Entendé los números detrás de tus evaluaciones. Seguí fondeado.",
+    "badge": "Analítica para prop firms, sin adivinar",
+    "headline": "El ROI de tu prop firm,",
+    "headlineAccent": "de un vistazo.",
+    "subhead": "Registrá cada evaluación, cuenta fondeada y payout en un solo dashboard. Conocé tus números reales — no la historia que te quiere contar tu P&L.",
     "primaryCta": "Empezar gratis",
-    "secondaryCta": "Cómo funciona"
+    "secondaryCta": "Ver cómo funciona",
+    "microcopy": "Sin tarjeta de crédito · Gratis para siempre en una cuenta",
+    "marqueeLabel": "Rastreando intentos en todas las firmas importantes"
+  },
+  "features": {
+    "eyebrow": "Seguimiento",
+    "headline": "Cada número que importa, en un solo lugar",
+    "subhead": "Fundout convierte tus evaluaciones, fees y payouts en los números por los que las prop firms realmente te miden.",
+    "card1Title": "Dashboard",
+    "card1Body": "P&L neto, gasto y payout ratio de un vistazo — recalculado en el momento en que registrás un intento o payout.",
+    "card2Title": "Evaluaciones",
+    "card2Body": "Registrá cada intento, reset y fee entre firmas, y mirá el costo real de fondearte.",
+    "card3Title": "Cuentas fondeadas",
+    "card3Body": "Monitoreá balances activos, margen de drawdown y estado en cada cuenta fondeada que operás.",
+    "card4Title": "Payouts",
+    "card4Body": "Rastreá retiros recibidos y pendientes — y lo que realmente te queda después de los fees."
+  },
+  "tools": {
+    "eyebrow": "Herramientas",
+    "headline": "Hacé la matemática antes de arriesgar un dólar",
+    "subhead": "Calculadoras gratis que convierten las reglas de las prop firms en números accionables.",
+    "openTool": "Abrir herramienta",
+    "card1Title": "Calculadora de Evaluación",
+    "card1Body": "Estimá el costo real de pasar un challenge antes de pagarlo.",
+    "card2Title": "Calculadora de Riesgo de Ruina",
+    "card2Body": "Conocé las probabilidades de que tu bankroll sobreviva una racha perdedora con tu riesgo actual.",
+    "card3Title": "Backtest",
+    "card3Body": "Reproducí tu estrategia contra reglas y payouts históricos para ver cómo aguanta."
+  },
+  "pricing": {
+    "eyebrow": "Precios",
+    "headline": "Precios simples. Es solo matemática.",
+    "subhead": "Empezá gratis para siempre en una cuenta. Escalá solo cuando estés operando más.",
+    "mostPopular": "Más elegido",
+    "perMonth": "/mes",
+    "plan1Name": "Free",
+    "plan1Price": "$0",
+    "plan1Desc": "Todo para rastrear una cuenta, para siempre.",
+    "plan1Features": [
+      "1 cuenta fondeada o de evaluación",
+      "Dashboard de ROI completo",
+      "Calculadora de evaluación",
+      "Registro manual de operaciones"
+    ],
+    "plan1Cta": "Empezar",
+    "plan2Name": "Pro",
+    "plan2Price": "$12",
+    "plan2Desc": "Para traders que operan varias firmas a la vez.",
+    "plan2Features": [
+      "Cuentas ilimitadas",
+      "Analítica completa y share cards",
+      "Todas las calculadoras + backtest",
+      "Soporte prioritario"
+    ],
+    "plan2Cta": "Probar gratis",
+    "plan3Name": "Team",
+    "plan3Price": "$39",
+    "plan3Desc": "Para grupos de prop y equipos de trading.",
+    "plan3Features": [
+      "Todo lo de Pro",
+      "Hasta 10 asientos",
+      "Biblioteca de firmas compartida",
+      "Reportes de ROI de equipo"
+    ],
+    "plan3Cta": "Contactanos"
+  },
+  "faq": {
+    "eyebrow": "Preguntas",
+    "headline": "Preguntas frecuentes",
+    "q1": "¿Qué es Fundout?",
+    "a1": "Fundout es un dashboard de analítica para traders de prop firms. Registrás tus evaluaciones, cuentas fondeadas y payouts, y te muestra la matemática real detrás de si realmente sos rentable — después de cada fee y reset.",
+    "q2": "¿Qué prop firms soporta?",
+    "a2": "Cualquiera. Vos configurás el set de reglas de tu firma — límite de drawdown, tope de pérdida diaria, regla de consistencia — para que los números coincidan con tu challenge exacto.",
+    "q3": "¿Mis datos de trading son privados?",
+    "a3": "Sí. Tu journal es tuyo. No lo vendemos, no lo compartimos ni entrenamos nada con él — y nunca te pedimos API keys, contraseñas ni credenciales de tu bróker.",
+    "q4": "¿Fundout es gratis?",
+    "a4": "Sí. Por ahora Fundout es gratis — una cuenta, el dashboard completo y todas las calculadoras. Si más adelante agregamos planes pagos, te avisamos con tiempo."
+  },
+  "ctaBanner": {
+    "headline": "Dejá de adivinar tu ROI.",
+    "headlineAccent": "Empezá a saberlo.",
+    "subhead": "Registrá tu primera evaluación en dos minutos y mirá la matemática detrás de tu fondeo.",
+    "primaryCta": "Empezar gratis",
+    "secondaryCta": "Ver cómo funciona"
   },
   "cta": {
     "joinFree": "Unirse gratis",
     "learnMore": "Saber más"
   },
   "footer": {
-    "tagline": "Hecho para traders de propfirms que quieren seguir fondeados.",
+    "tagline": "Seguimiento del ROI de prop firms, bien hecho. Para traders que quieren los números reales.",
     "rights": "Todos los derechos reservados.",
-    "columns": {
-      "product": "Producto",
-      "company": "Empresa",
-      "legal": "Legal"
-    }
+    "col1Title": "Producto",
+    "col1Link1": "Dashboard",
+    "col1Link2": "Evaluaciones",
+    "col1Link3": "Cuentas fondeadas",
+    "col1Link4": "Payouts",
+    "col2Title": "Herramientas",
+    "col2Link1": "Calculadora de Evaluación",
+    "col2Link2": "Riesgo de Ruina",
+    "col2Link3": "Backtest",
+    "col2Link4": "Blog",
+    "col3Title": "Empresa",
+    "col3Link1": "Nosotros",
+    "col3Link2": "Precios",
+    "col3Link3": "Contacto",
+    "legalPrivacy": "Privacidad",
+    "legalTerms": "Términos",
+    "soon": "Pronto"
   },
   "newsletter": {
     "title": "El resumen semanal",

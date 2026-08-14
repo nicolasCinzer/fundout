@@ -1,0 +1,50 @@
+---
+title: "Gestión de Riesgo para Traders de Prop Firms: Los Números que Debés Rastrear"
+description: "Cuatro métricas que todo trader de prop firm necesita monitorear a diario: velocidad de drawdown, % de pérdida diaria, puntaje de consistencia y riesgo de ruina."
+publishedAt: "2025-03-10"
+locale: es
+author: "Nicolás Cinzer"
+tags: ["gestion-de-riesgo", "propfirm", "analitica"]
+draft: false
+---
+
+La mayoría de la educación de trading se enfoca en entradas y salidas. La educación de prop firm debería enfocarse en **no romper las reglas** mientras las entradas y salidas se cuidan solas.
+
+Estos son los cuatro números que realmente necesitás rastrear.
+
+## 1. Velocidad de drawdown
+
+La velocidad de drawdown es qué tan rápido se está acercando tu cuenta al límite de drawdown máximo. Una deriva lenta es manejable. Un pico rápido en un mal día es lo que termina los desafíos.
+
+```
+velocidad_drawdown = (equity_maximo - equity_actual) / dias_transcurridos
+ritmo_seguro = limite_drawdown_total / dias_totales_permitidos
+```
+
+Si tu velocidad supera el ritmo seguro, estás en camino de una brecha — incluso si todavía sos rentable.
+
+## 2. Proximidad a la pérdida diaria
+
+¿Qué tan cerca estás del límite de pérdida máxima diaria ahora mismo? Este es el número que debería estar en tu pantalla en todo momento durante una sesión.
+
+<Callout type="warning">
+  La mayoría de las plataformas muestran tu P&L. Muy pocas muestran tu proximidad al límite de pérdida diaria. Esas no son la misma cosa, y confundirlas es la razón #1 por la que los traders se sorprenden con una cuenta reventada.
+</Callout>
+
+## 3. Puntaje de consistencia
+
+Muchas firmas penalizan a los traders de "un gran día". Si el 60% de tu ganancia vino de una sola sesión, algunas firmas no te fondearán — incluso si alcanzaste el objetivo.
+
+Rastreá la distribución de tu P&L diario como porcentaje del profit total. Ningún día debería representar más del 30–40% de tu total.
+
+## 4. Riesgo de ruina
+
+Dada tu tasa de aciertos actual, ganancia promedio y pérdida promedio, ¿cuál es la probabilidad estadística de alcanzar el drawdown máximo antes de alcanzar el objetivo de ganancia?
+
+Este número debería asustarte y llevarte a operar con menor tamaño. Generalmente lo hace.
+
+## Fundout rastrea los cuatro
+
+Podés construir una hoja de cálculo. Muchos traders lo hacen. Fundout lo automatiza y muestra alertas antes de que se conviertan en problemas.
+
+[Ver el dashboard →](https://app.fundout.app/login)

@@ -4,12 +4,17 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/next";
-import { Manrope, Outfit } from "next/font/google";
+import { Manrope, Outfit, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { routing } from "@/i18n/routing";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
-const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
+// Match the app (apps/web · @fundout/tokens): Manrope for body, Outfit for
+// headings. Same brand type, so the landing reads as one product with the app.
+const fontSans = Manrope({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fontHeading = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
+const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
   title: {
@@ -43,11 +48,15 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning className={`${manrope.variable} ${outfit.variable}`}>
-      <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <html lang={locale} suppressHydrationWarning className={`dark ${fontSans.variable} ${fontHeading.variable} ${fontMono.variable}`}>
+      <body className="bg-background text-foreground min-h-dvh flex flex-col">
+        <ThemeProvider attribute="class" forcedTheme="dark">
           <NextIntlClientProvider messages={messages}>
-            {children}
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
           </NextIntlClientProvider>
         </ThemeProvider>
         <Analytics />
