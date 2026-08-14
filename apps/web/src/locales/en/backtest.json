@@ -240,6 +240,7 @@
     "dd": {
       "balance": "Account balance",
       "startingBalance": "Starting balance",
+      "availableDd": "Available DD",
       "threshold": "DD threshold (MLL)",
       "buffer": "DD buffer",
       "locked": "Threshold locked",

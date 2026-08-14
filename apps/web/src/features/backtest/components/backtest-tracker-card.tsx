@@ -138,7 +138,7 @@ export function BacktestTrackerCard({
             {formatCurrency(final.balance)}
           </p>
           <p className="text-[10px] text-muted-foreground tabular-nums">
-            {t("tracker.dd.startingBalance")} {formatCurrency(rules.startingBalance)}
+            {t("tracker.dd.availableDd")} {formatCurrency(final.ddBuffer)}
           </p>
         </div>
 
