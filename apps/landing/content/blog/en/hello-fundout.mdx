@@ -1,0 +1,43 @@
+---
+title: "Hello Fundout: Analytics Built for Prop Traders"
+description: "Introducing Fundout — the trading journal and analytics platform built specifically for prop firm evaluation traders."
+publishedAt: "2025-01-15"
+locale: en
+author: "Nicolás Cinzer"
+tags: ["announcement", "propfirm", "analytics"]
+draft: false
+---
+
+Welcome to Fundout. If you trade at a prop firm — FTMO, MyFundedFX, The5ers, or any other — you know the drill: pass the evaluation, get funded, stay funded.
+
+What nobody tells you is that **most traders fail not because of bad setups, but because of math they're not tracking**.
+
+<Callout type="tip">
+  Fundout gives you a real-time view of the numbers that actually matter: drawdown velocity, max daily loss proximity, consistency score, and more.
+</Callout>
+
+## What we built
+
+The core of Fundout is a trade journal with a twist: every entry feeds a live analytics dashboard that tracks your position against the prop firm's rules — not just your P&L.
+
+### Rule-aware tracking
+
+Different firms have different rules. Fundout adapts. Whether your firm uses a trailing drawdown, a static one, or a consistency rule, the dashboard reflects it.
+
+### The math behind funding
+
+Here's the thing about evaluations: you're not just trying to be profitable. You're trying to be profitable *within a constraint box*.
+
+```js
+max_daily_loss = account_size * 0.05   // typical 5% rule
+drawdown_remaining = equity_high - current_equity
+safe_zone = drawdown_remaining > max_daily_loss
+```
+
+When `safe_zone` is false, most traders make their worst decisions. Fundout shows you this number in real time, before it becomes a problem.
+
+## What's next
+
+We're starting with a solid journal + dashboard combo. The roadmap includes prop firm rule presets, risk-of-ruin calculators, and session analytics.
+
+[Start free →](https://app.fundout.app/login)

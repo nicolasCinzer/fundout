@@ -1,0 +1,43 @@
+---
+title: "Hola Fundout: Analítica Construida para Traders de Prop Firms"
+description: "Presentamos Fundout — el journal de trading y plataforma de analítica diseñada específicamente para traders en evaluaciones de prop firms."
+publishedAt: "2025-01-15"
+locale: es
+author: "Nicolás Cinzer"
+tags: ["anuncio", "propfirm", "analitica"]
+draft: false
+---
+
+Bienvenidos a Fundout. Si tradeas en una prop firm — FTMO, MyFundedFX, The5ers o cualquier otra — conocés la historia: pasá la evaluación, accedé al capital, mantené la cuenta fondeada.
+
+Lo que nadie te dice es que **la mayoría de los traders falla no por malos setups, sino por números que no están rastreando**.
+
+<Callout type="tip">
+  Fundout te da una vista en tiempo real de los números que realmente importan: velocidad de drawdown, proximidad al máximo de pérdida diaria, puntaje de consistencia, y más.
+</Callout>
+
+## Qué construimos
+
+El núcleo de Fundout es un journal de trading con una diferencia: cada entrada alimenta un dashboard de analítica en vivo que rastrea tu posición contra las reglas de la prop firm — no solo tu P&L.
+
+### Seguimiento consciente de las reglas
+
+Cada firma tiene reglas diferentes. Fundout se adapta. Ya sea que tu firma use un drawdown trailing, uno estático o una regla de consistencia, el dashboard lo refleja.
+
+### La matemática detrás del fondeo
+
+Esto es lo que hay que entender sobre las evaluaciones: no solo estás tratando de ser rentable. Estás tratando de ser rentable *dentro de una caja de restricciones*.
+
+```
+perdida_maxima_diaria = tamaño_cuenta * 0.05   // regla típica del 5%
+drawdown_restante = maximo_equity - equity_actual
+zona_segura = drawdown_restante > perdida_maxima_diaria
+```
+
+Cuando `zona_segura` es falsa, la mayoría de los traders toman sus peores decisiones. Fundout te muestra este número en tiempo real, antes de que se convierta en un problema.
+
+## Qué viene después
+
+Empezamos con un sólido journal + dashboard. El roadmap incluye presets de reglas por prop firm, calculadoras de riesgo de ruina y analítica de sesión.
+
+[Empezá gratis →](https://app.fundout.app/login)

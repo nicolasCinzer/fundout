@@ -1,32 +1,127 @@
 {
   "nav": {
-    "home": "Home",
-    "howItWorks": "How it works",
+    "features": "Features",
+    "tools": "Tools",
     "pricing": "Pricing",
-    "blog": "Blog",
-    "about": "About",
+    "faq": "FAQ",
     "signIn": "Sign in",
-    "startFree": "Start free"
+    "getStarted": "Get started"
   },
   "hero": {
-    "eyebrow": "Propfirm trading analytics",
-    "headline": "It's not your trading. It's just math.",
-    "subhead": "Journal every trade. See the math behind your evaluations. Stay funded.",
-    "primaryCta": "Start free",
-    "secondaryCta": "How it works"
+    "badge": "Prop firm analytics, minus the guesswork",
+    "headline": "Your prop firm ROI,",
+    "headlineAccent": "at a glance.",
+    "subhead": "Track every evaluation, funded account and payout in one dashboard. Know your real numbers — not the story your P&L wants to tell you.",
+    "primaryCta": "Start tracking free",
+    "secondaryCta": "See how it works",
+    "microcopy": "No credit card required · Free forever on one account",
+    "marqueeLabel": "Tracking attempts across every major firm"
+  },
+  "features": {
+    "eyebrow": "Tracking",
+    "headline": "Every number that matters, in one place",
+    "subhead": "Fundout turns your evaluations, fees and payouts into the numbers prop firms actually judge you on.",
+    "card1Title": "Dashboard",
+    "card1Body": "Net P&L, spend and payout ratio in one glance — recalculated the moment you log an attempt or payout.",
+    "card2Title": "Evaluations",
+    "card2Body": "Log every attempt, reset and fee across firms, and see the true cost of getting funded.",
+    "card3Title": "Funded accounts",
+    "card3Body": "Monitor active balances, drawdown headroom and status on every funded account you run.",
+    "card4Title": "Payouts",
+    "card4Body": "Track received and pending withdrawals — and what you actually keep after fees."
+  },
+  "tools": {
+    "eyebrow": "Tools",
+    "headline": "Run the math before you risk a dollar",
+    "subhead": "Free calculators that turn prop firm rules into numbers you can act on.",
+    "openTool": "Open tool",
+    "card1Title": "Evaluation Calculator",
+    "card1Body": "Estimate the true cost of passing a challenge before you pay for it.",
+    "card2Title": "Bankroll Ruin Calculator",
+    "card2Body": "Know the odds your bankroll survives a losing streak at your current risk.",
+    "card3Title": "Backtest",
+    "card3Body": "Replay your strategy against historical rules and payouts to see how it holds up."
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headline": "Simple pricing. It's just math.",
+    "subhead": "Start free forever on one account. Upgrade only when you're running more.",
+    "mostPopular": "Most popular",
+    "perMonth": "/mo",
+    "plan1Name": "Free",
+    "plan1Price": "$0",
+    "plan1Desc": "Everything to track one account, forever.",
+    "plan1Features": [
+      "1 funded or evaluation account",
+      "Full ROI dashboard",
+      "Evaluation calculator",
+      "Manual trade journaling"
+    ],
+    "plan1Cta": "Get started",
+    "plan2Name": "Pro",
+    "plan2Price": "$12",
+    "plan2Desc": "For traders running multiple firms at once.",
+    "plan2Features": [
+      "Unlimited accounts",
+      "Full analytics & share cards",
+      "All calculators + backtest",
+      "Priority support"
+    ],
+    "plan2Cta": "Start free trial",
+    "plan3Name": "Team",
+    "plan3Price": "$39",
+    "plan3Desc": "For prop groups and trading teams.",
+    "plan3Features": [
+      "Everything in Pro",
+      "Up to 10 seats",
+      "Shared firm library",
+      "Team ROI reporting"
+    ],
+    "plan3Cta": "Contact us"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "headline": "Frequently asked questions",
+    "q1": "What is Fundout?",
+    "a1": "Fundout is an analytics dashboard for prop firm traders. You log your evaluations, funded accounts and payouts, and it shows you the real math behind whether you're actually profitable — after every fee and reset.",
+    "q2": "Which prop firms are supported?",
+    "a2": "Any of them. You configure your firm's rule set — drawdown limit, daily loss cap, consistency rule — so the numbers match your exact challenge.",
+    "q3": "Is my trading data private?",
+    "a3": "Yes. Your journal is yours. We never sell it, share it, or train anything on it — and we never ask for broker API keys, passwords or account credentials.",
+    "q4": "Is Fundout free?",
+    "a4": "Yes. Fundout is free to use right now — one account, the full dashboard and every calculator. If we add paid plans later, we'll give you plenty of notice."
+  },
+  "ctaBanner": {
+    "headline": "Stop guessing your ROI.",
+    "headlineAccent": "Start knowing it.",
+    "subhead": "Log your first evaluation in two minutes and see the math behind your funding.",
+    "primaryCta": "Start tracking free",
+    "secondaryCta": "See how it works"
   },
   "cta": {
     "joinFree": "Join free",
     "learnMore": "Learn more"
   },
   "footer": {
-    "tagline": "Built for prop traders who want to stay funded.",
+    "tagline": "Prop firm ROI tracking, done right. Built for traders who want the real numbers.",
     "rights": "All rights reserved.",
-    "columns": {
-      "product": "Product",
-      "company": "Company",
-      "legal": "Legal"
-    }
+    "col1Title": "Product",
+    "col1Link1": "Dashboard",
+    "col1Link2": "Evaluations",
+    "col1Link3": "Funded accounts",
+    "col1Link4": "Payouts",
+    "col2Title": "Tools",
+    "col2Link1": "Evaluation Calculator",
+    "col2Link2": "Bankroll Ruin",
+    "col2Link3": "Backtest",
+    "col2Link4": "Blog",
+    "col3Title": "Company",
+    "col3Link1": "About",
+    "col3Link2": "Pricing",
+    "col3Link3": "Contact",
+    "legalPrivacy": "Privacy",
+    "legalTerms": "Terms",
+    "soon": "Soon"
   },
   "newsletter": {
     "title": "Get the weekly drop",

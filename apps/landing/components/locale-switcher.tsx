@@ -1,12 +1,21 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { Button } from "@fundout/ui/button";
 import { useRouter, usePathname } from "@/i18n/navigation";
 
+// Mirrors the app's LanguageToggle (apps/web · language-toggle.tsx).
+const LOCALE_META = {
+  es: { flag: "🇪🇸", short: "ESP" },
+  en: { flag: "🇺🇸", short: "EN" },
+} as const;
+
 export function LocaleSwitcher() {
-  const locale = useLocale();
+  const locale = useLocale() as "en" | "es";
   const router = useRouter();
   const pathname = usePathname();
+
+  const current = LOCALE_META[locale] ?? LOCALE_META.en;
 
   function handleSwitch() {
     const nextLocale = locale === "en" ? "es" : "en";
@@ -15,12 +24,17 @@ export function LocaleSwitcher() {
   }
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={handleSwitch}
-      className="rounded-md px-2 py-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-      aria-label={locale === "en" ? "Switch to Spanish" : "Cambiar a inglés"}
+      className="gap-1.5 px-2 font-medium"
+      aria-label={locale === "en" ? "Cambiar a español" : "Switch to English"}
     >
-      {locale === "en" ? "ES" : "EN"}
-    </button>
+      <span aria-hidden="true" className="text-base leading-none">
+        {current.flag}
+      </span>
+      <span className="text-xs tracking-wide">{current.short}</span>
+    </Button>
   );
 }
