@@ -115,18 +115,31 @@ export function useCreateEvaluation() {
 type MarkFundedInput = {
   evaluationId: string
   fundedAt: string
+  /**
+   * Getting funded yields a fresh account, usually with a new propfirm-assigned
+   * ID (e.g. Lucid renames the account on funding). When provided (non-empty),
+   * update the evaluation's name to the new ID.
+   */
+  newName?: string | null
 }
 
 export function useMarkEvaluationFunded() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   return useMutation({
-    mutationFn: async ({ evaluationId, fundedAt }: MarkFundedInput) => {
+    mutationFn: async ({ evaluationId, fundedAt, newName }: MarkFundedInput) => {
       if (!user) throw new Error("Not authenticated")
 
+      const patch: Database["public"]["Tables"]["evaluations"]["Update"] = {
+        status: "passed",
+        closed_at: fundedAt,
+      }
+      if (newName != null && newName !== "") {
+        patch.name = newName
+      }
       const { error: updateError } = await supabase
         .from("evaluations")
-        .update({ status: "passed", closed_at: fundedAt })
+        .update(patch)
         .eq("id", evaluationId)
       if (updateError) throw updateError
 
@@ -266,9 +279,12 @@ export function useUndoMarkEvaluationFunded() {
     mutationFn: async ({
       evaluationId,
       fundedAccountId,
+      previousName,
     }: {
       evaluationId: string
       fundedAccountId: string
+      /** Restore the pre-funding name when funding renamed the evaluation. */
+      previousName?: string | null
     }) => {
       const { error: deleteError } = await supabase
         .from("funded_accounts")
@@ -276,9 +292,16 @@ export function useUndoMarkEvaluationFunded() {
         .eq("id", fundedAccountId)
       if (deleteError) throw deleteError
 
+      const revert: Database["public"]["Tables"]["evaluations"]["Update"] = {
+        status: "in_progress",
+        closed_at: null,
+      }
+      if (previousName != null) {
+        revert.name = previousName
+      }
       const { error: resetError } = await supabase
         .from("evaluations")
-        .update({ status: "in_progress", closed_at: null })
+        .update(revert)
         .eq("id", evaluationId)
       // funded_account was already deleted at this point — partial failure
       if (resetError)

@@ -105,7 +105,10 @@
     "title": "Mark as funded",
     "description": "When did this evaluation get funded? This sets the start of the payout window.",
     "fields": {
-      "fundedOn": "Funded on"
+      "fundedOn": "Funded on",
+      "newAccountId": "New account ID (optional)",
+      "newAccountIdPlaceholder": "e.g. the funded account ID",
+      "newAccountIdHint": "Getting funded is a fresh account — some firms assign a new ID. Update it here."
     },
     "submit": {
       "save": "Mark as funded",
